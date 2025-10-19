@@ -1,103 +1,188 @@
-import Image from "next/image";
+"use client";
+// import Image from "next/image"; // (Removed unused import)
+import Link from "next/link";
 
-export default function Home() {
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Hero from "@/components/Hero";
+import Testimonials from "@/components/testimonials";
+import CallToAction from "@/components/call-to-action";
+import FAQ from "@/components/FAQ";
+import HowItWorks from "@/components/how-it-works-section";
+import Footer from "@/components/footer";
+import Features from "@/components/features";
+import { useTheme } from "next-themes";
+
+
+import { coldCases } from "@/data/coldCases";
+import TeamSection from "@/components/team-section";
+
+
+gsap.registerPlugin(ScrollTrigger);
+
+function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <Link
+      href={`/cases/${caseData.slug}`}
+      className="relative w-80 md:w-96 h-[500px] flex-shrink-0 group transition-transform duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-3xl"
+    >
+      <div className="relative w-80 md:w-96 h-[500px] flex-shrink-0 cursor-pointer group transition-transform duration-300 ease-in-out hover:scale-105">
+        <div
+          className="w-full h-full bg-cover bg-center rounded-3xl shadow-2xl"
+          style={{ backgroundImage: `url(${caseData.imageUrl})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-3xl"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        <div className="absolute top-5 left-5 right-5 p-3 flex justify-between items-center bg-black/10 backdrop-blur-md rounded-2xl text-white">
+          <h3 className="font-semibold">{caseData.title}</h3>
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="transform transition-transform duration-300 group-hover:rotate-[-45deg]"
+          >
+            <path
+              d="M7 17L17 7M17 7H7M17 7V17"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
+        <div className="absolute bottom-5 left-5 flex flex-wrap gap-2">
+          {caseData.tags.map((tag, index) => (
+            <span
+              key={index}
+              className="px-3 py-1 text-xs text-white bg-white/20 backdrop-blur-sm rounded-full"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function ColdCaseFiles() {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      if (sectionRef.current) {
+        gsap.from(sectionRef.current.querySelectorAll(".case-card"), {
+          opacity: 0,
+          y: 50,
+          stagger: 0.1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 70%",
+            toggleActions: "play none none none",
+          },
+        });
+      }
+    }, sectionRef);
+    return () => ctx.revert();
+  }, []);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="bg-surface text-text-primary py-24 px-4 sm:px-6 lg:px-8 font-sans overflow-hidden"
+    >
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-5xl md:text-6xl font-bold mb-4">
+          SOLVE THE UNSOLVABLE
+        </h2>
+        <h3 className="text-sm font-semibold text-text-secondary tracking-[0.2em] mb-6">
+          COLD CASE FILE GAMES
+        </h3>
+        <p className="max-w-2xl text-text-secondary mb-12">
+          Looking for a unique date night or a fun challenge with friends? Our
+          immersive Cold Case Files put you in the role of a detective as you
+          work through police reports, witness statements, and crime scene
+          evidence to crack unsolved cases. Perfect for couples, game nights, or
+          anyone who loves true crime and investigative puzzles.
+        </p>
+      </div>
+      <div
+        ref={scrollContainerRef}
+        className="flex overflow-x-auto space-x-6 md:space-x-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pb-8"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {coldCases.map((caseFile) => (
+          <div key={caseFile.id} className="case-card">
+            <CaseCard caseData={caseFile} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function App() {
+  const { setTheme, theme } = useTheme();
+
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const mainContentRef = useRef<HTMLElement | null>(null);
+  const mainContainerRef = useRef(null);
+  const footerRef = useRef<HTMLElement>(null);
+
+  // Initialize theme from localStorage or system preference
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    const systemPrefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else if (systemPrefersDark) {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, [setTheme]);
+
+  // ThemeProvider in layout handles html class; we only persist preference
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", theme ?? "light");
+    }
+  }, [theme]);
+
+
+
+  return (
+    <div
+      ref={rootRef}
+      className="bg-background text-text-primary font-sans overflow-x-hidden"
+    >
+      <Hero />
+
+      <div ref={mainContainerRef}>
+        {/* --- MAIN CONTENT & FOOTER WRAPPER --- */}
+        <main ref={mainContentRef} className="relative z-10 bg-background">
+          <Testimonials />
+          <Features />
+          {/* <HowItWorks /> */}
+          <ColdCaseFiles />
+          <FAQ />
+          <TeamSection />
+        </main>
+        <CallToAction />
+        <Footer footerRef={footerRef as React.RefObject<HTMLElement>} />
+      </div>
     </div>
   );
 }
+
+export default App;
