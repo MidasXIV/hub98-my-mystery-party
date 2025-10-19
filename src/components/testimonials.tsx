@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 const testimonials = [
@@ -104,42 +105,52 @@ function Testimonials() {
 
   // GSAP's official seamless loop helper function for robustness
   // This is the best practice for this type of animation
-  function horizontalLoop(items: HTMLElement[], config: any) {
+  type HorizontalLoopConfig = {
+    repeat?: number;
+    paused?: boolean;
+    speed?: number;
+    snap?: number | false;
+    paddingRight?: number;
+    reversed?: boolean;
+  };
+
+  function horizontalLoop(items: HTMLElement[], config: HorizontalLoopConfig) {
     items = gsap.utils.toArray(items);
     config = config || {};
-    let tl = gsap.timeline({
+    const tl = gsap.timeline({
         repeat: config.repeat,
         paused: config.paused,
         defaults: { ease: "none" },
-          onReverseComplete: () => {
-            tl.totalTime(tl.rawTime() + tl.duration() * 100);
-          },
+        onReverseComplete: () => {
+          tl.totalTime(tl.rawTime() + tl.duration() * 100);
+        },
       }),
       length = items.length,
       startX = items[0].offsetLeft,
-      times: any = [],
-      widths: any = [],
-      xPercents: any = [],
-      curIndex = 0,
+      times: number[] = [],
+      widths: number[] = [],
+      xPercents: number[] = [],
       pixelsPerSecond = (config.speed || 1) * 100,
       snap =
         config.snap === false
           ? (v: any) => v
-          : gsap.utils.snap(config.snap || 1),
-      totalWidth,
-      curX,
-      distanceToStart,
-      distanceToLoop,
-      item,
-      i;
+          : gsap.utils.snap(config.snap || 1);
+
+    let totalWidth: number = 0,
+      curIndex = 0,
+      curX: number = 0,
+      distanceToStart: number = 0,
+      distanceToLoop: number = 0,
+      item: HTMLElement = null as any,
+      i: string | number = 0;
     gsap.set(items, {
       xPercent: (i, el) => {
-        let w = (widths[i] = parseFloat(
+        const w = (widths[i] = parseFloat(
           gsap.getProperty(el, "width", "px") as string
         ));
         xPercents[i] = snap(
           (parseFloat(gsap.getProperty(el, "x", "px") as string) / w) * 100 +
-            gsap.getProperty(el, "xPercent")
+            Number(gsap.getProperty(el, "xPercent"))
         );
         return xPercents[i];
       },
@@ -151,7 +162,7 @@ function Testimonials() {
       startX +
       items[length - 1].offsetWidth *
         (gsap.getProperty(items[length - 1], "scaleX") as number) +
-      (parseFloat(config.paddingRight) || 0);
+      (parseFloat(String(config.paddingRight)) || 0);
     for (i = 0; i < length; i++) {
       item = items[i];
       curX = (xPercents[i] / 100) * widths[i];
@@ -189,8 +200,8 @@ function Testimonials() {
       vars = vars || {};
       Math.abs(index - curIndex) > length / 2 &&
         (index += index > curIndex ? -length : length);
-      let newIndex = gsap.utils.wrap(0, length, index),
-        time = times[newIndex];
+      const newIndex = gsap.utils.wrap(0, length, index);
+      let time = times[newIndex];
       if (time > tl.time() !== index > curIndex) {
         vars.modifiers = { time: gsap.utils.wrap(0, tl.duration()) };
         time += tl.duration() * (index > curIndex ? 1 : -1);
@@ -206,8 +217,9 @@ function Testimonials() {
     tl.times = times;
     tl.progress(1, true).progress(0, true);
     if (config.reversed) {
-      //@ts-ignore
-      tl.vars.onReverseComplete();
+      if (typeof tl.vars.onReverseComplete === "function") {
+        tl.vars.onReverseComplete();
+      }
       tl.reverse();
     }
     return tl;

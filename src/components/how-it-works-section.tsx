@@ -177,8 +177,8 @@ function HowItWorks() {
                     <div aria-hidden="true" className="mt-8 px-6 py-3 rounded-full font-semibold self-start invisible">Explore Our Mysteries</div>
                 </div>
                 <div ref={valuePropTextRef} style={{ visibility: "hidden" }} className="absolute inset-0 flex flex-col justify-center">
-                    <h2 className="text-4xl lg:text-5xl font-bold leading-tight">More than a game. It's an experience.</h2>
-                    <p className="mt-6 text-lg text-text-secondary">We create immersive stories that become the centerpiece of your event. It’s an icebreaker, a team-builder, and a memory-maker, all in one box—or in this case, one download.</p>
+                    <h2 className="text-4xl lg:text-5xl font-bold leading-tight">More than a game. It&apos;s an experience.</h2>
+                    <p className="mt-6 text-lg text-text-secondary">We create immersive stories that become the centerpiece of your event. It&apos;s an icebreaker, a team-builder, and a memory-maker, all in one box—or in this case, one download.</p>
                     <button className="mt-8 bg-accent text-accent-text px-6 py-3 rounded-full font-semibold hover:bg-opacity-90 transition-opacity self-start">Explore Our Mysteries</button>
                 </div>
             </div>

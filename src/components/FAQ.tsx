@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // It's a good practice to register the GSAP plugin you are using.
 // gsap.registerPlugin(ScrollTrigger);

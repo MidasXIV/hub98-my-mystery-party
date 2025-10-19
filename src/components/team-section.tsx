@@ -17,11 +17,12 @@ const teamMembers = [
 
 import { gsap } from "gsap";
 function TeamSection() {
-    const sectionRef = useRef(null);
+    const sectionRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
         if (!sectionRef.current) return;
         const ctx = gsap.context(() => {
+            if (!sectionRef.current) return;
             gsap.from(sectionRef.current.querySelectorAll('.grid-item'), {
                 opacity: 0,
                 y: 30,

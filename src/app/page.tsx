@@ -9,7 +9,6 @@ import Hero from "@/components/Hero";
 import Testimonials from "@/components/testimonials";
 import CallToAction from "@/components/call-to-action";
 import FAQ from "@/components/FAQ";
-import HowItWorks from "@/components/how-it-works-section";
 import Footer from "@/components/footer";
 import Features from "@/components/features";
 import { useTheme } from "next-themes";
