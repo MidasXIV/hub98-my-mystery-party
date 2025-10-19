@@ -4,8 +4,13 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 
 const Header = () => {
-  const { theme, setTheme } = useTheme();
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  // Use resolvedTheme so 'system' doesn't cause ambiguous flicker.
+  const current = resolvedTheme || theme; // fallback
+  const toggleTheme = () => {
+    const next = current === "light" ? "dark" : "light";
+    setTheme(next);
+  };
 
   return (
     <header
@@ -37,7 +42,7 @@ const Header = () => {
           strokeWidth={1.5}
           stroke="currentColor"
           className={`size-5 transition-all duration-300 ${
-            theme === "light"
+            current === "light"
               ? "opacity-100 rotate-0"
               : "opacity-0 -rotate-90 scale-50 absolute"
           }`}
@@ -55,7 +60,7 @@ const Header = () => {
           strokeWidth={1.5}
           stroke="currentColor"
           className={`size-5 transition-all duration-300 ${
-            theme === "dark"
+            current === "dark"
               ? "opacity-100 rotate-0"
               : "opacity-0 rotate-90 scale-50 absolute"
           }`}

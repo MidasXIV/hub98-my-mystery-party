@@ -11,11 +11,9 @@ import CallToAction from "@/components/call-to-action";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/footer";
 import Features from "@/components/features";
-import { useTheme } from "next-themes";
 
 
 import { coldCases } from "@/data/coldCases";
-import TeamSection from "@/components/team-section";
 
 
 gsap.registerPlugin(ScrollTrigger);
@@ -129,34 +127,17 @@ function ColdCaseFiles() {
 }
 
 function App() {
-  const { setTheme, theme } = useTheme();
+  // next-themes provides theme classes via provider; no need to access theme here.
+  // (Removed theme usage to prevent unnecessary re-renders.)
 
   const rootRef = useRef<HTMLDivElement | null>(null);
   const mainContentRef = useRef<HTMLElement | null>(null);
   const mainContainerRef = useRef(null);
   const footerRef = useRef<HTMLElement>(null);
 
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (systemPrefersDark) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
-  }, [setTheme]);
-
-  // ThemeProvider in layout handles html class; we only persist preference
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("theme", theme ?? "light");
-    }
-  }, [theme]);
+  // Removed manual theme initialization & persistence: next-themes already
+  // handles system preference and localStorage. Keeping these effects caused
+  // rapid toggling when system vs stored preference conflicted under StrictMode.
 
 
 
