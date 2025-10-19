@@ -70,6 +70,10 @@ function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
 function ColdCaseFiles() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const leftBtnRef = useRef<HTMLButtonElement>(null);
+  const rightBtnRef = useRef<HTMLButtonElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = React.useState(false);
+  const [canScrollRight, setCanScrollRight] = React.useState(true);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -91,6 +95,72 @@ function ColdCaseFiles() {
     return () => ctx.revert();
   }, []);
 
+  // Update button enable/disable state based on scroll position
+  const updateScrollState = React.useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    setCanScrollLeft(scrollLeft > 0);
+    // Allow a 1px leeway for floating point rounding
+    setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 1);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    updateScrollState();
+    const onScroll = () => updateScrollState();
+    el.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", updateScrollState);
+    return () => {
+      el.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [updateScrollState]);
+
+  const scrollByCard = React.useCallback((direction: "left" | "right") => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const cards = el.querySelectorAll<HTMLElement>(".case-card");
+    if (!cards.length) return;
+    const first = cards[0];
+    // Use distance between first and second card to account for spacing utilities (space-x-*)
+    let delta = first.offsetWidth;
+    if (cards.length > 1) {
+      const second = cards[1];
+      delta = second.offsetLeft - first.offsetLeft; // includes margin created by space-x utilities
+    }
+    if (direction === "left") delta = -delta;
+    el.scrollBy({ left: delta, behavior: "smooth" });
+    // Continuously update scroll state during smooth scroll animation
+    const start = performance.now();
+    const duration = 500; // ms
+    const step = () => {
+      updateScrollState();
+      if (performance.now() - start < duration) {
+        requestAnimationFrame(step);
+      }
+    };
+    requestAnimationFrame(step);
+  }, [updateScrollState]);
+
+  // Keyboard accessibility: arrow keys scroll container when focus is on buttons or container
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        scrollByCard("left");
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        scrollByCard("right");
+      }
+    };
+    const section = sectionRef.current;
+    if (!section) return;
+    section.addEventListener("keydown", handleKey);
+    return () => section.removeEventListener("keydown", handleKey);
+  }, [scrollByCard]);
+
   return (
     <section
       ref={sectionRef}
@@ -111,16 +181,48 @@ function ColdCaseFiles() {
           anyone who loves true crime and investigative puzzles.
         </p>
       </div>
-      <div
-        ref={scrollContainerRef}
-        className="flex overflow-x-auto space-x-6 md:space-x-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 pb-8"
-        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-      >
-        {coldCases.map((caseFile) => (
-          <div key={caseFile.id} className="case-card">
-            <CaseCard caseData={caseFile} />
-          </div>
-        ))}
+      {/* Arrow Navigation Buttons */}
+      <div className="mt-4 flex flex-col lg:flex-row lg:items-start gap-6">
+        {/* Buttons beside the text area: horizontal on small screens, vertical stack on large */}
+        <div className="flex lg:flex-col gap-4 self-start">
+          <button
+            ref={leftBtnRef}
+            type="button"
+            aria-label="Scroll left"
+            onClick={() => scrollByCard("left")}
+            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${canScrollLeft ? "opacity-100" : "opacity-30 cursor-not-allowed"}`}
+            disabled={!canScrollLeft}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            ref={rightBtnRef}
+            type="button"
+            aria-label="Scroll right"
+            onClick={() => scrollByCard("right")}
+            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${canScrollRight ? "opacity-100" : "opacity-30 cursor-not-allowed"}`}
+            disabled={!canScrollRight}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        <div
+          ref={scrollContainerRef}
+          className="flex overflow-x-auto space-x-6 md:space-x-8 -mx-4 sm:-mx-6 px-4 sm:px-6 lg:px-0 lg:ml-2 pb-8 scroll-smooth focus:outline-none flex-1"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          tabIndex={0}
+          aria-label="Cold case files horizontally scrollable list"
+        >
+          {coldCases.map((caseFile) => (
+            <div key={caseFile.id} className="case-card">
+              <CaseCard caseData={caseFile} />
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
