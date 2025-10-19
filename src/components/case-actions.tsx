@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Play } from "lucide-react";
+import BetaBadge from "@/components/beta-badge";
 import { CustomizeModal, CustomizationData } from "@/components/customize-modal";
 
 interface CaseActionsProps {
@@ -52,10 +54,15 @@ export const CaseActions: React.FC<CaseActionsProps> = ({ slug }) => {
       <button
         type="button"
         tabIndex={0}
-        className="w-full md:w-auto px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-500 active:bg-blue-700 transition text-white font-semibold text-lg shadow-lg shadow-blue-600/30 cursor-pointer"
+        aria-label="Play case (Beta feature)"
+        className="relative w-full md:w-auto px-7 md:px-8 py-3.5 md:py-4 rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 active:from-blue-700 active:to-blue-800 transition text-white font-semibold text-lg shadow-lg shadow-blue-600/30 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
         onClick={handlePlay}
       >
-        Play
+        <span className="flex items-center justify-center gap-2">
+          <Play size={18} className="opacity-90" />
+          <span>Play</span>
+        </span>
+        <BetaBadge variant="corner" />
       </button>
       <CustomizeModal slug={slug} isOpen={open} onClose={() => setOpen(false)} onSave={handleSave} />
     </div>
