@@ -175,7 +175,7 @@ function App() {
           {/* <HowItWorks /> */}
           <ColdCaseFiles />
           <FAQ />
-          <TeamSection />
+          {/* <TeamSection /> */}
         </main>
         <CallToAction />
         <Footer footerRef={footerRef as React.RefObject<HTMLElement>} />
