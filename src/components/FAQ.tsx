@@ -106,7 +106,7 @@ function FAQ() {
   }, []);
 
   return (
-    <section ref={componentRef} className="bg-black text-white font-sans py-20 sm:py-24">
+    <section id="faq" ref={componentRef} className="bg-black text-white font-sans py-20 sm:py-24">
       <div className="max-w-3xl mx-auto px-4">
         <h2 className="faq-title text-4xl md:text-5xl text-center mb-16">
           Questions? Totally fair.

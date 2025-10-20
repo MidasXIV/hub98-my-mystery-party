@@ -162,7 +162,7 @@ function ColdCaseFiles() {
   }, [scrollByCard]);
 
   return (
-    <section
+    <section id="cases"
       ref={sectionRef}
       className="bg-surface text-text-primary py-24 px-4 sm:px-6 lg:px-8 font-sans overflow-hidden"
     >

@@ -17,13 +17,13 @@ const Header = () => {
       className="fixed left-1/2 top-8 z-50 transform -translate-x-1/2 flex items-center px-4 py-2 bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl rounded-full w-[360px] max-w-full gap-3 backdrop-blur-md"
     >
       <Link
-        href="/cases"
+        href="/#cases"
         className="font-mono text-sm px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 font-semibold shadow border border-gray-300/60 dark:border-white/10 transition"
       >
         Cold Cases
       </Link>
       <Link
-        href="/faq"
+        href="/#faq"
         className="font-mono text-sm px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 font-semibold shadow border border-gray-300/60 dark:border-white/10 transition"
       >
         FAQ

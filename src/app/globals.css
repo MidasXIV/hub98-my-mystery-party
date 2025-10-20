@@ -114,6 +114,10 @@ body {
   background-color: var(--background);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* lovely fluid fonts */
 
 :root {
