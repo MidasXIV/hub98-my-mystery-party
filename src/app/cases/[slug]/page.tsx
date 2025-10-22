@@ -29,8 +29,12 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans">
-      <div className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+      <div className="mx-auto max-w-6xl px-4 py-16 relative">
+        {/* Background embossed typography */}
+        <div aria-hidden className="embossed-backdrop">
+          {caseFile.title}
+        </div>
+        <div className="grid md:grid-cols-2 gap-12 items-start relative z-10">
           <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
             <Image
               src={caseFile.imageUrl}
@@ -40,7 +44,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
               priority
             />
           </div>
-          <div>
+          <div className="relative z-10">
             <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
               {caseFile.title}
             </h1>
@@ -80,7 +84,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
             <CaseActions slug={resolved.slug} />
           </div>
         </div>
-        <div className="mt-16 border-t border-subtle-stroke pt-10">
+        <div className="mt-16 border-t border-subtle-stroke pt-10 relative z-10">
           <h2 className="text-2xl font-semibold mb-4">What You&apos;ll Receive</h2>
           <p className="text-text-secondary max-w-3xl leading-relaxed">
             Each Cold Case File contains high-quality printable evidence, immersive

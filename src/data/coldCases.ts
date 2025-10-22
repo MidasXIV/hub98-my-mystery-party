@@ -144,6 +144,31 @@ export const coldCases: ColdCase[] = [
       }
     ],
   },
+  {
+    id: 6,
+    slug: "station-zero",
+    title: "Station Zero: Ghost of the Machine",
+    imageUrl: "/cold_cases/thumbnails/station_zero.png",
+    tags: ["Puzzle Heavy", "High Difficulty"],
+    description:
+      "A marine research station sends one last garbled transmission. Dive into sonar maps, lab notes, and encrypted logs to find what lurks beneath.",
+    difficulty: "Hard",
+    players: "1-4",
+    duration: "3-5 hours",
+    price: 39.0,
+    evidence: [
+      {
+        title: "Sonar Map",
+        description: "A sonar map with strange readings.",
+        imageUrl: "/cold_cases/thumbnails/evidence_sonar.png"
+      },
+      {
+        title: "Lab Notes",
+        description: "Encrypted lab notes from the station.",
+        imageUrl: "/cold_cases/thumbnails/evidence_lab.png"
+      }
+    ],
+  },
 ];
 
 export function getCaseBySlug(slug: string) {
