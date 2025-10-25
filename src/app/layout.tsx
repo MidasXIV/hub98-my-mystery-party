@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import "./globals.css";
 
 import Header from "../components/header";
+import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
 
 if (typeof window !== "undefined") {
@@ -34,6 +35,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+  const hideGlobalHeader = pathname.startsWith("/play/");
   return (
     <html lang="en">
       <body
@@ -45,8 +48,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-            <div id="smooth-content">{children}</div>
+          {!hideGlobalHeader && <Header />}
+          <div id="smooth-content">{children}</div>
         </ThemeProvider>
       </body>
     </html>
