@@ -1,5 +1,6 @@
 "use client";
 import gsap from "gsap";
+import { Analytics } from "@vercel/analytics/next"
 import { Geist, Geist_Mono, Blinker } from "next/font/google";
 import { ScrollSmoother } from "gsap/dist/ScrollSmoother";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
