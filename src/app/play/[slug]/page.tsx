@@ -1,4 +1,5 @@
-"use client"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
 
 import React from "react";
 import { getCaseBySlug, Evidence } from "@/data/coldCases";
@@ -15,6 +16,7 @@ import {
   useMemo,
   CSSProperties,
 } from "react";
+import { i } from "framer-motion/client";
 
 interface PlayPageProps {
   params: { slug: string };
@@ -133,15 +135,18 @@ interface BoardData {
 }
 
 // Provide sensible baseline sizes so AI-generated tiny dimensions are normalized.
-const DEFAULT_ITEM_SIZES: Record<BoardItemType, { width: number; height: number }> = {
+const DEFAULT_ITEM_SIZES: Record<
+  BoardItemType,
+  { width: number; height: number }
+> = {
   photo: { width: 220, height: 220 },
   document: { width: 260, height: 190 },
   note: { width: 180, height: 180 },
   clue: { width: 200, height: 100 },
-  'folder-tab': { width: 140, height: 48 },
-  'autopsy-report': { width: 300, height: 130 },
-  'formal-alibi': { width: 250, height: 160 },
-  'interrogation-transcript': { width: 270, height: 170 },
+  "folder-tab": { width: 140, height: 48 },
+  "autopsy-report": { width: 300, height: 130 },
+  "formal-alibi": { width: 250, height: 160 },
+  "interrogation-transcript": { width: 270, height: 170 },
   newspaper: { width: 300, height: 200 },
 };
 
@@ -164,7 +169,7 @@ function normalizeBoardData(data: BoardData): BoardData {
   };
 }
 
-function Tape({ rotation }) {
+function Tape({ rotation }: { rotation: number }) {
   return (
     <div
       className="absolute -top-1 -right-1 w-8 h-4 bg-yellow-500/20 backdrop-blur-sm"
@@ -173,7 +178,23 @@ function Tape({ rotation }) {
   );
 }
 
-function ContextMenu({ x, y, onEdit, onDelete, onConnect, onClose }) {
+interface ContextMenuProps {
+  x: number;
+  y: number;
+  onEdit: () => void;
+  onDelete: () => void;
+  onConnect: () => void;
+  onClose: () => void;
+}
+
+function ContextMenu({
+  x,
+  y,
+  onEdit,
+  onDelete,
+  onConnect,
+  onClose,
+}: ContextMenuProps) {
   const menuRef = useRef(null);
   const [position, setPosition] = useState({ x, y });
 
@@ -195,7 +216,7 @@ function ContextMenu({ x, y, onEdit, onDelete, onConnect, onClose }) {
 
   useEffect(() => {
     const handleClickOutside = () => onClose();
-    const handleEsc = (e) => {
+    const handleEsc = (e: { key: string }) => {
       if (e.key === "Escape") onClose();
     };
 
@@ -236,7 +257,13 @@ function ContextMenu({ x, y, onEdit, onDelete, onConnect, onClose }) {
   );
 }
 
-function NewspaperClipping({ content, isModal = false }) {
+function NewspaperClipping({
+  content,
+  isModal = false,
+}: {
+  content: string;
+  isModal?: boolean;
+}) {
   const parsedContent = useMemo(() => {
     try {
       const data = JSON.parse(content);
@@ -315,11 +342,11 @@ function NewspaperClipping({ content, isModal = false }) {
   );
 }
 
-function AutopsyReportViewer({ content }) {
+function AutopsyReportViewer({ content }: { content: string }) {
   const parsedContent = useMemo(() => {
     const lines = content.split("\n").filter((line) => line.trim() !== "");
-    const report = {};
-    let currentKey = null;
+    const report: Record<string, string> = {};
+    let currentKey: string | null = null;
     lines.forEach((line) => {
       const parts = line.split(":");
       if (parts.length > 1) {
@@ -400,7 +427,7 @@ function Modal({
   imageUrl?: string;
 }) {
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: { key: string }) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEsc);
@@ -511,15 +538,30 @@ function Modal({
   );
 }
 
-function TimelineView({ items, onClose, onFocusItem }) {
-  const timelineItems = useMemo(() => {
+interface TimelineViewProps {
+  items: BoardItem[];
+  onClose: () => void;
+  onFocusItem: (itemId: string) => void;
+}
+
+type TimelineItem = {
+  id: string;
+  type: string;
+  date: Date;
+  title: string;
+  summary: string;
+  content: string;
+};
+
+function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
+  const timelineItems: TimelineItem[] = useMemo(() => {
     const parsableItems = items
       .filter(
         (item) =>
           item.type === "newspaper" || item.type === "interrogation-transcript"
       )
       .map((item) => {
-        let date = null;
+        let date: Date | null = null;
         let title = "";
         let summary = "";
         try {
@@ -550,15 +592,22 @@ function TimelineView({ items, onClose, onFocusItem }) {
           return null;
         }
         return date && !isNaN(date.getTime())
-          ? { ...item, date, title, summary }
+          ? {
+              id: item.id,
+              type: item.type,
+              date,
+              title,
+              summary,
+              content: item.content,
+            }
           : null;
       })
-      .filter(Boolean);
+      .filter((item): item is TimelineItem => item !== null);
 
     return parsableItems.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [items]);
 
-  const handleItemClick = (itemId) => {
+  const handleItemClick = (itemId: string) => {
     onFocusItem(itemId);
   };
 
@@ -656,7 +705,17 @@ function TimelineView({ items, onClose, onFocusItem }) {
   );
 }
 
-function ObjectivesPanel({ objectives, completedObjectives, onAttemptSolve }) {
+interface ObjectivesPanelProps {
+  objectives: Objective[];
+  completedObjectives: Set<string>;
+  onAttemptSolve: (objectiveId: string) => void;
+}
+
+function ObjectivesPanel({
+  objectives,
+  completedObjectives,
+  onAttemptSolve,
+}: ObjectivesPanelProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   if (!objectives || objectives.length === 0) {
@@ -688,65 +747,106 @@ function ObjectivesPanel({ objectives, completedObjectives, onAttemptSolve }) {
           Mission Objectives
         </h2>
         <ul className="space-y-2">
-          {objectives.map((obj) => {
-            const isCompleted = completedObjectives.has(obj.id);
-            return (
-              <li
-                key={obj.id}
-                onClick={() => !isCompleted && onAttemptSolve(obj.id)}
-                className={`flex items-start group ${
-                  isCompleted ? "cursor-default" : "cursor-pointer"
-                }`}
-                role="button"
-                aria-disabled={isCompleted}
-                tabIndex={isCompleted ? -1 : 0}
-                onKeyDown={(e) =>
-                  !isCompleted &&
-                  (e.key === " " || e.key === "Enter") &&
-                  onAttemptSolve(obj.id)
-                }
-              >
-                <div
-                  className={`mt-1 mr-3 w-4 h-4 border-2 rounded-sm flex-shrink-0 flex items-center justify-center transition-colors ${
-                    isCompleted
-                      ? "bg-yellow-400 border-yellow-400"
-                      : "border-gray-500 group-hover:border-yellow-300"
+          {objectives.map(
+            (obj: {
+              id: React.Key;
+              description:
+                | string
+                | number
+                | bigint
+                | boolean
+                | React.ReactElement<
+                    unknown,
+                    string | React.JSXElementConstructor<any>
+                  >
+                | Iterable<React.ReactNode>
+                | React.ReactPortal
+                | Promise<
+                    | string
+                    | number
+                    | bigint
+                    | boolean
+                    | React.ReactPortal
+                    | React.ReactElement<
+                        unknown,
+                        string | React.JSXElementConstructor<any>
+                      >
+                    | Iterable<React.ReactNode>
+                    | null
+                    | undefined
+                  >
+                | null
+                | undefined;
+            }) => {
+              const isCompleted = completedObjectives.has(String(obj.id));
+              return (
+                <li
+                  key={obj.id}
+                  onClick={() => !isCompleted && onAttemptSolve(String(obj.id))}
+                  className={`flex items-start group ${
+                    isCompleted ? "cursor-default" : "cursor-pointer"
                   }`}
+                  role="button"
+                  aria-disabled={isCompleted}
+                  tabIndex={isCompleted ? -1 : 0}
+                  onKeyDown={(e) =>
+                    !isCompleted &&
+                    (e.key === " " || e.key === "Enter") &&
+                    onAttemptSolve(String(obj.id))
+                  }
                 >
-                  {isCompleted && (
-                    <span className="text-black font-bold text-xs">✓</span>
-                  )}
-                </div>
-                <span
-                  className={`font-special-elite text-sm transition-colors ${
-                    isCompleted
-                      ? "line-through text-gray-500"
-                      : "text-gray-300 group-hover:text-white"
-                  }`}
-                >
-                  {obj.description}
-                </span>
-              </li>
-            );
-          })}
+                  <div
+                    className={`mt-1 mr-3 w-4 h-4 border-2 rounded-sm flex-shrink-0 flex items-center justify-center transition-colors ${
+                      isCompleted
+                        ? "bg-yellow-400 border-yellow-400"
+                        : "border-gray-500 group-hover:border-yellow-300"
+                    }`}
+                  >
+                    {isCompleted && (
+                      <span className="text-black font-bold text-xs">✓</span>
+                    )}
+                  </div>
+                  <span
+                    className={`font-special-elite text-sm transition-colors ${
+                      isCompleted
+                        ? "line-through text-gray-500"
+                        : "text-gray-300 group-hover:text-white"
+                    }`}
+                  >
+                    {obj.description}
+                  </span>
+                </li>
+              );
+            }
+          )}
         </ul>
       </div>
     </div>
   );
 }
 
-function ObjectiveSolverModal({ objective, onClose, onSubmit, isSubmitting }) {
+function ObjectiveSolverModal({
+  objective,
+  onClose,
+  onSubmit,
+  isSubmitting,
+}: {
+  objective: Objective;
+  onClose: () => void;
+  onSubmit: (objectiveId: string, solution: string) => void;
+  isSubmitting: boolean;
+}) {
   const [solution, setSolution] = useState("");
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: { key: string }) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", handleEsc);
     return () => window.removeEventListener("keydown", handleEsc);
   }, [onClose]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     onSubmit(objective.id, solution);
   };
@@ -841,27 +941,38 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
 
   // FIX: Strongly type the boardData state to resolve property access errors on 'unknown' type for items.
   const [boardData, setBoardData] = useState<BoardData | null>(null);
-  const [lineCoords, setLineCoords] = useState([]);
-  const [error, setError] = useState(null);
-  const [loadingMessage, setLoadingMessage] = useState(
+  const [lineCoords, setLineCoords] = useState<
+    Array<{ x1: number; y1: number; x2: number; y2: number } | null>
+  >([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState<string | null>(
     "CLASSIFIED: Generating Mission Briefing..."
   );
-  const [imageUrls, setImageUrls] = useState({});
+  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
 
   // Interaction states
-  const [draggingItem, setDraggingItem] = useState(null);
+  const [draggingItem, setDraggingItem] = useState<{
+    id: string;
+    offsetX: number;
+    offsetY: number;
+  } | null>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [activeFilters, setActiveFilters] = useState(new Set(ITEM_TYPES));
-  const [contextMenu, setContextMenu] = useState({
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    itemId: string | null;
+  }>({
     visible: false,
     x: 0,
     y: 0,
     itemId: null,
   });
-  const [connectingState, setConnectingState] = useState({ from: null });
-  const [modalItem, setModalItem] = useState(null);
+  const [connectingState, setConnectingState] = useState<{ from: string | null }>({ from: null });
+  const [modalItem, setModalItem] = useState<BoardItem | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isTimelineVisible, setIsTimelineVisible] = useState(false);
   const [completedObjectives, setCompletedObjectives] = useState(
@@ -876,7 +987,7 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   const [newItemId, setNewItemId] = useState<string | null>(null);
 
   const itemRefs = useRef(new Map());
-  const viewportRef = useRef(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
   const lastPanPoint = useRef({ x: 0, y: 0 });
   const pinchDistRef = useRef(0);
   // FIX: Provide a specific type for the useRef to fix clearTimeout errors.
@@ -890,15 +1001,17 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   useEffect(() => {
     const generateBoard = async () => {
       try {
-        const res = await fetch('/api/board/generate', { method: 'POST' });
+        const res = await fetch("/api/board/generate", { method: "POST" });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const raw = await res.json();
         const data = normalizeBoardData(raw);
         setBoardData(data);
         setLoadingMessage(null);
       } catch (err) {
-        console.error('Failed to generate board data:', err);
-        setError('Failed to retrieve mission intel. The connection might be compromised.');
+        console.error("Failed to generate board data:", err);
+        setError(
+          "Failed to retrieve mission intel. The connection might be compromised."
+        );
         setLoadingMessage(null);
       }
     };
@@ -911,13 +1024,14 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
 
     const photoItems = boardData.items.filter((item) => item.type === "photo");
 
-    const newUrls = {};
+    const newUrls: Record<string, string> = {};
     for (const item of photoItems) {
       const matchingKey = Object.keys(PREDEFINED_IMAGES).find((key) =>
         item.content.includes(key)
       );
       if (matchingKey) {
-        newUrls[item.id] = PREDEFINED_IMAGES[matchingKey];
+        newUrls[item.id] =
+          PREDEFINED_IMAGES[matchingKey as keyof typeof PREDEFINED_IMAGES];
       }
     }
     setImageUrls(newUrls);
@@ -935,7 +1049,7 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   useLayoutEffect(() => {
     if (!boardData || !boardData.connections || !viewportRef.current) return;
 
-    const board = viewportRef.current;
+    const board = viewportRef.current as HTMLElement;
     // FIX: Explicitly type the Map to ensure that items retrieved from it (`fromItem`, `toItem`) are correctly typed as `BoardItem`. This resolves TypeScript errors where properties like `position` and `size` could not be found on an inferred `unknown` type.
     const itemsById: Map<string, BoardItem> = new Map(
       boardData.items.map((item) => [item.id, item])
@@ -1001,10 +1115,15 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
 
   // Zoom handler
   useEffect(() => {
-    const viewportElement = viewportRef.current;
+    const viewportElement = viewportRef.current as unknown as HTMLElement;
     if (!viewportElement) return;
 
-    const handleWheel = (e) => {
+    const handleWheel = (e: {
+      preventDefault: () => void;
+      deltaY: number;
+      clientX: number;
+      clientY: number;
+    }) => {
       e.preventDefault();
       const rect = viewportElement.getBoundingClientRect();
       const zoomSpeed = 0.1;
@@ -1045,7 +1164,10 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     return () => viewportElement.removeEventListener("wheel", handleWheel);
   }, [scale]);
 
-  const handleItemMouseDown = (e, itemId) => {
+  const handleItemMouseDown = (
+    e: { stopPropagation: () => void; clientX: number; clientY: number },
+    itemId: string
+  ) => {
     e.stopPropagation();
     dragStartPoint.current = { x: e.clientX, y: e.clientY };
     didDrag.current = false;
@@ -1057,7 +1179,10 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     setDraggingItem({ id: itemId, offsetX, offsetY });
   };
 
-  const handleItemTouchStart = (e, itemId) => {
+  const handleItemTouchStart = (
+    e: { stopPropagation: () => void; touches: string | any[] },
+    itemId: string
+  ) => {
     e.stopPropagation();
     if (e.touches.length > 1) return;
 
@@ -1086,34 +1211,46 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     setDraggingItem({ id: itemId, offsetX, offsetY });
   };
 
-  const handleBoardInteractionStart = (e) => {
+  const handleBoardInteractionStart = (
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+  ) => {
     if (connectingState.from) {
       setConnectingState({ from: null });
       return;
     }
+    // For mouse events, check if the target is the board itself or its direct child
     if (
       e.target !== e.currentTarget &&
-      e.target.parentElement !== e.currentTarget
+      (e.target as HTMLElement).parentElement !== e.currentTarget
     )
       return;
 
-    const isTouchEvent = "touches" in e;
-    if (isTouchEvent && e.touches.length === 2) {
-      e.preventDefault();
-      const dist = Math.hypot(
-        e.touches[0].pageX - e.touches[1].pageX,
-        e.touches[0].pageY - e.touches[1].pageY
-      );
-      pinchDistRef.current = dist;
-      setIsPanning(true);
+    if ("touches" in e) {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = Math.hypot(
+          e.touches[0].pageX - e.touches[1].pageX,
+          e.touches[0].pageY - e.touches[1].pageY
+        );
+        pinchDistRef.current = dist;
+        setIsPanning(true);
+      } else {
+        const point = e.touches[0];
+        lastPanPoint.current = { x: point.clientX, y: point.clientY };
+        setIsPanning(true);
+      }
     } else {
-      const point = isTouchEvent ? e.touches[0] : e;
-      lastPanPoint.current = { x: point.clientX, y: point.clientY };
+      lastPanPoint.current = { x: e.clientX, y: e.clientY };
       setIsPanning(true);
     }
   };
 
-  const handleInteractionMove = (e) => {
+  const handleInteractionMove = (e: {
+    touches: string | any[];
+    preventDefault: () => void;
+    movementX: number;
+    movementY: number;
+  }) => {
     const isTouchEvent = "touches" in e;
 
     if (isTouchEvent && longPressTimer.current) {
@@ -1140,11 +1277,11 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
         e.touches[0].pageY - e.touches[1].pageY
       );
 
-      const rect = viewportRef.current.getBoundingClientRect();
+      const rect = viewportRef.current?.getBoundingClientRect();
       const pinchMidpointX =
-        (e.touches[0].pageX + e.touches[1].pageX) / 2 - rect.left;
+        (e.touches[0].pageX + e.touches[1].pageX) / 2 - (rect?.left || 0);
       const pinchMidpointY =
-        (e.touches[0].pageY + e.touches[1].pageY) / 2 - rect.top;
+        (e.touches[0].pageY + e.touches[1].pageY) / 2 - (rect?.top || 0);
 
       setScale((currentScale) => {
         const scaleChange = newDist / pinchDistRef.current;
@@ -1188,14 +1325,21 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
       const newXPercent = (newX_px / viewportRect.width) * 100;
       const newYPercent = (newY_px / viewportRect.height) * 100;
 
-      setBoardData((prevData) => ({
-        ...prevData,
-        items: prevData.items.map((item) =>
-          item.id === draggingItem.id
-            ? { ...item, position: { x: newXPercent, y: newYPercent } }
-            : item
-        ),
-      }));
+      setBoardData((prevData) => {
+        // If there's no previous data, keep it unchanged.
+        if (!prevData) return prevData;
+        return {
+          ...prevData,
+          items: prevData.items.map((item) =>
+            item.id === draggingItem.id
+              ? { ...item, position: { x: newXPercent, y: newYPercent } }
+              : item
+          ),
+          // Ensure required arrays remain defined to match BoardData type.
+          connections: prevData.connections,
+          objectives: prevData.objectives,
+        };
+      });
     } else if (isPanning) {
       if (isTouchEvent) {
         const dx = point.clientX - lastPanPoint.current.x;
@@ -1204,8 +1348,8 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
         lastPanPoint.current = { x: point.clientX, y: point.clientY };
       } else {
         setPosition((prev) => ({
-          x: prev.x + e.movementX,
-          y: prev.y + e.movementY,
+          x: prev.x + (e as MouseEvent).movementX,
+          y: prev.y + (e as MouseEvent).movementY,
         }));
       }
     }
@@ -1222,7 +1366,7 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     pinchDistRef.current = 0;
   };
 
-  const toggleFilter = (type) => {
+  const toggleFilter = (type: string) => {
     setActiveFilters((prev) => {
       const newFilters = new Set(prev);
       if (newFilters.has(type)) {
@@ -1234,7 +1378,10 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     });
   };
 
-  const handleItemContextMenu = (e, itemId) => {
+  const handleItemContextMenu = (
+    e: { clientX: any; clientY: any; preventDefault: any },
+    itemId: string
+  ) => {
     e.preventDefault();
     setContextMenu({ visible: true, x: e.clientX, y: e.clientY, itemId });
   };
@@ -1245,28 +1392,36 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   const handleDelete = () => {
     const { itemId } = contextMenu;
     if (!itemId) return;
-    setBoardData((prev) => ({
-      ...prev,
-      items: prev.items.filter((i) => i.id !== itemId),
-      connections: prev.connections.filter(
-        (c) => c.from !== itemId && c.to !== itemId
-      ),
-    }));
+    setBoardData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        items: prev.items.filter((i) => i.id !== itemId),
+        connections: prev.connections.filter(
+          (c) => c.from !== itemId && c.to !== itemId
+        ),
+      };
+    });
     closeContextMenu();
   };
 
   const handleEdit = () => {
     const { itemId } = contextMenu;
-    const item = boardData.items.find((i) => i.id === itemId);
+    const item = boardData?.items.find((i) => i.id === itemId);
     if (!item) return;
     const newContent = prompt("Enter new content:", item.content);
     if (newContent !== null && newContent.trim() !== "") {
-      setBoardData((prev) => ({
-        ...prev,
-        items: prev.items.map((i) =>
-          i.id === itemId ? { ...i, content: newContent } : i
-        ),
-      }));
+      setBoardData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          items: prev.items.map((i) =>
+            i.id === itemId ? { ...i, content: newContent } : i
+          ),
+          connections: prev.connections ?? [],
+          objectives: prev.objectives ?? [],
+        };
+      });
     }
     closeContextMenu();
   };
@@ -1276,23 +1431,29 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     closeContextMenu();
   };
 
-  const handleItemClick = (e, itemId) => {
+  const handleItemClick = (
+    e: { stopPropagation: () => void },
+    itemId: string
+  ) => {
     if (didDrag.current) return;
 
     const fromId = connectingState.from;
 
     if (fromId) {
       if (fromId !== itemId) {
-        const connectionExists = boardData.connections.some(
+        const connectionExists = boardData?.connections.some(
           (c) =>
             (c.from === fromId && c.to === itemId) ||
             (c.from === itemId && c.to === fromId)
         );
         if (!connectionExists) {
-          setBoardData((prev) => ({
-            ...prev,
-            connections: [...prev.connections, { from: fromId, to: itemId }],
-          }));
+          setBoardData((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              connections: [...prev.connections, { from: fromId, to: itemId }],
+            };
+          });
         }
         setConnectingState({ from: null });
         e.stopPropagation();
@@ -1300,7 +1461,7 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
         setConnectingState({ from: null });
       }
     } else {
-      const item = boardData.items.find((i) => i.id === itemId);
+      const item = boardData?.items.find((i) => i.id === itemId);
       if (item) {
         setModalItem(item);
       }
@@ -1310,7 +1471,7 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   const handleResetView = () => {
     if (!viewportRef.current || visibleItems.length === 0) return;
 
-    const viewport = viewportRef.current;
+    const viewport = viewportRef.current as HTMLElement;
     const viewportWidth = viewport.clientWidth;
     const viewportHeight = viewport.clientHeight;
 
@@ -1361,8 +1522,8 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   const handleAddNewNote = () => {
     if (!viewportRef.current) return;
 
-    const viewportWidth = viewportRef.current.clientWidth;
-    const viewportHeight = viewportRef.current.clientHeight;
+    const viewportWidth = (viewportRef.current as HTMLElement).clientWidth;
+    const viewportHeight = (viewportRef.current as HTMLElement).clientHeight;
 
     // Center of the current view in board coordinates (pixels)
     const centerX_board_px = (viewportWidth / 2 - position.x) / scale;
@@ -1384,10 +1545,21 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
       rotation: Math.random() * 4 - 2, // -2 to 2 degrees
     };
 
-    setBoardData((prev) => ({
-      ...prev,
-      items: [...prev.items, newNote],
-    }));
+    setBoardData((prev) => {
+      if (!prev) {
+        return {
+          items: [newNote],
+          connections: [],
+          objectives: [],
+        };
+      }
+      return {
+        ...prev,
+        items: [...prev.items, newNote],
+        connections: prev.connections,
+        objectives: prev.objectives,
+      };
+    });
     setNewItemId(newNote.id);
     setTimeout(() => setNewItemId(null), 600);
   };
@@ -1426,10 +1598,23 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
       rotation: Math.random() * 5 - 2.5,
     };
 
-    setBoardData((prev) => ({
-      ...prev,
-      items: [...prev.items, newClueItem],
-    }));
+    setBoardData((prev) => {
+      // If there's no previous board data, create an initial BoardData object.
+      if (!prev) {
+        return {
+          items: [newClueItem],
+          connections: [],
+          objectives: [],
+        };
+      }
+      return {
+        ...prev,
+        items: [...prev.items, newClueItem],
+        // keep existing arrays intact to satisfy BoardData type
+        connections: prev.connections,
+        objectives: prev.objectives,
+      };
+    });
     setNewItemId(newClueItem.id);
     setTimeout(() => setNewItemId(null), 600);
 
@@ -1481,26 +1666,27 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     solutionText: string
   ) => {
     setIsSubmittingObjective(true);
-    const solvedObjective = boardData.objectives.find(
+    const solvedObjective = boardData?.objectives.find(
       (obj) => obj.id === objectiveId
     );
 
     try {
-      const res = await fetch('/api/board/objective', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/board/objective", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           boardData,
-          objectiveDescription: solvedObjective.description,
+          objectiveDescription: solvedObjective?.description,
           solutionText,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const newEvidence = await res.json();
-  // Normalize sizes of new items before merging so they aren't minuscule.
-  newEvidence.items = newEvidence.items.map(normalizeItemSize);
+      const newEvidence = await res.json();
+      // Normalize sizes of new items before merging so they aren't minuscule.
+      newEvidence.items = newEvidence.items.map(normalizeItemSize);
 
       setBoardData((prev) => {
+        if (!prev) return prev;
         const updatedItems = [...prev.items, ...newEvidence.items];
         const updatedConnections = [
           ...prev.connections,
@@ -1603,10 +1789,10 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
     };
 
     const interactionHandlers = {
-      onMouseDown: (e) => handleItemMouseDown(e, item.id),
-      onTouchStart: (e) => handleItemTouchStart(e, item.id),
-      onContextMenu: (e) => handleItemContextMenu(e, item.id),
-      onClick: (e) => handleItemClick(e, item.id),
+      onMouseDown: (e: any) => handleItemMouseDown(e, item.id),
+      onTouchStart: (e: any) => handleItemTouchStart(e, item.id),
+      onContextMenu: (e: any) => handleItemContextMenu(e, item.id),
+      onClick: (e: any) => handleItemClick(e, item.id),
       title: item.content,
     };
 
@@ -1829,10 +2015,10 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
       className={`w-screen h-screen p-2 md:p-4 flex flex-col items-center justify-center overflow-hidden bg-[#111] touch-none ${
         connectingState.from ? "cursor-crosshair" : ""
       }`}
-      onMouseMove={handleInteractionMove}
+      onMouseMove={handleInteractionMove as unknown as React.MouseEventHandler<HTMLElement>}
       onMouseUp={handleInteractionEnd}
       onMouseLeave={handleInteractionEnd}
-      onTouchMove={handleInteractionMove}
+      onTouchMove={handleInteractionMove as unknown as React.TouchEventHandler<HTMLElement>}
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
