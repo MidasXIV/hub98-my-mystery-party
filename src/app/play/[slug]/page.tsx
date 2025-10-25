@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import MissionLoading from "@/components/mission-loading";
 
 import React from "react";
 import type { Metadata } from 'next'
@@ -1715,13 +1716,8 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
   if (!caseFile) return notFound();
 
   if (loadingMessage) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="text-2xl text-gray-300 animate-pulse font-staatliches tracking-widest">
-          {loadingMessage}
-        </div>
-      </div>
-    );
+    // Use new MissionLoading component with rotating tips while data generates.
+    return <MissionLoading title={loadingMessage} />;
   }
 
   if (error) {
