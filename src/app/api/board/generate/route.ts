@@ -84,7 +84,20 @@ export async function POST() {
       config: { responseMimeType: 'application/json', responseSchema: boardSchema },
     });
 
-    const data = JSON.parse(response.text.trim());
+    // Guard against undefined or empty model response text
+    const raw = response.text?.trim();
+    if (!raw) {
+      return NextResponse.json({ error: 'Empty response from model' }, { status: 502 });
+    }
+
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (parseErr) {
+      console.error('Failed to parse model JSON', raw, parseErr);
+      return NextResponse.json({ error: 'Invalid JSON from model' }, { status: 500 });
+    }
+
     return NextResponse.json(data);
   } catch (err) {
     console.error('Board generation failed', err);

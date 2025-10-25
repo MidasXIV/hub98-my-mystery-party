@@ -92,7 +92,19 @@ Generate a JSON object containing 2-3 new pieces of evidence ('items') and 1-2 n
       config: { responseMimeType: 'application/json', responseSchema: newEvidenceSchema },
     });
 
-    const newEvidence = JSON.parse(response.text.trim());
+    const raw = response.text?.trim();
+    if (!raw) {
+      return NextResponse.json({ error: 'Empty response from model' }, { status: 502 });
+    }
+
+    let newEvidence;
+    try {
+      newEvidence = JSON.parse(raw);
+    } catch (parseErr) {
+      console.error('Failed to parse objective JSON', raw, parseErr);
+      return NextResponse.json({ error: 'Invalid JSON from model' }, { status: 500 });
+    }
+
     return NextResponse.json(newEvidence);
   } catch (err) {
     console.error('Objective update failed', err);
