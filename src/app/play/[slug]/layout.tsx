@@ -20,6 +20,8 @@ export async function generateMetadata({ params }: PlayPageProps): Promise<Metad
   const description = caseFile?.description || 'Interactive mystery experience on My Mystery Party.'
   const ogImagePath = `/play/${params.slug}/opengraph-image`
   const ogImageUrl = absoluteUrl(ogImagePath)
+  const twitterImagePath = `/play/${params.slug}/twitter-image`
+  const twitterImageUrl = absoluteUrl(twitterImagePath)
   return {
     title,
     description,
@@ -42,7 +44,7 @@ export async function generateMetadata({ params }: PlayPageProps): Promise<Metad
       card: 'summary_large_image',
       title,
       description,
-      images: [ogImageUrl]
+      images: [twitterImageUrl]
     },
     alternates: {
       canonical: absoluteUrl(`/play/${params.slug}`)
