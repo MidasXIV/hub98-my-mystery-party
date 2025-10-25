@@ -102,7 +102,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
         
         <div className="mt-24 border-t border-subtle-stroke pt-12 relative z-10">
            {/* 3. Using a regular apostrophe for better code readability */}
-          <h2 className="text-2xl font-semibold mb-4">What You'll Receive</h2>
+          <h2 className="text-2xl font-semibold mb-4">What You&apos;ll Receive</h2>
           <p className="text-text-secondary max-w-3xl leading-relaxed">
             Each Cold Case File contains high-quality printable evidence, immersive
             documents, layered clues, and hidden codes that challenge your logic
