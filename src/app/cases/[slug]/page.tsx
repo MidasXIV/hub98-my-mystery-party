@@ -12,6 +12,13 @@ export async function generateStaticParams() {
   return coldCases.map((c) => ({ slug: c.slug }));
 }
 
+// Helper to build absolute URLs for social crawlers (Twitter/Facebook require absolute og:image)
+function absoluteUrl(path: string): string {
+  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
+  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'https://hub98-my-mystery-party.vercel.app/'
+  return site.replace(/\/$/, '') + path
+}
+
 export async function generateMetadata({ params }: CasePageProps) {
   const { slug } = params instanceof Promise ? await params : params;
   const caseFile = getCaseBySlug(slug);
@@ -22,34 +29,36 @@ export async function generateMetadata({ params }: CasePageProps) {
     };
   }
 
-  // Use the production URL from Vercel's env variables, falling back to localhost
-  const siteUrl =
-    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ||
-    "http://hub98-my-mystery-party.vercel.app/";
-  const metadataBase = new URL(siteUrl);
-
-  const ogDynamicUrl = `/cases/${caseFile.slug}/opengraph-image`;
-  const twitterDynamicUrl = `/cases/${caseFile.slug}/twitter-image`;
+  const ogImagePath = `/cases/${caseFile.slug}/opengraph-image`
+  const ogImageUrl = absoluteUrl(ogImagePath)
+  // Static thumbnail fallback: some crawlers (Signal, older bots) ignore dynamically generated OG routes.
+  const staticThumbUrl = caseFile ? absoluteUrl(caseFile.imageUrl) : ogImageUrl
+  const twitterImagePath = `/cases/${caseFile.slug}/twitter-image`
+  const twitterImageUrl = absoluteUrl(twitterImagePath)
 
   return {
     title: `${caseFile.title} | Cold Case File`,
     description: caseFile.description,
-    metadataBase: metadataBase,
     openGraph: {
       type: "article",
       title: caseFile.title,
       description: caseFile.description,
+      url: absoluteUrl(`/cases/${caseFile.slug}`),
       images: [
         {
-          url: ogDynamicUrl,
+          url: ogImageUrl,
+          secureUrl: ogImageUrl,
           width: 1200,
           height: 630,
+          type: "image/png",
           alt: `${caseFile.title} – My Mystery Party`,
         },
         {
-          url: caseFile.imageUrl, // Can be a relative URL if metadataBase is set
+          url: staticThumbUrl, 
+          secureUrl: staticThumbUrl,
           width: 1200,
           height: 630,
+          type: "image/png",
           alt: caseFile.title,
         },
       ],
@@ -58,7 +67,7 @@ export async function generateMetadata({ params }: CasePageProps) {
       card: "summary_large_image",
       title: caseFile.title,
       description: caseFile.description,
-      images: [twitterDynamicUrl, caseFile.imageUrl], // Place dynamic first
+      images: [twitterImageUrl, staticThumbUrl], // Place dynamic first
     },
     alternates: {
       canonical: `/cases/${caseFile.slug}`,
