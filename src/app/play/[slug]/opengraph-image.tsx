@@ -141,6 +141,27 @@ export default async function Image({ params }: { params: { slug: string } }) {
                   ))}
                 </div>
               ) : null}
+              {/* Simple play button on right edge */}
+              <div
+                style={{
+                  position: "absolute",
+                  top: 72,
+                  right: 72,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  background: "linear-gradient(90deg,#ffcf33,#f59e0b)",
+                  color: "#000",
+                  fontSize: 26,
+                  fontWeight: 700,
+                  padding: "14px 26px",
+                  borderRadius: 999,
+                  letterSpacing: "1.5px",
+                  boxShadow: "0 6px 22px rgba(0,0,0,0.55)",
+                }}
+              >
+                <span style={{ fontSize: 26 }}>▶</span> PLAY
+              </div>
             </div>
           </div>
         ),
