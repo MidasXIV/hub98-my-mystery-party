@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { coldCases, getCaseBySlug } from "@/data/coldCases";
 import { CaseActions } from "@/components/case-actions";
-import { Metadata } from "next";
 
 // Next.js 15: params is now async (a Promise) in certain dynamic APIs.
 interface CasePageProps {
@@ -13,68 +12,16 @@ export async function generateStaticParams() {
   return coldCases.map((c) => ({ slug: c.slug }));
 }
 
-
-// Helper to build absolute URLs for social crawlers (Twitter/Facebook require absolute og:image)
-function absoluteUrl(path: string): string {
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'http://localhost:3000'
-  return site.replace(/\/$/, '') + path
-}
-
-export async function generateMetadata({ params }: CasePageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: CasePageProps) {
   const { slug } = params instanceof Promise ? await params : params;
   const caseFile = getCaseBySlug(slug);
-  const titleBase = caseFile ? caseFile.title : 'Case Not Found'
-  const title = `${titleBase} | Cold Case File`
-  const description = caseFile?.description || 'Interactive mystery experience on My Mystery Party.'
-  const ogImagePath = `/cases/${slug}/opengraph-image`
-  const ogImageUrl = absoluteUrl(ogImagePath)
-  // Static thumbnail fallback: some crawlers (Signal, older bots) ignore dynamically generated OG routes.
-  const staticThumbUrl = caseFile ? absoluteUrl(caseFile.imageUrl) : ogImageUrl
-  const twitterImagePath = `/cases/${slug}/twitter-image`
-  const twitterImageUrl = absoluteUrl(twitterImagePath)
+  if (!caseFile) return { title: "Case Not Found" };
+  
   return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: 'website',
-      siteName: 'My Mystery Party',
-      url: absoluteUrl(`/cases/${slug}`),
-      images: [
-        // Put static thumbnail FIRST for picky crawlers; then dynamic composite.
-        {
-          url: staticThumbUrl,
-          secureUrl: staticThumbUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} Thumbnail – My Mystery Party`
-        },
-        {
-          url: ogImageUrl,
-          secureUrl: ogImageUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} – My Mystery Party`
-        }
-      ]
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title,
-      description,
-      images: [twitterImageUrl, staticThumbUrl]
-    },
-    alternates: {
-      canonical: absoluteUrl(`/cases/${slug}`)
-    }
-  }
+    title: `${caseFile.title} | Cold Case File`,
+    description: caseFile.description,
+  };
 }
-
-
 
 export default async function CaseDetailPage({ params }: CasePageProps) {
   // 1. Resolve params and destructure slug once for cleaner code
