@@ -15,11 +15,39 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: CasePageProps) {
   const { slug } = params instanceof Promise ? await params : params;
   const caseFile = getCaseBySlug(slug);
-  if (!caseFile) return { title: "Case Not Found" };
-  
+  if (!caseFile) {
+    return {
+      title: "Case Not Found",
+      description: "The requested mystery case could not be found.",
+    };
+  }
+
+  const base = (process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || "https://hub98-my-mystery-party.vercel.app").replace(/\/$/, "");
+  const ogDynamic = `${base}/cases/${caseFile.slug}/opengraph-image`;
+  const twitterDynamic = `${base}/cases/${caseFile.slug}/twitter-image`;
+  const staticThumb = `${base}${caseFile.imageUrl}`; // original thumbnail as fallback/first crawl target
+
   return {
     title: `${caseFile.title} | Cold Case File`,
     description: caseFile.description,
+    openGraph: {
+      type: "article",
+      title: caseFile.title,
+      description: caseFile.description,
+      images: [
+        { url: staticThumb, width: 1200, height: 630, alt: caseFile.title },
+        { url: ogDynamic, width: 1200, height: 630, alt: `${caseFile.title} – My Mystery Party` },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: caseFile.title,
+      description: caseFile.description,
+      images: [twitterDynamic, staticThumb],
+    },
+    alternates: {
+      canonical: `${base}/cases/${caseFile.slug}`,
+    },
   };
 }
 
