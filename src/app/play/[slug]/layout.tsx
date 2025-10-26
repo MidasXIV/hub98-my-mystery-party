@@ -9,7 +9,7 @@ interface PlayPageProps {
 // Helper to build absolute URLs for social crawlers (Twitter/Facebook require absolute og:image)
 function absoluteUrl(path: string): string {
   const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'http://localhost:3000'
+  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'https://hub98-my-mystery-party.vercel.app/'
   return site.replace(/\/$/, '') + path
 }
 

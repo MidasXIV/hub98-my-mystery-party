@@ -40,8 +40,6 @@ export default function Head() {
       <meta name="twitter:description" content={SITE_DESCRIPTION} />
       <meta name="twitter:image" content={twitterImage} />
       <meta name="twitter:image:alt" content={SITE_ALT} />
-      {/* Theme / misc */}
-      <meta name="theme-color" content="#000000" />
     </>
   );
 }

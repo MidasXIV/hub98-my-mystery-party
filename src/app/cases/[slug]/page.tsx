@@ -22,7 +22,10 @@ export async function generateMetadata({ params }: CasePageProps) {
     };
   }
 
-  const base = (process.env.NEXT_PUBLIC_SITE_URL || process.env.VERCEL_URL || "https://hub98-my-mystery-party.vercel.app").replace(/\/$/, "");
+  // Align with play/[slug] layout: build absolute URLs & set metadataBase for consistent resolution.
+  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
+  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "https://hub98-my-mystery-party.vercel.app";
+  const base = site.replace(/\/$/, "");
   const ogDynamic = `${base}/cases/${caseFile.slug}/opengraph-image`;
   const twitterDynamic = `${base}/cases/${caseFile.slug}/twitter-image`;
   const staticThumb = `${base}${caseFile.imageUrl}`; // original thumbnail as fallback/first crawl target
@@ -30,6 +33,8 @@ export async function generateMetadata({ params }: CasePageProps) {
   return {
     title: `${caseFile.title} | Cold Case File`,
     description: caseFile.description,
+    // Provide base so Next can resolve relative social image URLs reliably.
+    metadataBase: new URL(base),
     openGraph: {
       type: "article",
       title: caseFile.title,
