@@ -10,7 +10,7 @@ const blinkerFont = Blinker({ weight: ["400", "700"], subsets: ["latin"], variab
 
 function getBase() {
   const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "https://hub98-my-mystery-party.vercel.app";
+  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "http://localhost:3000";
   return site.replace(/\/$/, "");
 }
 
