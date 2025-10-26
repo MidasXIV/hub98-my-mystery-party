@@ -1,75 +1,61 @@
-import React from 'react'
-import { getCaseBySlug } from '@/data/coldCases'
-import type { Metadata } from 'next'
+import React from "react";
+import { getCaseBySlug } from "@/data/coldCases";
+import type { Metadata } from "next";
 
-// Match the dynamic params behavior (Next.js 15 may provide params as a Promise in some hooks)
-interface CaseLayoutProps {
-  params: Promise<{ slug: string }> | { slug: string }
-  children: React.ReactNode
-}
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const { slug } = params;
+  const caseFile = getCaseBySlug(slug);
+  const titleBase = caseFile ? caseFile.title : "Case Not Found";
+  const title = `${titleBase} | Cold Case File`;
+  const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
 
-// Helper to build absolute URLs for social crawlers
-function absoluteUrl(path: string): string {
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'http://localhost:3000'
-  return site.replace(/\/$/, '') + path
-}
+  const ogImages = [
+    {
+      url: `/cases/${slug}/opengraph-image`,
+      width: 1200,
+      height: 630,
+      type: "image/png",
+      alt: `${titleBase} – My Mystery Party`,
+    },
+    ...(caseFile
+      ? [
+          {
+            url: caseFile.imageUrl,
+            width: 1200,
+            height: 630,
+            type: "image/png",
+            alt: `${titleBase} Thumbnail – My Mystery Party`,
+          },
+        ]
+      : []),
+  ];
 
-export async function generateMetadata({ params }: CaseLayoutProps): Promise<Metadata> {
-  const { slug } = params instanceof Promise ? await params : params
-  const caseFile = getCaseBySlug(slug)
-  const titleBase = caseFile ? caseFile.title : 'Case Not Found'
-  const title = `${titleBase} | Cold Case File`
-  const description = caseFile?.description || 'Interactive mystery experience on My Mystery Party.'
-
-  const ogImagePath = `/cases/${slug}/opengraph-image`
-  const ogImageUrl = absoluteUrl(ogImagePath)
-  const staticThumbUrl = caseFile ? absoluteUrl(caseFile.imageUrl) : ogImageUrl
-  const twitterImagePath = `/cases/${slug}/twitter-image`
-  const twitterImageUrl = absoluteUrl(twitterImagePath)
+  const twitterImages = [
+    `/cases/${slug}/twitter-image`,
+    caseFile?.imageUrl || `/cases/${slug}/opengraph-image`,
+  ];
 
   return {
     title,
     description,
-    metadataBase: new URL(absoluteUrl('/')),
     openGraph: {
       title,
       description,
-      type: 'website',
-      siteName: 'My Mystery Party',
-      url: absoluteUrl(`/cases/${slug}`),
-      images: [
-        {
-          url: staticThumbUrl,
-          secureUrl: staticThumbUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} Thumbnail – My Mystery Party`
-        },
-        {
-          url: ogImageUrl,
-          secureUrl: ogImageUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} – My Mystery Party`
-        }
-      ]
+      type: "website",
+      siteName: "My Mystery Party",
+      url: `/cases/${slug}`,
+      images: ogImages,
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
-      images: [twitterImageUrl, staticThumbUrl]
+      images: twitterImages,
     },
-    alternates: {
-      canonical: absoluteUrl(`/cases/${slug}`)
-    }
-  }
+    alternates: { canonical: `/cases/${slug}` },
+  };
 }
 
-// Dummy layout wrapper; keeps children untouched for now.
-export default async function CaseLayout({ children }: CaseLayoutProps) {
-  return <>{children}</>
+export default function CaseLayout({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

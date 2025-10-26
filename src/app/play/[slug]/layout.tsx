@@ -1,75 +1,64 @@
 import React from "react";
 import { getCaseBySlug } from "@/data/coldCases";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
-interface PlayPageProps {
-  params: { slug: string };
-}
+// Simplify params typing (Promise form not required for generateMetadata) and
+// rely on root metadataBase for resolving relative image URLs.
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+  const caseFile = getCaseBySlug(params.slug);
+  const titleBase = caseFile ? caseFile.title : "Case Not Found";
+  const title = `${titleBase} | My Mystery Party`;
+  const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
 
-// Helper to build absolute URLs for social crawlers (Twitter/Facebook require absolute og:image)
-function absoluteUrl(path: string): string {
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'http://localhost:3000'
-  return site.replace(/\/$/, '') + path
-}
+  // Prefer dynamic composite FIRST so crawlers that only take the first image use it.
+  // Provide static thumbnail as a fallback second.
+  const ogImages = [
+    {
+      url: `/play/${params.slug}/opengraph-image`,
+      width: 1200,
+      height: 630,
+      type: "image/png",
+      alt: `${titleBase} – My Mystery Party`,
+    },
+    ...(caseFile
+      ? [
+          {
+            url: caseFile.imageUrl,
+            width: 1200,
+            height: 630,
+            type: "image/png",
+            alt: `${titleBase} Thumbnail – My Mystery Party`,
+          },
+        ]
+      : []),
+  ];
 
-export async function generateMetadata({ params }: PlayPageProps): Promise<Metadata> {
-  const caseFile = getCaseBySlug(params.slug)
-  const titleBase = caseFile ? caseFile.title : 'Case Not Found'
-  const title = `${titleBase} | My Mystery Party`
-  const description = caseFile?.description || 'Interactive mystery experience on My Mystery Party.'
-  const ogImagePath = `/play/${params.slug}/opengraph-image`
-  const ogImageUrl = absoluteUrl(ogImagePath)
-  // Static thumbnail fallback: some crawlers (Signal, older bots) ignore dynamically generated OG routes.
-  const staticThumbUrl = caseFile ? absoluteUrl(caseFile.imageUrl) : ogImageUrl
-  const twitterImagePath = `/play/${params.slug}/twitter-image`
-  const twitterImageUrl = absoluteUrl(twitterImagePath)
+  const twitterImages = [
+    `/play/${params.slug}/twitter-image`,
+    caseFile?.imageUrl || `/play/${params.slug}/opengraph-image`,
+  ];
+
   return {
     title,
     description,
     openGraph: {
       title,
       description,
-      type: 'website',
-      siteName: 'My Mystery Party',
-      url: absoluteUrl(`/play/${params.slug}`),
-      images: [
-        // Put static thumbnail FIRST for picky crawlers; then dynamic composite.
-        {
-          url: staticThumbUrl,
-          secureUrl: staticThumbUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} Thumbnail – My Mystery Party`
-        },
-        {
-          url: ogImageUrl,
-          secureUrl: ogImageUrl,
-          width: 1200,
-          height: 630,
-          type: 'image/png',
-          alt: `${titleBase} – My Mystery Party`
-        }
-      ]
+      type: "website",
+      siteName: "My Mystery Party",
+      url: `/play/${params.slug}`,
+  images: ogImages,
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
-      images: [twitterImageUrl, staticThumbUrl]
+      images: twitterImages,
     },
-    alternates: {
-      canonical: absoluteUrl(`/play/${params.slug}`)
-    }
-  }
+    alternates: { canonical: `/play/${params.slug}` },
+  };
 }
 
 export default function PlaySlugLayout({ children }: { children: React.ReactNode }) {
-  // Header removed; page now mounts its own integrated PlayHeader with FilterMenu.
-  return (
-    <div className="h-screen w-screen overflow-hidden bg-background">
-      {children}
-    </div>
-  );
+  return <div className="h-screen w-screen overflow-hidden bg-background">{children}</div>;
 }

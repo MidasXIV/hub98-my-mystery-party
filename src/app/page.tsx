@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import React, { useEffect, useRef } from "react";
+import type { Metadata } from "next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Hero from "@/components/Hero";
