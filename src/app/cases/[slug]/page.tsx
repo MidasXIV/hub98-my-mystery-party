@@ -22,40 +22,49 @@ export async function generateMetadata({ params }: CasePageProps) {
     };
   }
 
-  // Align with play/[slug] layout: build absolute URLs & set metadataBase for consistent resolution.
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "https://hub98-my-mystery-party.vercel.app";
-  const base = site.replace(/\/$/, "");
-  const ogDynamic = `${base}/cases/${caseFile.slug}/opengraph-image`;
-  const twitterDynamic = `${base}/cases/${caseFile.slug}/twitter-image`;
-  const staticThumb = `${base}${caseFile.imageUrl}`; // original thumbnail as fallback/first crawl target
+  // Use the production URL from Vercel's env variables, falling back to localhost
+  const siteUrl =
+    process.env.NEXT_PUBLIC_VERCEL_PROJECT_PRODUCTION_URL ||
+    "http://hub98-my-mystery-party.vercel.app/";
+  const metadataBase = new URL(siteUrl);
+
+  const ogDynamicUrl = `/cases/${caseFile.slug}/opengraph-image`;
+  const twitterDynamicUrl = `/cases/${caseFile.slug}/twitter-image`;
 
   return {
     title: `${caseFile.title} | Cold Case File`,
     description: caseFile.description,
-    // Provide base so Next can resolve relative social image URLs reliably.
-    metadataBase: new URL(base),
+    metadataBase: metadataBase,
     openGraph: {
       type: "article",
       title: caseFile.title,
       description: caseFile.description,
       images: [
-        { url: staticThumb, width: 1200, height: 630, alt: caseFile.title },
-        { url: ogDynamic, width: 1200, height: 630, alt: `${caseFile.title} – My Mystery Party` },
+        {
+          url: ogDynamicUrl,
+          width: 1200,
+          height: 630,
+          alt: `${caseFile.title} – My Mystery Party`,
+        },
+        {
+          url: caseFile.imageUrl, // Can be a relative URL if metadataBase is set
+          width: 1200,
+          height: 630,
+          alt: caseFile.title,
+        },
       ],
     },
     twitter: {
       card: "summary_large_image",
       title: caseFile.title,
       description: caseFile.description,
-      images: [twitterDynamic, staticThumb],
+      images: [twitterDynamicUrl, caseFile.imageUrl], // Place dynamic first
     },
     alternates: {
-      canonical: `${base}/cases/${caseFile.slug}`,
+      canonical: `/cases/${caseFile.slug}`,
     },
   };
 }
-
 export default async function CaseDetailPage({ params }: CasePageProps) {
   // 1. Resolve params and destructure slug once for cleaner code
   const { slug } = params instanceof Promise ? await params : params;
@@ -71,7 +80,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
         <div aria-hidden className="embossed-backdrop">
           {caseFile.title}
         </div>
-        
+
         <div className="grid md:grid-cols-2 gap-12 items-start relative z-10">
           <div className="relative w-full aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl">
             <Image
@@ -107,40 +116,49 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
               <ul className="mb-8 space-y-1 text-sm text-text-secondary">
                 {caseFile.difficulty && (
                   <li>
-                    <strong className="text-text-primary">Difficulty:</strong> {caseFile.difficulty}
+                    <strong className="text-text-primary">Difficulty:</strong>{" "}
+                    {caseFile.difficulty}
                   </li>
                 )}
                 {caseFile.players && (
                   <li>
-                    <strong className="text-text-primary">Players:</strong> {caseFile.players}
+                    <strong className="text-text-primary">Players:</strong>{" "}
+                    {caseFile.players}
                   </li>
                 )}
                 {caseFile.duration && (
                   <li>
-                    <strong className="text-text-primary">Estimated Duration:</strong> {caseFile.duration}
+                    <strong className="text-text-primary">
+                      Estimated Duration:
+                    </strong>{" "}
+                    {caseFile.duration}
                   </li>
                 )}
               </ul>
             </div>
-            
+
             <div className="mt-auto">
               {/* 2. Moved price above the actions for better context */}
               {caseFile.price != null && (
-                <div className="text-4xl font-bold mb-6">${caseFile.price.toFixed(2)}</div>
+                <div className="text-4xl font-bold mb-6">
+                  ${caseFile.price.toFixed(2)}
+                </div>
               )}
               <CaseActions slug={slug} />
             </div>
           </div>
         </div>
-        
+
         <div className="mt-24 border-t border-subtle-stroke pt-12 relative z-10">
-           {/* 3. Using a regular apostrophe for better code readability */}
-          <h2 className="text-2xl font-semibold mb-4">What You&apos;ll Receive</h2>
+          {/* 3. Using a regular apostrophe for better code readability */}
+          <h2 className="text-2xl font-semibold mb-4">
+            What You&apos;ll Receive
+          </h2>
           <p className="text-text-secondary max-w-3xl leading-relaxed">
-            Each Cold Case File contains high-quality printable evidence, immersive
-            documents, layered clues, and hidden codes that challenge your logic
-            and creativity. Perfect for an unforgettable evening of mystery and
-            deduction.
+            Each Cold Case File contains high-quality printable evidence,
+            immersive documents, layered clues, and hidden codes that challenge
+            your logic and creativity. Perfect for an unforgettable evening of
+            mystery and deduction.
           </p>
         </div>
       </div>
