@@ -8,9 +8,9 @@ interface PlayPageProps {
 
 // Helper to build absolute URLs for social crawlers (Twitter/Facebook require absolute og:image)
 function absoluteUrl(path: string): string {
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "http://localhost:3000";
-  return site.replace(/\/$/, "") + path;
+  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined
+  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || 'http://localhost:3000'
+  return site.replace(/\/$/, '') + path
 }
 
 export async function generateMetadata({ params }: PlayPageProps): Promise<Metadata> {
@@ -24,9 +24,7 @@ export async function generateMetadata({ params }: PlayPageProps): Promise<Metad
   const staticThumbUrl = caseFile ? absoluteUrl(caseFile.imageUrl) : ogImageUrl
   const twitterImagePath = `/play/${params.slug}/twitter-image`
   const twitterImageUrl = absoluteUrl(twitterImagePath)
-  const base = absoluteUrl(''); // ensures trailing slash removed already
   return {
-    metadataBase: new URL(base),
     title,
     description,
     openGraph: {
