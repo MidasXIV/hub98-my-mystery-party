@@ -3,12 +3,13 @@
 import MissionLoading from "@/components/mission-loading";
 
 import React from "react";
-import { getCaseBySlug, Evidence } from "@/data/coldCases";
+import { getCaseBySlug } from "@/data/coldCases";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import PlayHeader from "@/components/play-header";
+import EvidencePanel from "@/components/evidence-panel";
 
-import { Type } from "@google/genai"; // Only Type needed client-side; AI calls moved server-side.
+// Removed unused Type import (schemas are server-side)
 import {
   useEffect,
   useState,
@@ -19,9 +20,7 @@ import {
 } from "react";
 import ObjectivesPanel from "@/components/objectives-panel";
 
-interface PlayPageProps {
-  params: { slug: string };
-}
+// Removed unused PlayPageProps interface
 
 const PREDEFINED_IMAGES = {
   "Dr Verma image":
@@ -47,49 +46,7 @@ const PREDEFINED_CLUES = [
   "A hastily scribbled note: 'Meet me at the pier. Urgent.'",
 ];
 
-const boardItemSchema = {
-  type: Type.OBJECT,
-  properties: {
-    id: { type: Type.STRING },
-    type: {
-      type: Type.STRING,
-      enum: [
-        "photo",
-        "document",
-        "note",
-        "folder-tab",
-        "autopsy-report",
-        "formal-alibi",
-        "interrogation-transcript",
-        "newspaper",
-        "clue",
-      ],
-    },
-    content: {
-      type: Type.STRING,
-      description:
-        "Text content, or for photos, one of the predefined image keys. For autopsy report, provide detailed multi-section content. For alibis, provide a formal statement for a suspect. For newspaper, provide a stringified JSON with headline, date, and body.",
-    },
-    position: {
-      type: Type.OBJECT,
-      properties: { x: { type: Type.NUMBER }, y: { type: Type.NUMBER } },
-      required: ["x", "y"],
-    },
-    size: {
-      type: Type.OBJECT,
-      properties: {
-        width: { type: Type.NUMBER },
-        height: { type: Type.NUMBER },
-      },
-      required: ["width", "height"],
-    },
-    rotation: {
-      type: Type.NUMBER,
-      description: "Rotation in degrees, e.g., -2.5",
-    },
-  },
-  required: ["id", "type", "content", "position", "size", "rotation"],
-};
+// Removed unused boardItemSchema (server-side generation only now)
 
 // Schemas moved server-side; removed unused client definitions.
 
@@ -274,7 +231,7 @@ function NewspaperClipping({
         date: "Unknown Date",
         body: content,
       };
-    } catch (e) {
+    } catch {
       return {
         headline: "Newspaper Clipping",
         date: "Unknown Date",
@@ -438,9 +395,11 @@ function Modal({
       case "photo":
         if (imageUrl) {
           return (
-            <img
+            <Image
               src={imageUrl}
               alt={item.content}
+              width={900}
+              height={900}
               className="max-w-full max-h-[70vh] object-contain mx-auto"
             />
           );
@@ -1013,16 +972,13 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
 
       const delta = e.deltaY > 0 ? -1 : 1;
 
-      setPosition((currentPosition) => {
+      setPosition((prevPosition) => {
         setScale((currentScale) => {
           const newScale = Math.max(
             0.5,
             Math.min(3, currentScale + delta * zoomSpeed * currentScale)
           );
-          const mouseX = e.clientX - rect.left;
-          const mouseY = e.clientY - rect.top;
-          const contentX = (mouseX - currentPosition.x) / currentScale;
-          const contentY = (mouseY - currentPosition.y) / currentScale;
+          // Removed unused contentX/contentY variables (calculation refactored)
           // newPosX/newPosY no longer needed after refactor; position recalculated below.
           return newScale;
         });
@@ -1034,8 +990,8 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
         );
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
-        const contentX = (mouseX - currentPosition.x) / scale;
-        const contentY = (mouseY - currentPosition.y) / scale;
+        const contentX = (mouseX - prevPosition.x) / scale;
+        const contentY = (mouseY - prevPosition.y) / scale;
         return {
           x: mouseX - contentX * newScale,
           y: mouseY - contentY * newScale,
@@ -1170,6 +1126,7 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
         const scaleChange = newDist / pinchDistRef.current;
         const newScale = Math.max(0.5, Math.min(3, currentScale * scaleChange));
 
+        // Recompute position to keep midpoint stable
         setPosition((currentPos) => {
           const contentX = (pinchMidpointX - currentPos.x) / currentScale;
           const contentY = (pinchMidpointY - currentPos.y) / currentScale;
@@ -1690,9 +1647,11 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
             className={`${commonClasses} ${dynamicClasses} p-2 bg-gray-700 border border-gray-500 overflow-hidden`}
           >
             {imageUrl ? (
-              <img
+              <Image
                 src={imageUrl}
                 alt={item.content}
+                width={300}
+                height={300}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -1937,6 +1896,15 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
           onClose={() => setModalItem(null)}
           imageUrl={imageUrls[modalItem.id]}
         />
+      )}
+      {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}
+      {boardData && (
+        <div className="fixed left-2 top-2 z-[55]">
+          <EvidencePanel
+            items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
+            onFocus={(id) => handleFocusItem(id)}
+          />
+        </div>
       )}
 
       <PlayHeader
