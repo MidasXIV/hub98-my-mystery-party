@@ -24,6 +24,12 @@ export interface GenericFloatingPanelProps {
   hideStageControls?: boolean;
   resizable?: boolean;
   draggable?: boolean;
+  /** Provide an initial size override for the panel instead of the library default (often ~240px height). */
+  initialSize?: { width?: number | string; height?: number | string };
+  /** Inline style overrides applied to FloatingPanel.Content (after size). */
+  contentStyle?: React.CSSProperties;
+  /** Optional className override for the FloatingPanel.Body wrapper */
+  bodyClassName?: string;
 }
 
 export default function GenericFloatingPanel({
@@ -36,6 +42,9 @@ export default function GenericFloatingPanel({
   hideStageControls = false,
   resizable = true,
   draggable = true,
+  initialSize,
+  contentStyle,
+  bodyClassName,
 }: GenericFloatingPanelProps) {
   return (
     <FloatingPanel.Root>
@@ -46,6 +55,15 @@ export default function GenericFloatingPanel({
         <FloatingPanel.Positioner className="z-50">
           <FloatingPanel.Content
             className={`flex flex-col bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl backdrop-blur-md rounded-lg data-[stage=maximized]:rounded-none w-full min-w-80 ${className}`}
+            style={{
+              ...(initialSize?.width !== undefined && {
+                width: initialSize.width,
+              }),
+              ...(initialSize?.height !== undefined && {
+                height: initialSize.height,
+              }),
+              ...contentStyle,
+            }}
           >
             {draggable ? (
               <FloatingPanel.DragTrigger>
@@ -64,7 +82,7 @@ export default function GenericFloatingPanel({
                 onClose={onClose}
               />
             )}
-            <FloatingPanel.Body className="flex flex-col gap-4">
+            <FloatingPanel.Body className={bodyClassName || "flex flex-col gap-4 flex-1 overflow-auto"}>
               {children}
             </FloatingPanel.Body>
             {resizable && (
