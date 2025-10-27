@@ -4,16 +4,16 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import { usePathname, useSearchParams } from "next/navigation";
 import { getCaseBySlug } from "@/data/coldCases";
-import FilterMenu, { FilterMenuProps } from "./filter-menu";
+import BoardControls, { BoardControlsProps } from "./board-controls";
 
 // Dedicated header for /play/[slug] preserving original style while injecting case metadata.
 interface PlayHeaderComponentProps {
-  filterMenuProps?: FilterMenuProps; // If provided, renders integrated FilterMenu controls.
+  boardControlsProps?: BoardControlsProps; // Unified controls (filters + actions + mobile dock)
   titleOverride?: string; // Optional override for case title (e.g., operation codename).
 }
 
 export const PlayHeader: React.FC<PlayHeaderComponentProps> = ({
-  filterMenuProps,
+  boardControlsProps,
   titleOverride,
 }) => {
   const { theme, resolvedTheme, setTheme } = useTheme();
@@ -27,6 +27,7 @@ export const PlayHeader: React.FC<PlayHeaderComponentProps> = ({
   const characters = searchParams.get("chars")?.split("|").filter(Boolean) || [];
 
   return (
+    <>
   <header id="play-header" className="fixed left-1/2 top-2 md:top-4 z-50 -translate-x-1/2 flex flex-col items-stretch px-3 md:px-4 py-2 bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl rounded-2xl w-[95vw] max-w-[960px] gap-2 backdrop-blur-md">
       <div className="flex items-center w-full gap-2 md:gap-3">
       {/* Mobile: icon-only Cases */}
@@ -93,12 +94,14 @@ export const PlayHeader: React.FC<PlayHeaderComponentProps> = ({
         </svg>
       </button>
       </div>
-      {filterMenuProps && (
+      {boardControlsProps && (
         <div className="w-full mt-1 md:mt-2 border-t border-gray-200/40 dark:border-white/10 pt-2">
-          <FilterMenu {...filterMenuProps} />
+          <BoardControls {...boardControlsProps} />
         </div>
       )}
     </header>
+  {/* BoardControls renders unified controls (filters + actions + mobile dock) */}
+    </>
   );
 };
 
