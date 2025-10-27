@@ -3,7 +3,6 @@
 import MissionLoading from "@/components/mission-loading";
 
 import React from "react";
-import type { Metadata } from 'next'
 import { getCaseBySlug, Evidence } from "@/data/coldCases";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -18,7 +17,6 @@ import {
   useMemo,
   CSSProperties,
 } from "react";
-import { i } from "framer-motion/client";
 
 interface PlayPageProps {
   params: { slug: string };
@@ -2058,18 +2056,22 @@ export default function PlayBoardPage({ params }: PlayPageProps) {
 
       <PlayHeader
         titleOverride="OPERATION SHADOWFALL"
-        filterMenuProps={{
+        boardControlsProps={{
           activeFilters,
-          allTypes: ITEM_TYPES,
-          toggleFilter,
-          setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
-          handleResetView,
-          setIsTimelineVisible: (v: boolean) => setIsTimelineVisible(v),
-          handleAddNewNote,
-          handleRequestClue,
-          cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
-          isMobileMenuOpen,
-          setIsMobileMenuOpen: (v: boolean) => setIsMobileMenuOpen(v),
+            allTypes: ITEM_TYPES,
+            toggleFilter,
+            setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
+            handleResetView,
+            setIsTimelineVisible,
+            handleAddNewNote,
+            handleRequestClue,
+            cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
+            isMobileMenuOpen,
+            setIsMobileMenuOpen,
+            variant: 'integrated',
+            dockActionsOnMobile: true,
+            mobileDockPortal: true,
+            includeDockSpacer: true,
         }}
       />
       <div
