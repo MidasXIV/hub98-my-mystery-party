@@ -83,7 +83,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
 
   // Style tokens
   const baseBtn =
-    "font-staatliches tracking-wider text-sm md:text-base px-3 py-1 rounded-md transition-colors border";
+    "font-staatliches tracking-wider text-xs md:text-xs px-3 py-1 rounded-md transition-colors border pointer-events-auto cursor-pointer";
   const filterActive =
     "bg-yellow-300 hover:bg-yellow-400 text-yellow-900 dark:bg-yellow-500/30 dark:text-yellow-100 dark:hover:bg-yellow-500/50 border-yellow-300/70 dark:border-yellow-500/40";
   const filterInactive =
