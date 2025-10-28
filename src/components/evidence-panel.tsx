@@ -21,12 +21,12 @@ const TYPE_ORDER = [
   "photo",
   "document",
   "note",
-  "clue",
   "folder-tab",
   "autopsy-report",
   "formal-alibi",
   "interrogation-transcript",
   "newspaper",
+  "clue",
 ];
 
 // Utility: group items by type preserving defined type order

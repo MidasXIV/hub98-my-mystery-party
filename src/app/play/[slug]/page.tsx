@@ -1860,11 +1860,14 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
       onTouchCancel={handleInteractionEnd}
     >
       {boardData?.objectives && boardData.objectives.length > 0 && (
-        <ObjectivesPanel
+        <div className="fixed right-10 top-30 z-[55]">
+          <ObjectivesPanel
           objectives={boardData.objectives}
           completedObjectives={completedObjectives}
           onAttemptSolve={handleAttemptSolve}
         />
+        </div>
+        
       )}
       {solvingObjective && (
         <ObjectiveSolverModal
@@ -1899,7 +1902,7 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
       )}
       {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}
       {boardData && (
-        <div className="fixed left-2 top-2 z-[55]">
+        <div className="fixed right-10 top-20 z-[55]">
           <EvidencePanel
             items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
             onFocus={(id) => handleFocusItem(id)}

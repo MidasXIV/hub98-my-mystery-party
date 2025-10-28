@@ -18,29 +18,17 @@ export default function ObjectivesPanel({
   completedObjectives,
   onAttemptSolve,
 }: ObjectivesPanelProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-
+  
   if (!objectives || objectives.length === 0) {
     return null;
   }
 
   return (
     <GenericFloatingPanel
-    className="h-fit"
+      className="h-fit"
       trigger={
-        <div
-        //   onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute top-1/2 right-0 -translate-y-1/2 w-8 h-16 bg-gray-700/80 hover:bg-gray-600/80 rounded-r-md flex items-center justify-center text-gray-700 dark:text-gray-300 focus:outline-none"
-          aria-label={isCollapsed ? "Show objectives" : "Hide objectives"}
-        //   style={{ transform: `translateX(100%)` }}
-        >
-          <span
-            // className={`transition-transform duration-300 ${
-            //   isCollapsed ? "rotate-180" : ""
-            // }`}
-          >
-            Objectives
-          </span>
+        <div className="font-staatliches tracking-wider text-xs md:text-sm px-3 py-2 rounded-md bg-white/80 dark:bg-black/40 border border-gray-300/60 dark:border-white/10 hover:bg-white dark:hover:bg-black/60 shadow-sm transition">
+          Objectives
         </div>
       }
       title="Objectives panel"
