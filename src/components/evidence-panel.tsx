@@ -52,13 +52,12 @@ export default function EvidencePanel({
   return (
     <GenericFloatingPanel
       trigger={
-        <button
-          type="button"
-          className="font-staatliches tracking-wider text-xs md:text-sm px-3 py-2 rounded-md bg-white/80 dark:bg-black/40 border border-gray-300/60 dark:border-white/10 hover:bg-white dark:hover:bg-black/60 shadow-sm transition"
+        <div
+          className="font-staatliches tracking-wider text-xs md:text-sm px-3 py-2 rounded-md bg-white/80 dark:bg-black/40 border border-gray-300/60 dark:border-white/10 hover:bg-white dark:hover:bg-black/60 shadow-sm transition pointer-events-auto cursor-pointer"
           aria-label="Open evidence list"
         >
           Evidence
-        </button>
+        </div>
       }
       title={
         <span className="flex items-center gap-2">
