@@ -8,6 +8,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import PlayHeader from "@/components/play-header";
 import EvidencePanel from "@/components/evidence-panel";
+import TimelinePanel from "@/components/timeline-panel";
 
 // Removed unused Type import (schemas are server-side)
 import {
@@ -663,8 +664,6 @@ function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
   );
 }
 
-
-
 function ObjectiveSolverModal({
   objective,
   onClose,
@@ -777,7 +776,11 @@ function ObjectiveSolverModal({
 // FilterMenu moved to dedicated component and integrated inside PlayHeader.
 
 // Adapt to upcoming Next.js change where params may be a Promise.
-export default function PlayBoardPage({ params }: { params: Promise<{ slug: string }> }) {
+export default function PlayBoardPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = React.use(params);
   const caseFile = getCaseBySlug(slug);
 
@@ -813,7 +816,9 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
     y: 0,
     itemId: null,
   });
-  const [connectingState, setConnectingState] = useState<{ from: string | null }>({ from: null });
+  const [connectingState, setConnectingState] = useState<{
+    from: string | null;
+  }>({ from: null });
   const [modalItem, setModalItem] = useState<BoardItem | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isTimelineVisible, setIsTimelineVisible] = useState(false);
@@ -1655,7 +1660,10 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex flex-col items-center justify-center text-center text-gray-300 text-xs p-1 bg-gray-800">
+              <div
+                key={`${item.id}-image-placeholder`}
+                className="w-full h-full flex flex-col items-center justify-center text-center text-gray-300 text-xs p-1 bg-gray-800"
+              >
                 <svg
                   className="animate-spin h-5 w-5 text-gray-400 mb-2"
                   xmlns="http://www.w3.org/2000/svg"
@@ -1681,7 +1689,7 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
                 </span>
               </div>
             )}
-            <Tape rotation={-15} />
+            <Tape key={`tape-${item.id}`} rotation={-15} />
           </div>
         );
       case "document":
@@ -1852,22 +1860,25 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
       className={`w-screen h-screen p-2 md:p-4 flex flex-col items-center justify-center overflow-hidden bg-[#111] touch-none ${
         connectingState.from ? "cursor-crosshair" : ""
       }`}
-      onMouseMove={handleInteractionMove as unknown as React.MouseEventHandler<HTMLElement>}
+      onMouseMove={
+        handleInteractionMove as unknown as React.MouseEventHandler<HTMLElement>
+      }
       onMouseUp={handleInteractionEnd}
       onMouseLeave={handleInteractionEnd}
-      onTouchMove={handleInteractionMove as unknown as React.TouchEventHandler<HTMLElement>}
+      onTouchMove={
+        handleInteractionMove as unknown as React.TouchEventHandler<HTMLElement>
+      }
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
       {boardData?.objectives && boardData.objectives.length > 0 && (
         <div className="fixed right-10 top-30 z-[55]">
           <ObjectivesPanel
-          objectives={boardData.objectives}
-          completedObjectives={completedObjectives}
-          onAttemptSolve={handleAttemptSolve}
-        />
+            objectives={boardData.objectives}
+            completedObjectives={completedObjectives}
+            onAttemptSolve={handleAttemptSolve}
+          />
         </div>
-        
       )}
       {solvingObjective && (
         <ObjectiveSolverModal
@@ -1902,10 +1913,15 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
       )}
       {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}
       {boardData && (
-        <div className="fixed right-10 top-20 z-[55]">
+        <div className="fixed right-10 top-20 z-[55] flex flex-col gap-4">
           <EvidencePanel
             items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
             onFocus={(id) => handleFocusItem(id)}
+          />
+          <TimelinePanel
+            items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
+            onFocus={(id) => handleFocusItem(id)}
+            onOpenFull={() => setIsTimelineVisible(true)}
           />
         </div>
       )}
@@ -1914,20 +1930,20 @@ export default function PlayBoardPage({ params }: { params: Promise<{ slug: stri
         titleOverride="OPERATION SHADOWFALL"
         boardControlsProps={{
           activeFilters,
-            allTypes: ITEM_TYPES,
-            toggleFilter,
-            setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
-            handleResetView,
-            setIsTimelineVisible,
-            handleAddNewNote,
-            handleRequestClue,
-            cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
-            isMobileMenuOpen,
-            setIsMobileMenuOpen,
-            variant: 'integrated',
-            dockActionsOnMobile: true,
-            mobileDockPortal: true,
-            includeDockSpacer: true,
+          allTypes: ITEM_TYPES,
+          toggleFilter,
+          setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
+          handleResetView,
+          setIsTimelineVisible,
+          handleAddNewNote,
+          handleRequestClue,
+          cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
+          isMobileMenuOpen,
+          setIsMobileMenuOpen,
+          variant: "integrated",
+          dockActionsOnMobile: true,
+          mobileDockPortal: true,
+          includeDockSpacer: true,
         }}
       />
       <div
