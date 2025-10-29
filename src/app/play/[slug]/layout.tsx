@@ -2,10 +2,12 @@ import React from "react";
 import { getCaseBySlug } from "@/data/coldCases";
 import type { Metadata } from "next";
 
-// Simplify params typing (Promise form not required for generateMetadata) and
-// rely on root metadataBase for resolving relative image URLs.
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const caseFile = getCaseBySlug(params.slug);
+// Future-compatible: params may arrive as a Promise. Unwrap with React.use() when provided.
+// Keeping function async to allow any data fetching additions later.
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }): Promise<Metadata> {
+  // In server metadata functions we cannot call React.use(); just await if it's a Promise.
+  const resolved = params instanceof Promise ? await params : params;
+  const caseFile = getCaseBySlug(resolved.slug);
   const titleBase = caseFile ? caseFile.title : "Case Not Found";
   const title = `${titleBase} | My Mystery Party`;
   const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
@@ -14,7 +16,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // Provide static thumbnail as a fallback second.
   const ogImages = [
     {
-      url: `/play/${params.slug}/opengraph-image`,
+      url: `/play/${resolved.slug}/opengraph-image`,
       width: 1200,
       height: 630,
       type: "image/png",
@@ -34,8 +36,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   ];
 
   const twitterImages = [
-    `/play/${params.slug}/twitter-image`,
-    caseFile?.imageUrl || `/play/${params.slug}/opengraph-image`,
+  `/play/${resolved.slug}/twitter-image`,
+  caseFile?.imageUrl || `/play/${resolved.slug}/opengraph-image`,
   ];
 
   return {
@@ -46,7 +48,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description,
       type: "website",
       siteName: "My Mystery Party",
-      url: `/play/${params.slug}`,
+  url: `/play/${resolved.slug}`,
   images: ogImages,
     },
     twitter: {
@@ -55,7 +57,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description,
       images: twitterImages,
     },
-    alternates: { canonical: `/play/${params.slug}` },
+    alternates: { canonical: `/play/${resolved.slug}` },
   };
 }
 
