@@ -26,6 +26,7 @@ export interface BoardControlsProps {
   dockActionsOnMobile?: boolean; // if true actions rendered as bottom dock in mobile view
   mobileDockPortal?: boolean; // render dock via portal to body for reliable positioning
   includeDockSpacer?: boolean; // add spacer div to prevent overlap with page content
+  hideActions?: boolean; // new: allow caller (PlayHeader) to suppress duplicate action buttons
 }
 
 const BoardControls: React.FC<BoardControlsProps> = ({
@@ -44,6 +45,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   dockActionsOnMobile = true,
   mobileDockPortal = true,
   includeDockSpacer = true,
+  hideActions = false,
 }) => {
   const noCluesLeft = cluesLeft === 0;
   const scrollRef = React.useRef<HTMLDivElement | null>(null);
@@ -81,8 +83,9 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   };
 
   // Style tokens
+  // Match PlayHeader button sizing (mobile icon-only heights and desktop consistent font)
   const baseBtn =
-    "font-staatliches tracking-wider text-xs md:text-xs px-3 py-1 rounded-md transition-colors border pointer-events-auto cursor-pointer";
+    "font-staatliches tracking-wider text-[10px] md:text-xs px-3 py-1 rounded-md transition-colors border pointer-events-auto cursor-pointer h-9 md:h-auto flex items-center justify-center";
   const filterActive =
     "bg-yellow-300 hover:bg-yellow-400 text-yellow-900 dark:bg-yellow-500/30 dark:text-yellow-100 dark:hover:bg-yellow-500/50 border-yellow-300/70 dark:border-yellow-500/40";
   const filterInactive =
@@ -195,7 +198,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   );
 
   // Actions bar (desktop inline)
-  const desktopActions = (
+  const desktopActions = hideActions ? null : (
     <div
       role="group"
       aria-label="Board actions"
@@ -237,7 +240,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   );
 
   // Mobile dock actions
-  const mobileDockContent = (
+  const mobileDockContent = hideActions ? null : (
     <div
       className="md:hidden fixed inset-x-0 bottom-0 z-[60] mx-auto w-full max-w-[960px] px-2 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] flex gap-2 backdrop-blur-md rounded-t-xl border border-gray-300/60 dark:border-white/10 bg-white/90 dark:bg-black/70 shadow-xl"
       role="group"
@@ -300,7 +303,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   if (variant === "integrated") {
     return (
       <div className="flex flex-col w-full gap-2">
-        {desktopActions}
+  {desktopActions}
         {/* Filter bar mobile with arrows */}
         <div className="md:hidden w-full px-1 pt-1 pb-1 flex items-stretch gap-2">
           <button

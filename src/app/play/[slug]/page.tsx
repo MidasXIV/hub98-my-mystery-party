@@ -1928,12 +1928,22 @@ export default function PlayBoardPage({
 
       <PlayHeader
         titleOverride="OPERATION SHADOWFALL"
+        // Direct action props for integrated header buttons
+        handleResetView={handleResetView}
+        setIsTimelineVisible={setIsTimelineVisible}
+        handleAddNewNote={handleAddNewNote}
+        handleRequestClue={handleRequestClue}
+        cluesLeft={PREDEFINED_CLUES.length - usedClueIndices.size}
+        activeFilters={activeFilters}
+        allTypes={ITEM_TYPES}
+        setActiveFilters={(filters: Set<string>) => setActiveFilters(filters)}
+        // Provide BoardControls for filters (still needed for mobile scroll & desktop filter row)
         boardControlsProps={{
           activeFilters,
           allTypes: ITEM_TYPES,
           toggleFilter,
           setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
-          handleResetView,
+          handleResetView, // retained for internal reset usage if needed
           setIsTimelineVisible,
           handleAddNewNote,
           handleRequestClue,
@@ -1941,9 +1951,11 @@ export default function PlayBoardPage({
           isMobileMenuOpen,
           setIsMobileMenuOpen,
           variant: "integrated",
-          dockActionsOnMobile: true,
+          // Disable mobile dock actions to avoid duplication since header now shows them
+          dockActionsOnMobile: false,
           mobileDockPortal: true,
-          includeDockSpacer: true,
+          includeDockSpacer: false,
+          hideActions: true,
         }}
       />
       <div
