@@ -51,44 +51,37 @@ const PREDEFINED_CLUES = [
 
 // Schemas moved server-side; removed unused client definitions.
 
-const ITEM_TYPES = [
-  "photo",
-  "document",
-  "note",
-  "clue",
-  "folder-tab",
-  "autopsy-report",
-  "formal-alibi",
-  "interrogation-transcript",
-  "newspaper",
-];
+import { ITEM_TYPES, BoardItem, BoardData, BoardItemType, Objective } from "../../../lib/boardTypes";
+import { computeDeclutterLayout } from "../../../lib/declutter";
 
-// FIX: Add type definitions for board data to ensure type safety and resolve errors with unknown types.
-type BoardItemType = (typeof ITEM_TYPES)[number];
-
-interface BoardItem {
-  id: string;
-  type: BoardItemType;
-  content: string;
-  position: { x: number; y: number };
-  size: { width: number; height: number };
-  rotation: number;
+// Minimal decorative tape component (placeholder for previous implementation)
+function Tape({ rotation }: { rotation?: number }) {
+  return (
+    <div
+      className="absolute top-1 left-1 w-10 h-4 bg-yellow-300/80 opacity-70 mix-blend-multiply"
+      style={{ transform: `rotate(${rotation || 0}deg)` }}
+    />
+  );
 }
 
-interface Connection {
-  from: string;
-  to: string;
-}
-
-interface Objective {
-  id: string;
-  description: string;
-}
-
-interface BoardData {
-  items: BoardItem[];
-  connections: Connection[];
-  objectives: Objective[];
+// Simplified context menu (replacing earlier extracted component)
+function ContextMenu({ visible, x, y, onClose, onDelete, onEdit, onConnect }: {
+  visible: boolean; x: number; y: number;
+  onClose: () => void; onDelete: () => void; onEdit: () => void; onConnect: () => void;
+}) {
+  if (!visible) return null;
+  return (
+    <div
+      className="fixed z-[400] bg-gray-900 border border-gray-700 rounded shadow-lg text-sm"
+      style={{ left: x, top: y }}
+      onMouseLeave={onClose}
+    >
+      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onEdit}>Edit</button>
+      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onDelete}>Delete</button>
+      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onConnect}>Connect</button>
+      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onClose}>Close</button>
+    </div>
+  );
 }
 
 // Provide sensible baseline sizes so AI-generated tiny dimensions are normalized.
@@ -110,7 +103,6 @@ const DEFAULT_ITEM_SIZES: Record<
 function normalizeItemSize(item: BoardItem): BoardItem {
   const defaults = DEFAULT_ITEM_SIZES[item.type];
   if (!defaults) return item;
-  // If AI gave absurdly small or missing sizes, replace. Otherwise gently upscale if below 70% of baseline.
   const minWidth = defaults.width * 0.7;
   const minHeight = defaults.height * 0.7;
   let { width, height } = item.size;
@@ -119,256 +111,63 @@ function normalizeItemSize(item: BoardItem): BoardItem {
   return { ...item, size: { width, height } };
 }
 
-function normalizeBoardData(data: BoardData): BoardData {
-  return {
-    ...data,
-    items: data.items.map(normalizeItemSize),
-  };
-}
-
-function Tape({ rotation }: { rotation: number }) {
-  return (
-    <div
-      className="absolute -top-1 -right-1 w-8 h-4 bg-yellow-500/20 backdrop-blur-sm"
-      style={{ transform: `rotate(${rotation}deg)` }}
-    ></div>
-  );
-}
-
-interface ContextMenuProps {
-  x: number;
-  y: number;
-  onEdit: () => void;
-  onDelete: () => void;
-  onConnect: () => void;
-  onClose: () => void;
-}
-
-function ContextMenu({
-  x,
-  y,
-  onEdit,
-  onDelete,
-  onConnect,
-  onClose,
-}: ContextMenuProps) {
-  const menuRef = useRef(null);
-  const [position, setPosition] = useState({ x, y });
-
-  useLayoutEffect(() => {
-    if (menuRef.current) {
-      const { innerWidth, innerHeight } = window;
-      const { offsetWidth, offsetHeight } = menuRef.current;
-      let newX = x;
-      let newY = y;
-      if (x + offsetWidth > innerWidth) {
-        newX = innerWidth - offsetWidth - 5;
-      }
-      if (y + offsetHeight > innerHeight) {
-        newY = innerHeight - offsetHeight - 5;
-      }
-      setPosition({ x: newX, y: newY });
-    }
-  }, [x, y]);
-
-  useEffect(() => {
-    const handleClickOutside = () => onClose();
-    const handleEsc = (e: { key: string }) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    window.addEventListener("click", handleClickOutside);
-    window.addEventListener("keydown", handleEsc);
-    return () => {
-      window.removeEventListener("click", handleClickOutside);
-      window.removeEventListener("keydown", handleEsc);
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      ref={menuRef}
-      style={{ top: position.y, left: position.x }}
-      className="absolute z-[200] bg-gray-900/80 backdrop-blur-sm border border-gray-600 rounded-md shadow-lg py-1 animate-fade-in"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={onEdit}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
-      >
-        Edit
-      </button>
-      <button
-        onClick={onDelete}
-        className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700"
-      >
-        Delete
-      </button>
-      <button
-        onClick={onConnect}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700"
-      >
-        Connect to...
-      </button>
-    </div>
-  );
-}
-
-function NewspaperClipping({
-  content,
-  isModal = false,
-}: {
-  content: string;
-  isModal?: boolean;
-}) {
-  const parsedContent = useMemo(() => {
-    try {
-      const data = JSON.parse(content);
-      if (data.headline && data.date && data.body) {
-        return data;
-      }
-      return {
-        headline: "Newspaper Clipping",
-        date: "Unknown Date",
-        body: content,
-      };
-    } catch {
-      return {
-        headline: "Newspaper Clipping",
-        date: "Unknown Date",
-        body: content,
-      };
-    }
-  }, [content]);
-
-  const inkSmudgeStyle: CSSProperties = {
-    textShadow: "0 0 1px rgba(0,0,0,0.3)",
-  };
-
-  if (isModal) {
-    return (
-      <div
-        className="newspaper-modal-view text-black p-8 max-w-3xl"
-        style={{ fontFamily: "Georgia, 'Times New Roman', serif" }}
-      >
-        <h1
-          className="text-5xl font-extrabold mb-2 text-gray-900 uppercase"
-          style={{
-            fontFamily: "Impact, 'Arial Black', sans-serif",
-            letterSpacing: "-0.05em",
-            ...inkSmudgeStyle,
-          }}
-        >
-          {parsedContent.headline}
-        </h1>
-        <p className="text-sm text-gray-600 mb-4 border-y-2 border-black py-1 font-sans text-center">
-          {parsedContent.date.toUpperCase()}
-        </p>
-        <div
-          className="text-base leading-relaxed columns-2 sm:columns-3 gap-x-8 text-justify"
-          style={inkSmudgeStyle}
-        >
-          <p>
-            {parsedContent.body} {parsedContent.body}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full h-full text-black p-2 flex flex-col overflow-hidden">
-      <h2
-        className="text-[18px] font-bold uppercase leading-tight text-black mb-1"
-        style={{
-          fontFamily: "Impact, 'Arial Black', sans-serif",
-          ...inkSmudgeStyle,
-        }}
-      >
-        {parsedContent.headline}
-      </h2>
-      <div
-        className="text-[7px] leading-snug text-justify overflow-hidden flex-grow"
-        style={{ fontFamily: "Georgia, serif", ...inkSmudgeStyle }}
-      >
-        <p className="[column-count:3] [column-gap:6px] h-full">
-          {parsedContent.body} {parsedContent.body} {parsedContent.body}
-        </p>
-      </div>
-    </div>
-  );
-}
-
+// Lightweight viewers extracted from earlier inline markup accidentally injected.
 function AutopsyReportViewer({ content }: { content: string }) {
-  const parsedContent = useMemo(() => {
-    const lines = content.split("\n").filter((line) => line.trim() !== "");
-    const report: Record<string, string> = {};
-    let currentKey: string | null = null;
-    lines.forEach((line) => {
-      const parts = line.split(":");
-      if (parts.length > 1) {
-        const key = parts[0].trim().toUpperCase();
-        const value = parts.slice(1).join(":").trim();
-        report[key] = value;
-        currentKey = key;
-      } else if (currentKey) {
-        // Append to the previous value if it's a multi-line entry
-        report[currentKey] += "\n" + line.trim();
-      }
+  let parsedContent: Record<string, string> = {};
+  try {
+    const maybe = JSON.parse(content);
+    if (maybe && typeof maybe === 'object') parsedContent = maybe;
+  } catch {
+    // Fallback: attempt to split by lines with KEY: VALUE pattern
+    content.split(/\n+/).forEach(line => {
+      const match = line.match(/^(.*?):\s*(.*)$/);
+      if (match) parsedContent[match[1].trim()] = match[2].trim();
     });
-    return report;
-  }, [content]);
-
+  }
   return (
-    <div className="bg-white text-black p-8 font-special-elite max-w-3xl relative overflow-hidden">
-      <div className="absolute inset-0 flex items-center justify-center z-0">
-        <p className="text-red-500/10 text-9xl font-bold select-none -rotate-12">
-          CONFIDENTIAL
-        </p>
+    <div className="bg-[#f6f2e8] text-black p-6 font-special-elite max-w-3xl w-full">
+      <h2 className="text-2xl font-bold text-center mb-2">OFFICE OF THE CHIEF MEDICAL EXAMINER</h2>
+      <h3 className="text-lg text-center border-b-2 border-black pb-4 mb-6">AUTOPSY REPORT</h3>
+      <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6 text-sm">
+        {Object.entries(parsedContent).map(([key, value]) => {
+          if (key.toLowerCase().includes('findings')) return null;
+          return (
+            <div key={key}>
+              <p className="font-bold text-gray-600">{key}:</p>
+              <p className="pl-2 whitespace-pre-wrap">{String(value)}</p>
+            </div>
+          );
+        })}
       </div>
-      <div className="relative z-10">
-        <h2 className="text-2xl font-bold text-center mb-2">
-          OFFICE OF THE CHIEF MEDICAL EXAMINER
-        </h2>
-        <h3 className="text-lg text-center border-b-2 border-black pb-4 mb-6">
-          AUTOPSY REPORT
-        </h3>
-
-        <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6 text-sm">
-          {Object.entries(parsedContent).map(([key, value]) => {
-            if (key.toLowerCase().includes("findings")) return null;
-            return (
-              <div key={key}>
-                <p className="font-bold text-gray-600">{key}:</p>
-                <p className="pl-2">{value}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="text-sm">
-          {(parsedContent["SUMMARY OF FINDINGS"] ||
-            parsedContent["FINDINGS"]) && (
-            <>
-              <h4 className="font-bold text-gray-600 border-b border-black/50 mb-2">
-                SUMMARY OF FINDINGS
-              </h4>
-              <p className="whitespace-pre-wrap">
-                {parsedContent["SUMMARY OF FINDINGS"] ||
-                  parsedContent["FINDINGS"]}
-              </p>
-            </>
-          )}
-        </div>
-
-        <div className="mt-16 text-sm">
-          <div className="w-1/2 float-right text-center">
-            <p className="border-t border-black pt-2">
-              SIGNATURE OF MEDICAL EXAMINER
-            </p>
-          </div>
+      <div className="text-sm">
+        {(parsedContent['SUMMARY OF FINDINGS'] || parsedContent['FINDINGS']) && (
+          <>
+            <h4 className="font-bold text-gray-600 border-b border-black/50 mb-2">SUMMARY OF FINDINGS</h4>
+            <p className="whitespace-pre-wrap">{parsedContent['SUMMARY OF FINDINGS'] || parsedContent['FINDINGS']}</p>
+          </>
+        )}
+      </div>
+      <div className="mt-16 text-sm">
+        <div className="w-1/2 float-right text-center">
+          <p className="border-t border-black pt-2">SIGNATURE OF MEDICAL EXAMINER</p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function NewspaperClipping({ content, isModal }: { content: string; isModal: boolean }) {
+  let data: { headline?: string; body?: string; date?: string } = {};
+  try {
+    data = JSON.parse(content);
+  } catch {
+    data = { headline: 'UNPARSEABLE CLIPPING', body: content };
+  }
+  return (
+    <div className={`bg-[#fdf7e3] text-black font-special-elite p-3 border border-gray-500 ${isModal ? 'max-w-2xl' : 'text-[10px]'}`}>
+      <h4 className="font-bold text-center tracking-wide mb-1 uppercase">{data.headline || 'UNTITLED'}</h4>
+      {data.date && <p className="text-center text-[10px] mb-2 opacity-70">{data.date}</p>}
+      <p className="whitespace-pre-wrap leading-snug">{data.body || ''}</p>
     </div>
   );
 }
@@ -514,56 +313,51 @@ type TimelineItem = {
 
 function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
   const timelineItems: TimelineItem[] = useMemo(() => {
-    const parsableItems = items
-      .filter(
-        (item) =>
-          item.type === "newspaper" || item.type === "interrogation-transcript"
-      )
-      .map((item) => {
-        let date: Date | null = null;
-        let title = "";
-        let summary = "";
-        try {
-          if (item.type === "newspaper") {
-            const data = JSON.parse(item.content);
-            if (data.date) {
-              date = new Date(data.date);
-              title = data.headline;
-              summary = data.body.substring(0, 120) + "...";
-            }
-          } else if (item.type === "interrogation-transcript") {
-            const dateMatch = item.content.match(/^INTERVIEW DATE: (.*)/m);
-            const subjectMatch = item.content.match(/^SUBJECT: (.*)/m);
-            if (dateMatch && dateMatch[1]) {
-              date = new Date(dateMatch[1]);
-              title =
-                subjectMatch && subjectMatch[1]
-                  ? `Interrogation: ${subjectMatch[1]}`
-                  : "Interrogation Transcript";
-              const contentWithoutHeader = item.content
-                .replace(/^INTERVIEW DATE: .*\n?/, "")
-                .replace(/^SUBJECT: .*\n?/, "");
-              summary = contentWithoutHeader.trim().substring(0, 120) + "...";
+    const raw = items.filter(i => i.type === 'newspaper' || i.type === 'interrogation-transcript');
+    const parsed: TimelineItem[] = [];
+    for (const item of raw) {
+      try {
+        if (item.type === 'newspaper') {
+          const data = JSON.parse(item.content);
+          if (data.date && data.headline && data.body) {
+            const dateObj = new Date(data.date);
+            if (!isNaN(dateObj.getTime())) {
+              parsed.push({
+                id: item.id,
+                type: item.type,
+                date: dateObj,
+                title: data.headline,
+                summary: String(data.body).substring(0,120) + '...',
+                content: item.content,
+              });
             }
           }
-        } catch (e) {
-          console.warn("Could not parse timeline item:", item, e);
-          return null;
-        }
-        return date && !isNaN(date.getTime())
-          ? {
-              id: item.id,
-              type: item.type,
-              date,
-              title,
-              summary,
-              content: item.content,
+        } else {
+          const dateMatch = item.content.match(/^INTERVIEW DATE: (.*)/m);
+          const subjectMatch = item.content.match(/^SUBJECT: (.*)/m);
+          if (dateMatch?.[1]) {
+            const dateObj = new Date(dateMatch[1]);
+            if (!isNaN(dateObj.getTime())) {
+              const title = subjectMatch?.[1] ? `Interrogation: ${subjectMatch[1]}` : 'Interrogation Transcript';
+              const contentWithoutHeader = item.content
+                .replace(/^INTERVIEW DATE: .*\n?/, '')
+                .replace(/^SUBJECT: .*\n?/, '');
+              parsed.push({
+                id: item.id,
+                type: item.type,
+                date: dateObj,
+                title,
+                summary: contentWithoutHeader.trim().substring(0,120) + '...',
+                content: item.content,
+              });
             }
-          : null;
-      })
-      .filter((item): item is TimelineItem => item !== null);
-
-    return parsableItems.sort((a, b) => a.date.getTime() - b.date.getTime());
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to parse timeline item', item, e);
+      }
+    }
+    return parsed.sort((a,b) => a.date.getTime() - b.date.getTime());
   }, [items]);
 
   const handleItemClick = (itemId: string) => {
@@ -804,7 +598,7 @@ export default function PlayBoardPage({
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [activeFilters, setActiveFilters] = useState(new Set(ITEM_TYPES));
+  const [activeFilters, setActiveFilters] = useState<Set<BoardItemType>>(new Set(ITEM_TYPES));
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -1211,7 +1005,7 @@ export default function PlayBoardPage({
     pinchDistRef.current = 0;
   };
 
-  const toggleFilter = (type: string) => {
+  const toggleFilter = (type: BoardItemType) => {
     setActiveFilters((prev) => {
       const newFilters = new Set(prev);
       if (newFilters.has(type)) {
@@ -1362,6 +1156,52 @@ export default function PlayBoardPage({
     setTimeout(() => {
       setIsAnimating(false);
     }, 500);
+  };
+
+  // Declutter: collision-aware grouping by type into columns without overlap.
+  // Store original item positions keyed by id for robust undo (preserves new items added after declutter)
+  const previousPositionsRef = useRef<Map<string, { position: { x: number; y: number }; rotation: number }> | null>(null);
+  const [isDecluttered, setIsDecluttered] = useState(false);
+  const [animateLayout, setAnimateLayout] = useState(false);
+
+  // Aesthetic clustered declutter with undo toggle.
+  const handleToggleDeclutter = () => {
+    if (!boardData || !viewportRef.current) return;
+
+    // Undo case: restore original layout
+    if (isDecluttered && previousPositionsRef.current) {
+      const snapshot = previousPositionsRef.current;
+      setBoardData((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          items: prev.items.map((item) => {
+            const original = snapshot.get(item.id);
+            return original
+              ? { ...item, position: original.position, rotation: original.rotation }
+              : item; // keep items created after declutter
+          }),
+        };
+      });
+      previousPositionsRef.current = null;
+      setIsDecluttered(false);
+      setTimeout(() => handleResetView(), 50);
+      return;
+    }
+
+  // Capture original positions for undo
+  const posMap = new Map<string, { position: { x: number; y: number }; rotation: number }>();
+  boardData.items.forEach((i) => posMap.set(i.id, { position: { ...i.position }, rotation: i.rotation }));
+  previousPositionsRef.current = posMap;
+
+    const viewportWidth = (viewportRef.current as HTMLElement).clientWidth;
+    const viewportHeight = (viewportRef.current as HTMLElement).clientHeight;
+    const placed = computeDeclutterLayout(boardData.items, viewportWidth, viewportHeight);
+    setAnimateLayout(true);
+    setBoardData((prev) => (prev ? { ...prev, items: placed } : prev));
+    setIsDecluttered(true);
+    setTimeout(() => handleResetView(), 80);
+    setTimeout(() => setAnimateLayout(false), 600);
   };
 
   const handleAddNewNote = () => {
@@ -1560,6 +1400,30 @@ export default function PlayBoardPage({
 
   if (!caseFile) return notFound();
 
+  // Basic normalization logic; ensures required shape & sizes.
+  function normalizeBoardData(raw: any): BoardData {
+    const items: BoardItem[] = Array.isArray(raw.items)
+      ? raw.items.map((it: any, idx: number) => {
+          const type: BoardItemType = ITEM_TYPES.includes(it.type) ? it.type : 'note';
+          const id = typeof it.id === 'string' ? it.id : `item-${idx}-${Date.now()}`;
+          const content = typeof it.content === 'string' ? it.content : JSON.stringify(it.content ?? {});
+          const position = {
+            x: typeof it.position?.x === 'number' ? it.position.x : Math.random() * 80 + 10,
+            y: typeof it.position?.y === 'number' ? it.position.y : Math.random() * 80 + 10,
+          };
+            const size = {
+            width: typeof it.size?.width === 'number' ? it.size.width : DEFAULT_ITEM_SIZES[type].width,
+            height: typeof it.size?.height === 'number' ? it.size.height : DEFAULT_ITEM_SIZES[type].height,
+          };
+          const rotation = typeof it.rotation === 'number' ? it.rotation : (Math.random()*6 - 3);
+          return normalizeItemSize({ id, type, content, position, size, rotation });
+        })
+      : [];
+    const connections = Array.isArray(raw.connections) ? raw.connections.filter((c: any) => c && c.from && c.to) : [];
+    const objectives = Array.isArray(raw.objectives) ? raw.objectives.filter((o: any) => o && o.id && o.description) : [];
+    return { items, connections, objectives };
+  }
+
   if (loadingMessage) {
     // Use new MissionLoading component with rotating tips while data generates.
     return <MissionLoading title={loadingMessage} />;
@@ -1582,7 +1446,7 @@ export default function PlayBoardPage({
 
     // Enable composite transforms for hover effects to work with inline transforms.
     const commonClasses =
-      "absolute shadow-lg shadow-black/60 transition-all duration-200 transform-gpu";
+      `absolute shadow-lg shadow-black/60 transform-gpu ${animateLayout ? 'transition-[left,top] duration-500 ease-in-out' : 'transition-all duration-200'}`;
     let dynamicClasses = "";
 
     if (isDragging) {
@@ -1930,13 +1794,15 @@ export default function PlayBoardPage({
         titleOverride="OPERATION SHADOWFALL"
         boardControlsProps={{
           activeFilters,
-          allTypes: ITEM_TYPES,
-          toggleFilter,
-          setActiveFilters: (filters: Set<string>) => setActiveFilters(filters),
+          allTypes: [...ITEM_TYPES] as string[],
+          toggleFilter: (t: string) => toggleFilter(t as BoardItemType),
+          setActiveFilters: (filters: Set<string>) => setActiveFilters(filters as Set<BoardItemType>),
           handleResetView,
           setIsTimelineVisible,
           handleAddNewNote,
           handleRequestClue,
+          handleDeclutter: handleToggleDeclutter,
+          isDecluttered,
           cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
           isMobileMenuOpen,
           setIsMobileMenuOpen,

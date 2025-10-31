@@ -19,6 +19,8 @@ export interface BoardControlsProps {
   setIsTimelineVisible: (visible: boolean) => void;
   handleAddNewNote: () => void;
   handleRequestClue: () => void;
+  handleDeclutter: () => void; // new declutter layout action
+  isDecluttered?: boolean; // indicates current declutter state for toggle label
   cluesLeft: number;
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
@@ -37,6 +39,8 @@ const BoardControls: React.FC<BoardControlsProps> = ({
   setIsTimelineVisible,
   handleAddNewNote,
   handleRequestClue,
+  handleDeclutter,
+  isDecluttered,
   cluesLeft,
   isMobileMenuOpen,
   setIsMobileMenuOpen,
@@ -227,6 +231,12 @@ const BoardControls: React.FC<BoardControlsProps> = ({
         Clue ({cluesLeft})
       </button>
       <button
+        onClick={handleDeclutter}
+        className={`${baseBtn} ${actionNeutral}`}
+      >
+        {isDecluttered ? "Undo" : "Declutter"}
+      </button>
+      <button
         onClick={toggleAll}
         aria-pressed={allActive}
         className={`${baseBtn} ${allActive ? actionPrimary : actionNeutral}`}
@@ -275,6 +285,13 @@ const BoardControls: React.FC<BoardControlsProps> = ({
       >
         <Lightbulb />
         <span className="leading-tight">Clue ({cluesLeft})</span>
+      </button>
+      <button
+        onClick={handleDeclutter}
+        className="group flex flex-col items-center justify-center gap-0.5 flex-1 min-w-0 px-1 py-1 text-[10px] font-semibold tracking-wide font-staatliches rounded-md bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-white/20 transition"
+      >
+        <ListRestart />
+        <span className="leading-tight">{isDecluttered ? "Undo" : "Declutter"}</span>
       </button>
       <button
         onClick={toggleAll}
