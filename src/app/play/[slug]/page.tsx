@@ -705,6 +705,7 @@ export default function PlayBoardPage({
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const lastPanPoint = useRef({ x: 0, y: 0 });
   const pinchDistRef = useRef(0);
+  const pinchStartScaleRef = useRef(1);
   // FIX: Provide a specific type for the useRef to fix clearTimeout errors.
   // Use ReturnType<typeof setTimeout> to correctly type the timer ID for both browser (number) and Node (Timeout) environments.
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -950,6 +951,7 @@ export default function PlayBoardPage({
           e.touches[0].pageY - e.touches[1].pageY
         );
         pinchDistRef.current = dist;
+        pinchStartScaleRef.current = scale; // capture scale at gesture start
         setIsPanning(true);
       } else {
         const point = e.touches[0];
@@ -1000,22 +1002,20 @@ export default function PlayBoardPage({
       const pinchMidpointY =
         (e.touches[0].pageY + e.touches[1].pageY) / 2 - (rect?.top || 0);
 
-      setScale((currentScale) => {
-        const scaleChange = newDist / pinchDistRef.current;
-        const newScale = Math.max(0.5, Math.min(3, currentScale * scaleChange));
+      // Compute scale relative to initial pinch start scale for stability
+      const baseScale = pinchStartScaleRef.current;
+      const ratio = newDist / (pinchDistRef.current || newDist);
+      const targetScale = Math.max(0.5, Math.min(3, baseScale * ratio));
 
-        // Recompute position to keep midpoint stable
-        setPosition((currentPos) => {
-          const contentX = (pinchMidpointX - currentPos.x) / currentScale;
-          const contentY = (pinchMidpointY - currentPos.y) / currentScale;
-          const newPosX = pinchMidpointX - contentX * newScale;
-          const newPosY = pinchMidpointY - contentY * newScale;
-          return { x: newPosX, y: newPosY };
-        });
-
-        pinchDistRef.current = newDist;
-        return newScale;
+      // Adjust position keeping pinch midpoint stable relative to content
+      setPosition((currentPos) => {
+        const contentX = (pinchMidpointX - currentPos.x) / scale;
+        const contentY = (pinchMidpointY - currentPos.y) / scale;
+        const newPosX = pinchMidpointX - contentX * targetScale;
+        const newPosY = pinchMidpointY - contentY * targetScale;
+        return { x: newPosX, y: newPosY };
       });
+      setScale(targetScale);
       return;
     }
 
