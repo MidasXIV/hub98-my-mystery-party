@@ -932,12 +932,15 @@ export default function PlayBoardPage({
       setConnectingState({ from: null });
       return;
     }
-    // For mouse events, check if the target is the board itself or its direct child
-    if (
-      e.target !== e.currentTarget &&
-      (e.target as HTMLElement).parentElement !== e.currentTarget
-    )
-      return;
+    // In normal mode, only start panning if clicking empty space (board or its immediate child wrapper).
+    // In pan-only mode we allow panning even when the initial press is over an item.
+    if (!panOnly) {
+      if (
+        e.target !== e.currentTarget &&
+        (e.target as HTMLElement).parentElement !== e.currentTarget
+      )
+        return;
+    }
 
     if ("touches" in e) {
       if (e.touches.length === 2) {
@@ -1644,6 +1647,8 @@ export default function PlayBoardPage({
         : "grab",
       zIndex: isDragging || isConnectingFrom ? 100 : 10,
       userSelect: "none",
+      // In pan-only mode we disable pointer events so the board receives the drag to pan.
+      pointerEvents: panOnly ? "none" : "auto",
     };
 
     const interactionHandlers = {
