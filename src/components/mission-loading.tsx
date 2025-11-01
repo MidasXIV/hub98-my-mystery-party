@@ -9,6 +9,8 @@ interface MissionLoadingProps {
 
 // Helpful rotating intel tips while the board generates.
 const DEFAULT_SUGGESTIONS: string[] = [
+  "Shortcut: Ctrl/Cmd + / - to zoom; Ctrl/Cmd 0 resets to 100%.",
+  "Shortcut: Shift+Space toggles Pan Only mode (disables item clicks).",
   "Tip: Right-click (or long-press) an evidence item, then choose 'Connect to...' to link two pieces of intel.",
   "Tip: On mobile, rotate your device for a wider tactical layout.",
   "Tip: Use 'Reset View' when zoom/pan feels disoriented to re-center all evidence.",

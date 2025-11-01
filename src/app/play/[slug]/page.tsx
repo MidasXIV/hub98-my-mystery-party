@@ -20,6 +20,7 @@ import {
   CSSProperties,
 } from "react";
 import ObjectivesPanel from "@/components/objectives-panel";
+import ZoomController from "@/components/zoom-controller";
 
 // Removed unused PlayPageProps interface
 
@@ -667,6 +668,8 @@ export default function PlayBoardPage({
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  // Pan-only mode: disable item interactions (click, drag, context menu)
+  const [panOnly, setPanOnly] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Set<BoardItemType>>(
     new Set(ITEM_TYPES)
   );
@@ -877,6 +880,7 @@ export default function PlayBoardPage({
     e: { stopPropagation: () => void; clientX: number; clientY: number },
     itemId: string
   ) => {
+    if (panOnly) return; // disable drag start in pan-only mode
     e.stopPropagation();
     dragStartPoint.current = { x: e.clientX, y: e.clientY };
     didDrag.current = false;
@@ -892,6 +896,7 @@ export default function PlayBoardPage({
     e: { stopPropagation: () => void; touches: string | any[] },
     itemId: string
   ) => {
+    if (panOnly) return; // disable touch drag start in pan-only mode
     e.stopPropagation();
     if (e.touches.length > 1) return;
 
@@ -1092,6 +1097,7 @@ export default function PlayBoardPage({
     e: { clientX: any; clientY: any; preventDefault: any },
     itemId: string
   ) => {
+    if (panOnly) return; // disable context menu in pan-only mode
     e.preventDefault();
     setContextMenu({ visible: true, x: e.clientX, y: e.clientY, itemId });
   };
@@ -1145,6 +1151,7 @@ export default function PlayBoardPage({
     e: { stopPropagation: () => void },
     itemId: string
   ) => {
+    if (panOnly) return; // disable opening modal or connections in pan-only mode
     if (didDrag.current) return;
 
     const fromId = connectingState.from;
@@ -1396,6 +1403,31 @@ export default function PlayBoardPage({
       return newSet;
     });
   };
+
+  // Keyboard shortcuts: Ctrl/Cmd +/- for zoom, Ctrl+0 reset, Shift+Space toggles pan-only
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      const isCtrl = e.ctrlKey || e.metaKey;
+      if (isCtrl) {
+        if (e.key === "+" || e.key === "=") {
+          e.preventDefault();
+          setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)));
+        } else if (e.key === "-" || e.key === "_") {
+          e.preventDefault();
+          setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)));
+        } else if (e.key === "0") {
+          e.preventDefault();
+          setScale(1);
+        }
+      }
+      if (e.key === " " && e.shiftKey) {
+        e.preventDefault();
+        setPanOnly((p) => !p);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, []);
 
   const handleFocusItem = (itemId: string) => {
     setIsTimelineVisible(false);
@@ -1939,7 +1971,24 @@ export default function PlayBoardPage({
           dockActionsOnMobile: true,
           mobileDockPortal: true,
           includeDockSpacer: true,
+          // Zoom + PanOnly additions
+          scale,
+          onZoomIn: () =>
+            setScale((s) => Math.max(0.5, Math.min(3, s * 1.1))),
+          onZoomOut: () =>
+            setScale((s) => Math.max(0.5, Math.min(3, s / 1.1))),
+          onZoomReset: () => setScale(1),
+          panOnly,
+          togglePanOnly: () => setPanOnly((p) => !p),
         }}
+      />
+      {/* Floating mobile zoom controller */}
+      <ZoomController
+        scale={scale}
+        onZoomIn={() => setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))}
+        onZoomOut={() => setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))}
+        onZoomReset={() => setScale(1)}
+        mobileOnly
       />
       <div
         id="board"
