@@ -51,7 +51,13 @@ const PREDEFINED_CLUES = [
 
 // Schemas moved server-side; removed unused client definitions.
 
-import { ITEM_TYPES, BoardItem, BoardData, BoardItemType, Objective } from "../../../lib/boardTypes";
+import {
+  ITEM_TYPES,
+  BoardItem,
+  BoardData,
+  BoardItemType,
+  Objective,
+} from "../../../lib/boardTypes";
 import { computeDeclutterLayout } from "../../../lib/declutter";
 
 // Minimal decorative tape component (placeholder for previous implementation)
@@ -65,9 +71,22 @@ function Tape({ rotation }: { rotation?: number }) {
 }
 
 // Simplified context menu (replacing earlier extracted component)
-function ContextMenu({ visible, x, y, onClose, onDelete, onEdit, onConnect }: {
-  visible: boolean; x: number; y: number;
-  onClose: () => void; onDelete: () => void; onEdit: () => void; onConnect: () => void;
+function ContextMenu({
+  visible,
+  x,
+  y,
+  onClose,
+  onDelete,
+  onEdit,
+  onConnect,
+}: {
+  visible: boolean;
+  x: number;
+  y: number;
+  onClose: () => void;
+  onDelete: () => void;
+  onEdit: () => void;
+  onConnect: () => void;
 }) {
   if (!visible) return null;
   return (
@@ -76,10 +95,30 @@ function ContextMenu({ visible, x, y, onClose, onDelete, onEdit, onConnect }: {
       style={{ left: x, top: y }}
       onMouseLeave={onClose}
     >
-      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onEdit}>Edit</button>
-      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onDelete}>Delete</button>
-      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onConnect}>Connect</button>
-      <button className="block w-full text-left px-3 py-2 hover:bg-gray-700" onClick={onClose}>Close</button>
+      <button
+        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
+        onClick={onEdit}
+      >
+        Edit
+      </button>
+      <button
+        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
+        onClick={onDelete}
+      >
+        Delete
+      </button>
+      <button
+        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
+        onClick={onConnect}
+      >
+        Connect
+      </button>
+      <button
+        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
+        onClick={onClose}
+      >
+        Close
+      </button>
     </div>
   );
 }
@@ -116,21 +155,25 @@ function AutopsyReportViewer({ content }: { content: string }) {
   let parsedContent: Record<string, string> = {};
   try {
     const maybe = JSON.parse(content);
-    if (maybe && typeof maybe === 'object') parsedContent = maybe;
+    if (maybe && typeof maybe === "object") parsedContent = maybe;
   } catch {
     // Fallback: attempt to split by lines with KEY: VALUE pattern
-    content.split(/\n+/).forEach(line => {
+    content.split(/\n+/).forEach((line) => {
       const match = line.match(/^(.*?):\s*(.*)$/);
       if (match) parsedContent[match[1].trim()] = match[2].trim();
     });
   }
   return (
     <div className="bg-[#f6f2e8] text-black p-6 font-special-elite max-w-3xl w-full">
-      <h2 className="text-2xl font-bold text-center mb-2">OFFICE OF THE CHIEF MEDICAL EXAMINER</h2>
-      <h3 className="text-lg text-center border-b-2 border-black pb-4 mb-6">AUTOPSY REPORT</h3>
+      <h2 className="text-2xl font-bold text-center mb-2">
+        OFFICE OF THE CHIEF MEDICAL EXAMINER
+      </h2>
+      <h3 className="text-lg text-center border-b-2 border-black pb-4 mb-6">
+        AUTOPSY REPORT
+      </h3>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6 text-sm">
         {Object.entries(parsedContent).map(([key, value]) => {
-          if (key.toLowerCase().includes('findings')) return null;
+          if (key.toLowerCase().includes("findings")) return null;
           return (
             <div key={key}>
               <p className="font-bold text-gray-600">{key}:</p>
@@ -140,34 +183,56 @@ function AutopsyReportViewer({ content }: { content: string }) {
         })}
       </div>
       <div className="text-sm">
-        {(parsedContent['SUMMARY OF FINDINGS'] || parsedContent['FINDINGS']) && (
+        {(parsedContent["SUMMARY OF FINDINGS"] ||
+          parsedContent["FINDINGS"]) && (
           <>
-            <h4 className="font-bold text-gray-600 border-b border-black/50 mb-2">SUMMARY OF FINDINGS</h4>
-            <p className="whitespace-pre-wrap">{parsedContent['SUMMARY OF FINDINGS'] || parsedContent['FINDINGS']}</p>
+            <h4 className="font-bold text-gray-600 border-b border-black/50 mb-2">
+              SUMMARY OF FINDINGS
+            </h4>
+            <p className="whitespace-pre-wrap">
+              {parsedContent["SUMMARY OF FINDINGS"] ||
+                parsedContent["FINDINGS"]}
+            </p>
           </>
         )}
       </div>
       <div className="mt-16 text-sm">
         <div className="w-1/2 float-right text-center">
-          <p className="border-t border-black pt-2">SIGNATURE OF MEDICAL EXAMINER</p>
+          <p className="border-t border-black pt-2">
+            SIGNATURE OF MEDICAL EXAMINER
+          </p>
         </div>
       </div>
     </div>
   );
 }
 
-function NewspaperClipping({ content, isModal }: { content: string; isModal: boolean }) {
+function NewspaperClipping({
+  content,
+  isModal,
+}: {
+  content: string;
+  isModal: boolean;
+}) {
   let data: { headline?: string; body?: string; date?: string } = {};
   try {
     data = JSON.parse(content);
   } catch {
-    data = { headline: 'UNPARSEABLE CLIPPING', body: content };
+    data = { headline: "UNPARSEABLE CLIPPING", body: content };
   }
   return (
-    <div className={`bg-[#fdf7e3] text-black font-special-elite p-3 border border-gray-500 ${isModal ? 'max-w-2xl' : 'text-[10px]'}`}>
-      <h4 className="font-bold text-center tracking-wide mb-1 uppercase">{data.headline || 'UNTITLED'}</h4>
-      {data.date && <p className="text-center text-[10px] mb-2 opacity-70">{data.date}</p>}
-      <p className="whitespace-pre-wrap leading-snug">{data.body || ''}</p>
+    <div
+      className={`bg-[#fdf7e3] text-black font-special-elite p-3 border border-gray-500 ${
+        isModal ? "max-w-2xl" : "text-[10px]"
+      }`}
+    >
+      <h4 className="font-bold text-center tracking-wide mb-1 uppercase">
+        {data.headline || "UNTITLED"}
+      </h4>
+      {data.date && (
+        <p className="text-center text-[10px] mb-2 opacity-70">{data.date}</p>
+      )}
+      <p className="whitespace-pre-wrap leading-snug">{data.body || ""}</p>
     </div>
   );
 }
@@ -313,11 +378,13 @@ type TimelineItem = {
 
 function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
   const timelineItems: TimelineItem[] = useMemo(() => {
-    const raw = items.filter(i => i.type === 'newspaper' || i.type === 'interrogation-transcript');
+    const raw = items.filter(
+      (i) => i.type === "newspaper" || i.type === "interrogation-transcript"
+    );
     const parsed: TimelineItem[] = [];
     for (const item of raw) {
       try {
-        if (item.type === 'newspaper') {
+        if (item.type === "newspaper") {
           const data = JSON.parse(item.content);
           if (data.date && data.headline && data.body) {
             const dateObj = new Date(data.date);
@@ -327,7 +394,7 @@ function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
                 type: item.type,
                 date: dateObj,
                 title: data.headline,
-                summary: String(data.body).substring(0,120) + '...',
+                summary: String(data.body).substring(0, 120) + "...",
                 content: item.content,
               });
             }
@@ -338,26 +405,28 @@ function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
           if (dateMatch?.[1]) {
             const dateObj = new Date(dateMatch[1]);
             if (!isNaN(dateObj.getTime())) {
-              const title = subjectMatch?.[1] ? `Interrogation: ${subjectMatch[1]}` : 'Interrogation Transcript';
+              const title = subjectMatch?.[1]
+                ? `Interrogation: ${subjectMatch[1]}`
+                : "Interrogation Transcript";
               const contentWithoutHeader = item.content
-                .replace(/^INTERVIEW DATE: .*\n?/, '')
-                .replace(/^SUBJECT: .*\n?/, '');
+                .replace(/^INTERVIEW DATE: .*\n?/, "")
+                .replace(/^SUBJECT: .*\n?/, "");
               parsed.push({
                 id: item.id,
                 type: item.type,
                 date: dateObj,
                 title,
-                summary: contentWithoutHeader.trim().substring(0,120) + '...',
+                summary: contentWithoutHeader.trim().substring(0, 120) + "...",
                 content: item.content,
               });
             }
           }
         }
       } catch (e) {
-        console.warn('Failed to parse timeline item', item, e);
+        console.warn("Failed to parse timeline item", item, e);
       }
     }
-    return parsed.sort((a,b) => a.date.getTime() - b.date.getTime());
+    return parsed.sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [items]);
 
   const handleItemClick = (itemId: string) => {
@@ -598,7 +667,9 @@ export default function PlayBoardPage({
   const [isPanning, setIsPanning] = useState(false);
   const [scale, setScale] = useState(1);
   const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [activeFilters, setActiveFilters] = useState<Set<BoardItemType>>(new Set(ITEM_TYPES));
+  const [activeFilters, setActiveFilters] = useState<Set<BoardItemType>>(
+    new Set(ITEM_TYPES)
+  );
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
     x: number;
@@ -1160,7 +1231,10 @@ export default function PlayBoardPage({
 
   // Declutter: collision-aware grouping by type into columns without overlap.
   // Store original item positions keyed by id for robust undo (preserves new items added after declutter)
-  const previousPositionsRef = useRef<Map<string, { position: { x: number; y: number }; rotation: number }> | null>(null);
+  const previousPositionsRef = useRef<Map<
+    string,
+    { position: { x: number; y: number }; rotation: number }
+  > | null>(null);
   const [isDecluttered, setIsDecluttered] = useState(false);
   const [animateLayout, setAnimateLayout] = useState(false);
 
@@ -1178,7 +1252,11 @@ export default function PlayBoardPage({
           items: prev.items.map((item) => {
             const original = snapshot.get(item.id);
             return original
-              ? { ...item, position: original.position, rotation: original.rotation }
+              ? {
+                  ...item,
+                  position: original.position,
+                  rotation: original.rotation,
+                }
               : item; // keep items created after declutter
           }),
         };
@@ -1189,14 +1267,23 @@ export default function PlayBoardPage({
       return;
     }
 
-  // Capture original positions for undo
-  const posMap = new Map<string, { position: { x: number; y: number }; rotation: number }>();
-  boardData.items.forEach((i) => posMap.set(i.id, { position: { ...i.position }, rotation: i.rotation }));
-  previousPositionsRef.current = posMap;
+    // Capture original positions for undo
+    const posMap = new Map<
+      string,
+      { position: { x: number; y: number }; rotation: number }
+    >();
+    boardData.items.forEach((i) =>
+      posMap.set(i.id, { position: { ...i.position }, rotation: i.rotation })
+    );
+    previousPositionsRef.current = posMap;
 
     const viewportWidth = (viewportRef.current as HTMLElement).clientWidth;
     const viewportHeight = (viewportRef.current as HTMLElement).clientHeight;
-    const placed = computeDeclutterLayout(boardData.items, viewportWidth, viewportHeight);
+    const placed = computeDeclutterLayout(
+      boardData.items,
+      viewportWidth,
+      viewportHeight
+    );
     setAnimateLayout(true);
     setBoardData((prev) => (prev ? { ...prev, items: placed } : prev));
     setIsDecluttered(true);
@@ -1404,23 +1491,55 @@ export default function PlayBoardPage({
   function normalizeBoardData(raw: any): BoardData {
     const items: BoardItem[] = Array.isArray(raw.items)
       ? raw.items.map((it: any, idx: number) => {
-          const type: BoardItemType = ITEM_TYPES.includes(it.type) ? it.type : 'note';
-          const id = typeof it.id === 'string' ? it.id : `item-${idx}-${Date.now()}`;
-          const content = typeof it.content === 'string' ? it.content : JSON.stringify(it.content ?? {});
+          const type: BoardItemType = ITEM_TYPES.includes(it.type)
+            ? it.type
+            : "note";
+          const id =
+            typeof it.id === "string" ? it.id : `item-${idx}-${Date.now()}`;
+          const content =
+            typeof it.content === "string"
+              ? it.content
+              : JSON.stringify(it.content ?? {});
           const position = {
-            x: typeof it.position?.x === 'number' ? it.position.x : Math.random() * 80 + 10,
-            y: typeof it.position?.y === 'number' ? it.position.y : Math.random() * 80 + 10,
+            x:
+              typeof it.position?.x === "number"
+                ? it.position.x
+                : Math.random() * 80 + 10,
+            y:
+              typeof it.position?.y === "number"
+                ? it.position.y
+                : Math.random() * 80 + 10,
           };
-            const size = {
-            width: typeof it.size?.width === 'number' ? it.size.width : DEFAULT_ITEM_SIZES[type].width,
-            height: typeof it.size?.height === 'number' ? it.size.height : DEFAULT_ITEM_SIZES[type].height,
+          const size = {
+            width:
+              typeof it.size?.width === "number"
+                ? it.size.width
+                : DEFAULT_ITEM_SIZES[type].width,
+            height:
+              typeof it.size?.height === "number"
+                ? it.size.height
+                : DEFAULT_ITEM_SIZES[type].height,
           };
-          const rotation = typeof it.rotation === 'number' ? it.rotation : (Math.random()*6 - 3);
-          return normalizeItemSize({ id, type, content, position, size, rotation });
+          const rotation =
+            typeof it.rotation === "number"
+              ? it.rotation
+              : Math.random() * 6 - 3;
+          return normalizeItemSize({
+            id,
+            type,
+            content,
+            position,
+            size,
+            rotation,
+          });
         })
       : [];
-    const connections = Array.isArray(raw.connections) ? raw.connections.filter((c: any) => c && c.from && c.to) : [];
-    const objectives = Array.isArray(raw.objectives) ? raw.objectives.filter((o: any) => o && o.id && o.description) : [];
+    const connections = Array.isArray(raw.connections)
+      ? raw.connections.filter((c: any) => c && c.from && c.to)
+      : [];
+    const objectives = Array.isArray(raw.objectives)
+      ? raw.objectives.filter((o: any) => o && o.id && o.description)
+      : [];
     return { items, connections, objectives };
   }
 
@@ -1445,8 +1564,11 @@ export default function PlayBoardPage({
     const isAnyItemDragging = !!draggingItem;
 
     // Enable composite transforms for hover effects to work with inline transforms.
-    const commonClasses =
-      `absolute shadow-lg shadow-black/60 transform-gpu ${animateLayout ? 'transition-[left,top] duration-500 ease-in-out' : 'transition-all duration-200'}`;
+    const commonClasses = `absolute shadow-lg shadow-black/60 transform-gpu ${
+      animateLayout
+        ? "transition-[left,top] duration-500 ease-in-out"
+        : "transition-all duration-200"
+    }`;
     let dynamicClasses = "";
 
     if (isDragging) {
@@ -1735,15 +1857,6 @@ export default function PlayBoardPage({
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
-      {boardData?.objectives && boardData.objectives.length > 0 && (
-        <div className="fixed right-10 top-30 z-[55]">
-          <ObjectivesPanel
-            objectives={boardData.objectives}
-            completedObjectives={completedObjectives}
-            onAttemptSolve={handleAttemptSolve}
-          />
-        </div>
-      )}
       {solvingObjective && (
         <ObjectiveSolverModal
           objective={solvingObjective}
@@ -1779,14 +1892,29 @@ export default function PlayBoardPage({
       {boardData && (
         <div className="fixed right-10 top-20 z-[55] flex flex-col gap-4">
           <EvidencePanel
-            items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
+            items={boardData.items.map((i) => ({
+              id: i.id,
+              type: i.type,
+              content: i.content,
+            }))}
             onFocus={(id) => handleFocusItem(id)}
           />
           <TimelinePanel
-            items={boardData.items.map((i) => ({ id: i.id, type: i.type, content: i.content }))}
+            items={boardData.items.map((i) => ({
+              id: i.id,
+              type: i.type,
+              content: i.content,
+            }))}
             onFocus={(id) => handleFocusItem(id)}
             onOpenFull={() => setIsTimelineVisible(true)}
           />
+          {boardData.objectives.length > 0 && (
+            <ObjectivesPanel
+              objectives={boardData.objectives}
+              completedObjectives={completedObjectives}
+              onAttemptSolve={handleAttemptSolve}
+            />
+          )}
         </div>
       )}
 
@@ -1796,7 +1924,8 @@ export default function PlayBoardPage({
           activeFilters,
           allTypes: [...ITEM_TYPES] as string[],
           toggleFilter: (t: string) => toggleFilter(t as BoardItemType),
-          setActiveFilters: (filters: Set<string>) => setActiveFilters(filters as Set<BoardItemType>),
+          setActiveFilters: (filters: Set<string>) =>
+            setActiveFilters(filters as Set<BoardItemType>),
           handleResetView,
           setIsTimelineVisible,
           handleAddNewNote,
