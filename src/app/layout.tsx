@@ -1,16 +1,52 @@
 import "./globals.css";
-import { Geist, Geist_Mono, Blinker } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Blinker,
+  Special_Elite,
+  Staatliches,
+  Kalam,
+} from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import RootClient from "../components/root-client";
 
 // Server-side font declarations
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-const blinkerFont = Blinker({ weight: ["400", "700"], subsets: ["latin"], variable: "--font-blinker" });
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+const blinkerFont = Blinker({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  variable: "--font-blinker",
+});
+// Decorative / thematic fonts (handwritten / display)
+// Each of these fonts is single-style; specify explicit weights required by types
+const specialElite = Special_Elite({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-special-elite",
+});
+const staatliches = Staatliches({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-staatliches",
+});
+const kalam = Kalam({
+  weight: ["300", "400", "700"],
+  subsets: ["latin"],
+  variable: "--font-kalam",
+});
 
 function getBase() {
-  const vercelHost = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined;
-  const site = process.env.NEXT_PUBLIC_SITE_URL || vercelHost || "https://hub98-my-mystery-party.vercel.app";
+  const vercelHost = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : undefined;
+  const site =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    vercelHost ||
+    "https://hub98-my-mystery-party.vercel.app";
   return site.replace(/\/$/, "");
 }
 
@@ -26,7 +62,8 @@ export const metadata: Metadata = {
     default: "My Mystery Party – Unravel Every Mystery",
     template: "%s | My Mystery Party",
   },
-  description: "Interactive case files. Collaborative sleuthing. New stories weekly.",
+  description:
+    "Interactive case files. Collaborative sleuthing. New stories weekly.",
   // NOTE: Intentionally omitting openGraph.images at the root to ensure
   // segment-level generateMetadata (cases/play) fully controls image order.
   // Root page will define its own images via generateMetadata in page.tsx.
@@ -35,12 +72,14 @@ export const metadata: Metadata = {
     siteName: "My Mystery Party",
     url: base,
     title: "My Mystery Party – Unravel Every Mystery",
-    description: "Interactive case files. Collaborative sleuthing. New stories weekly.",
+    description:
+      "Interactive case files. Collaborative sleuthing. New stories weekly.",
   },
   twitter: {
     card: "summary_large_image",
     title: "My Mystery Party – Unravel Every Mystery",
-    description: "Interactive case files. Collaborative sleuthing. New stories weekly.",
+    description:
+      "Interactive case files. Collaborative sleuthing. New stories weekly.",
     // Provide only a generic fallback; route-level metadata will override with specific images.
     images: [twitterDynamic],
   },
@@ -53,10 +92,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
+      >
         <RootClient>{children}</RootClient>
       </body>
     </html>
