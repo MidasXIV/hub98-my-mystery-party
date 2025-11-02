@@ -2055,11 +2055,11 @@ export default function PlayBoardPage({
             embedded
             mobileOnly
             scale={scale}
-            onZoomIn={() =>
-              setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
+            onZoomIn={() => {}
+              // setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
             }
-            onZoomOut={() =>
-              setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
+            onZoomOut={() => {}
+              // setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
             }
             onZoomReset={() => setScale(1)}
             onZoomSet={(next) => setScale(next)}

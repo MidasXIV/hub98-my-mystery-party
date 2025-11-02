@@ -1,6 +1,26 @@
 "use client";
 import React, { useRef, useState, useCallback } from "react";
 import { Slider } from "@/components/ui/slider";
+import { VerticalSlider } from "./ui/vertical-slider";
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyFunction = (...args: any[]) => any;
+function debounce<T extends AnyFunction>(
+  func: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+
+  return (...args: Parameters<T>) => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(() => {
+      func(...args);
+      timeout = undefined; // Clear timeout after execution
+    }, delay);
+  };
+}
 
 interface ZoomControllerProps {
   scale: number;
@@ -32,34 +52,15 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
   const toggleExpanded = () => setExpanded((e) => !e);
 
   const percent = Math.round(scale * 100);
-  const animRef = useRef<number | null>(null);
+  
   const scaleStartRef = useRef(scale);
   scaleStartRef.current = scale;
 
-  const animateTo = useCallback(
-    (target: number) => {
-      if (!onZoomSet) return;
-      const start = performance.now();
-      const initial = scaleStartRef.current;
-      const duration = 180; // ms
-      if (animRef.current) cancelAnimationFrame(animRef.current);
-      const frame = (ts: number) => {
-        const t = Math.min(1, (ts - start) / duration);
-        // easeOutCubic
-        const eased = 1 - Math.pow(1 - t, 3);
-        const next = initial + (target - initial) * eased;
-        onZoomSet(next);
-        if (t < 1) animRef.current = requestAnimationFrame(frame);
-        else animRef.current = null;
-      };
-      animRef.current = requestAnimationFrame(frame);
-    },
-    [onZoomSet]
-  );
-
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     embedded ? (
-      <div ref={containerRef} className={className}>{children}</div>
+      <div ref={containerRef} className={className}>
+        {children}
+      </div>
     ) : (
       <div
         ref={containerRef}
@@ -77,9 +78,7 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
         className="flex flex-col items-center gap-1"
         aria-label="Zoom controls"
       >
-        <div
-          className="rounded-xl shadow-lg shadow-black/40 border border-gray-300/60 dark:border-white/10 backdrop-blur bg-white/90 dark:bg-black/70 px-2 py-2 flex flex-col items-center"
-        >
+        <div className="rounded-xl shadow-lg shadow-black/40 border border-gray-300/60 dark:border-white/10 backdrop-blur bg-white/90 dark:bg-black/70 px-2 py-2 flex flex-col items-center">
           <button
             onClick={onZoomIn}
             aria-label="Zoom in"
@@ -90,20 +89,25 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
           </button>
           {/* Slider (mobile vertical) */}
           <div className="my-2 h-full flex items-center justify-center px-1">
-            <Slider
-              orientation="vertical"
-              min={50}
-              max={300}
-              value={[percent]}
-              onValueChange={(vals) => {
-                const p = vals[0];
-                const target = Math.max(0.5, Math.min(3, p / 100));
-                animateTo(target);
-              }}
-              className="h-full data-[orientation=vertical]:w-6"
-              aria-label="Zoom level"
-            />
-            <span className="sr-only" role="status" aria-live="polite">Zoom {percent}%</span>
+            <div className="flex h-40 justify-center">
+              <VerticalSlider
+                defaultValue={[percent]}
+                max={300}
+                min={50}
+                orientation="vertical"
+                aria-label="zoom slider"
+                onValueChange={debounce((val: number[]) => {
+                  console.log(val);
+                  const p = val[0];
+                  const target = Math.max(0.5, Math.min(3, p / 100));
+                  onZoomSet?.(target);
+                }, 300)}
+              />
+            </div>
+
+            <span className="sr-only" role="status" aria-live="polite">
+              Zoom {percent}%
+            </span>
           </div>
           <button
             onClick={onZoomReset}
