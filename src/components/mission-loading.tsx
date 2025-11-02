@@ -46,23 +46,23 @@ export default function MissionLoading({
 
   return (
     <div
-      className={`flex flex-col items-center justify-center h-screen w-screen px-6 text-center ${className}`}
+      className={`flex flex-col items-center justify-center h-screen w-screen px-6 text-center bg-[#0f1115] bg-gradient-to-b from-[#0f1115] to-[#1a1d22] text-gray-100 ${className}`}
       aria-live="polite"
       aria-busy="true"
     >
       <div className="mb-8 flex flex-col items-center">
-        <div className="text-2xl md:text-3xl text-gray-300 font-staatliches tracking-widest animate-pulse">
+        <div className="text-2xl md:text-3xl text-gray-200 font-staatliches tracking-widest animate-pulse drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
           {title}
         </div>
-        <div className="mt-6 h-2 w-56 bg-gray-800 rounded overflow-hidden">
-          <div className="h-full bg-yellow-500 animate-[loading-bar_2.4s_ease-in-out_infinite]" />
+        <div className="mt-6 h-2 w-56 bg-gray-700/60 rounded overflow-hidden ring-1 ring-black/40">
+          <div className="h-full bg-yellow-400 animate-[loading-bar_2.4s_ease-in-out_infinite] shadow-[0_0_8px_2px_rgba(255,230,120,0.4)]" />
         </div>
       </div>
 
       <div className="relative mt-4 max-w-xl">
         <p
           key={index}
-          className={`text-sm md:text-base font-special-elite text-gray-400 transition-opacity duration-300 ${
+          className={`text-sm md:text-base font-special-elite text-gray-400/90 transition-opacity duration-300 ${
             fade ? "opacity-100" : "opacity-0"
           }`}
         >
@@ -70,9 +70,12 @@ export default function MissionLoading({
         </p>
       </div>
 
-      <div className="mt-10 flex items-center space-x-2 text-[10px] tracking-widest uppercase text-gray-600 font-mono">
-        <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-ping" />
-        <span>Encrypted channel active</span>
+      <div className="mt-10 flex items-center space-x-2 text-[10px] tracking-widest uppercase text-gray-500 font-mono">
+        <span className="relative inline-block w-2 h-2">
+          <span className="absolute inset-0 rounded-full bg-red-600 animate-ping" />
+          <span className="absolute inset-0 rounded-full bg-red-600" />
+        </span>
+        <span className="text-gray-400">Encrypted channel active</span>
       </div>
     </div>
   );

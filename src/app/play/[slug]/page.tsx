@@ -1968,7 +1968,7 @@ export default function PlayBoardPage({
       )}
       {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}
       {boardData && (
-        <div className="fixed right-10 top-20 z-[55] flex flex-col gap-4">
+        <div className="fixed right-5 top-40 z-[55] flex flex-col gap-2">
           <EvidencePanel
             items={boardData.items.map((i) => ({
               id: i.id,
@@ -2055,11 +2055,11 @@ export default function PlayBoardPage({
             embedded
             mobileOnly
             scale={scale}
-            onZoomIn={() => {}
-              // setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
+            onZoomIn={() => 
+              setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
             }
-            onZoomOut={() => {}
-              // setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
+            onZoomOut={() => 
+              setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
             }
             onZoomReset={() => setScale(1)}
             onZoomSet={(next) => setScale(next)}
