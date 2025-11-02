@@ -72,54 +72,81 @@ function Tape({ rotation }: { rotation?: number }) {
   );
 }
 
-// Simplified context menu (replacing earlier extracted component)
-function ContextMenu({
-  visible,
-  x,
-  y,
-  onClose,
-  onDelete,
-  onEdit,
-  onConnect,
-}: {
-  visible: boolean;
+interface ContextMenuProps {
   x: number;
   y: number;
-  onClose: () => void;
-  onDelete: () => void;
   onEdit: () => void;
+  onDelete: () => void;
   onConnect: () => void;
-}) {
-  if (!visible) return null;
+  onClose: () => void;
+}
+
+// Simplified context menu (replacing earlier extracted component)
+function ContextMenu({
+  x,
+  y,
+  onEdit,
+  onDelete,
+  onConnect,
+  onClose,
+}: ContextMenuProps) {
+  const menuRef = useRef(null);
+  const [position, setPosition] = useState({ x, y });
+
+  useLayoutEffect(() => {
+    if (menuRef.current) {
+      const { innerWidth, innerHeight } = window;
+      const { offsetWidth, offsetHeight } = menuRef.current;
+      let newX = x;
+      let newY = y;
+      if (x + offsetWidth > innerWidth) {
+        newX = innerWidth - offsetWidth - 5;
+      }
+      if (y + offsetHeight > innerHeight) {
+        newY = innerHeight - offsetHeight - 5;
+      }
+      setPosition({ x: newX, y: newY });
+    }
+  }, [x, y]);
+
+  useEffect(() => {
+    const handleClickOutside = () => onClose();
+    const handleEsc = (e: { key: string }) => {
+      if (e.key === "Escape") onClose();
+    };
+
+    window.addEventListener("click", handleClickOutside);
+    window.addEventListener("keydown", handleEsc);
+    return () => {
+      window.removeEventListener("click", handleClickOutside);
+      window.removeEventListener("keydown", handleEsc);
+    };
+  }, [onClose]);
+
   return (
     <div
-      className="fixed z-[400] bg-gray-900 border border-gray-700 rounded shadow-lg text-sm"
-      style={{ left: x, top: y }}
-      onMouseLeave={onClose}
+      ref={menuRef}
+      style={{ top: position.y, left: position.x }}
+      className="absolute z-[200] bg-gray-900/80 backdrop-blur-sm border border-gray-600 rounded-md shadow-lg py-1 animate-fade-in"
+      onClick={(e) => e.stopPropagation()}
     >
       <button
-        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
         onClick={onEdit}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
       >
         Edit
       </button>
       <button
-        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
         onClick={onDelete}
+        className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 cursor-pointer"
       >
         Delete
       </button>
       <button
-        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
         onClick={onConnect}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
       >
-        Connect
-      </button>
-      <button
-        className="block w-full text-left px-3 py-2 hover:bg-gray-700"
-        onClick={onClose}
-      >
-        Close
+        Connect to...
       </button>
     </div>
   );
@@ -1538,13 +1565,13 @@ export default function PlayBoardPage({
               ? it.id.trim()
               : `item-${idx}-${Date.now()}`;
           // Deduplicate if id already used
-            if (seenIds.has(id)) {
-              let counter = 1;
-              const base = id;
-              while (seenIds.has(`${base}-${counter}`)) counter++;
-              id = `${base}-${counter}`;
-            }
-            seenIds.add(id);
+          if (seenIds.has(id)) {
+            let counter = 1;
+            const base = id;
+            while (seenIds.has(`${base}-${counter}`)) counter++;
+            id = `${base}-${counter}`;
+          }
+          seenIds.add(id);
           const content =
             typeof it.content === "string"
               ? it.content
@@ -1992,10 +2019,8 @@ export default function PlayBoardPage({
           includeDockSpacer: true,
           // Zoom + PanOnly additions
           scale,
-          onZoomIn: () =>
-            setScale((s) => Math.max(0.5, Math.min(3, s * 1.1))),
-          onZoomOut: () =>
-            setScale((s) => Math.max(0.5, Math.min(3, s / 1.1))),
+          onZoomIn: () => setScale((s) => Math.max(0.5, Math.min(3, s * 1.1))),
+          onZoomOut: () => setScale((s) => Math.max(0.5, Math.min(3, s / 1.1))),
           onZoomReset: () => setScale(1),
           panOnly,
           togglePanOnly: () => setPanOnly((p) => !p),
@@ -2009,7 +2034,20 @@ export default function PlayBoardPage({
               aria-label="Show zoom controls"
               className="h-12 w-12 rounded-full shadow-lg shadow-black/40 border border-gray-300/60 dark:border-white/10 backdrop-blur bg-white/90 dark:bg-black/70 flex items-center justify-center text-lg font-bold text-gray-800 dark:text-gray-100"
             >
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159ZM4.25 6.5C4.25 6.22386 4.47386 6 4.75 6H6V4.75C6 4.47386 6.22386 4.25 6.5 4.25C6.77614 4.25 7 4.47386 7 4.75V6H8.25C8.52614 6 8.75 6.22386 8.75 6.5C8.75 6.77614 8.52614 7 8.25 7H7V8.25C7 8.52614 6.77614 8.75 6.5 8.75C6.22386 8.75 6 8.52614 6 8.25V7H4.75C4.47386 7 4.25 6.77614 4.25 6.5Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 15 15"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159ZM4.25 6.5C4.25 6.22386 4.47386 6 4.75 6H6V4.75C6 4.47386 6.22386 4.25 6.5 4.25C6.77614 4.25 7 4.47386 7 4.75V6H8.25C8.52614 6 8.75 6.22386 8.75 6.5C8.75 6.77614 8.52614 7 8.25 7H7V8.25C7 8.52614 6.77614 8.75 6.5 8.75C6.22386 8.75 6 8.52614 6 8.25V7H4.75C4.47386 7 4.25 6.77614 4.25 6.5Z"
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
             </button>
           }
         >
@@ -2017,8 +2055,12 @@ export default function PlayBoardPage({
             embedded
             mobileOnly
             scale={scale}
-            onZoomIn={() => setScale(s => Math.max(0.5, Math.min(3, s * 1.1)))}
-            onZoomOut={() => setScale(s => Math.max(0.5, Math.min(3, s / 1.1)))}
+            onZoomIn={() =>
+              setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
+            }
+            onZoomOut={() =>
+              setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
+            }
             onZoomReset={() => setScale(1)}
             onZoomSet={(next) => setScale(next)}
             className="mt-2"
