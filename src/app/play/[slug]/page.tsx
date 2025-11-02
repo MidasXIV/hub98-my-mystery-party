@@ -21,6 +21,7 @@ import {
 } from "react";
 import ObjectivesPanel from "@/components/objectives-panel";
 import ZoomController from "@/components/zoom-controller";
+import { FloatingButton } from "@/components/ui/floating-button";
 
 // Removed unused PlayPageProps interface
 
@@ -173,10 +174,11 @@ function AutopsyReportViewer({ content }: { content: string }) {
         AUTOPSY REPORT
       </h3>
       <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6 text-sm">
-        {Object.entries(parsedContent).map(([key, value]) => {
+        {Object.entries(parsedContent).map(([key, value], idx) => {
           if (key.toLowerCase().includes("findings")) return null;
+          const safeKey = key && key.length > 0 ? key : `field-${idx}`;
           return (
-            <div key={key}>
+            <div key={safeKey}>
               <p className="font-bold text-gray-600">{key}:</p>
               <p className="pl-2 whitespace-pre-wrap">{String(value)}</p>
             </div>
@@ -700,6 +702,7 @@ export default function PlayBoardPage({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [usedClueIndices, setUsedClueIndices] = useState(new Set<number>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
+  // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -1524,13 +1527,24 @@ export default function PlayBoardPage({
 
   // Basic normalization logic; ensures required shape & sizes.
   function normalizeBoardData(raw: any): BoardData {
+    const seenIds = new Set<string>();
     const items: BoardItem[] = Array.isArray(raw.items)
       ? raw.items.map((it: any, idx: number) => {
           const type: BoardItemType = ITEM_TYPES.includes(it.type)
             ? it.type
             : "note";
-          const id =
-            typeof it.id === "string" ? it.id : `item-${idx}-${Date.now()}`;
+          let id =
+            typeof it.id === "string" && it.id.trim().length > 0
+              ? it.id.trim()
+              : `item-${idx}-${Date.now()}`;
+          // Deduplicate if id already used
+            if (seenIds.has(id)) {
+              let counter = 1;
+              const base = id;
+              while (seenIds.has(`${base}-${counter}`)) counter++;
+              id = `${base}-${counter}`;
+            }
+            seenIds.add(id);
           const content =
             typeof it.content === "string"
               ? it.content
@@ -1987,14 +2001,30 @@ export default function PlayBoardPage({
           togglePanOnly: () => setPanOnly((p) => !p),
         }}
       />
-      {/* Floating mobile zoom controller */}
-      <ZoomController
-        scale={scale}
-        onZoomIn={() => setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))}
-        onZoomOut={() => setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))}
-        onZoomReset={() => setScale(1)}
-        mobileOnly
-      />
+      {/* Floating zoom controller trigger (mobile only) */}
+      <div className="fixed md:hidden bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-3 z-[135]">
+        <FloatingButton
+          triggerContent={
+            <button
+              aria-label="Show zoom controls"
+              className="h-12 w-12 rounded-full shadow-lg shadow-black/40 border border-gray-300/60 dark:border-white/10 backdrop-blur bg-white/90 dark:bg-black/70 flex items-center justify-center text-lg font-bold text-gray-800 dark:text-gray-100"
+            >
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 6.5C10 8.433 8.433 10 6.5 10C4.567 10 3 8.433 3 6.5C3 4.567 4.567 3 6.5 3C8.433 3 10 4.567 10 6.5ZM9.30884 10.0159C8.53901 10.6318 7.56251 11 6.5 11C4.01472 11 2 8.98528 2 6.5C2 4.01472 4.01472 2 6.5 2C8.98528 2 11 4.01472 11 6.5C11 7.56251 10.6318 8.53901 10.0159 9.30884L12.8536 12.1464C13.0488 12.3417 13.0488 12.6583 12.8536 12.8536C12.6583 13.0488 12.3417 13.0488 12.1464 12.8536L9.30884 10.0159ZM4.25 6.5C4.25 6.22386 4.47386 6 4.75 6H6V4.75C6 4.47386 6.22386 4.25 6.5 4.25C6.77614 4.25 7 4.47386 7 4.75V6H8.25C8.52614 6 8.75 6.22386 8.75 6.5C8.75 6.77614 8.52614 7 8.25 7H7V8.25C7 8.52614 6.77614 8.75 6.5 8.75C6.22386 8.75 6 8.52614 6 8.25V7H4.75C4.47386 7 4.25 6.77614 4.25 6.5Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+            </button>
+          }
+        >
+          <ZoomController
+            embedded
+            mobileOnly
+            scale={scale}
+            onZoomIn={() => setScale(s => Math.max(0.5, Math.min(3, s * 1.1)))}
+            onZoomOut={() => setScale(s => Math.max(0.5, Math.min(3, s / 1.1)))}
+            onZoomReset={() => setScale(1)}
+            onZoomSet={(next) => setScale(next)}
+            className="mt-2"
+          />
+        </FloatingButton>
+      </div>
       <div
         id="board"
         ref={viewportRef}

@@ -1,14 +1,16 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback } from "react";
+import { Slider } from "@/components/ui/slider";
 
 interface ZoomControllerProps {
   scale: number;
   onZoomIn: () => void;
   onZoomOut: () => void;
   onZoomReset: () => void;
+  onZoomSet?: (scale: number) => void; // direct set from slider
   className?: string;
-  // optional mobile-only rendering hint
-  mobileOnly?: boolean;
+  mobileOnly?: boolean; // optional mobile-only rendering hint
+  embedded?: boolean; // render without fixed positioning wrapper
 }
 
 // Floating zoom controller optimized for mobile visibility.
@@ -18,8 +20,10 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
   onZoomIn,
   onZoomOut,
   onZoomReset,
+  onZoomSet,
   className = "",
   mobileOnly = true,
+  embedded = false,
 }) => {
   const [expanded, setExpanded] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -28,14 +32,47 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
   const toggleExpanded = () => setExpanded((e) => !e);
 
   const percent = Math.round(scale * 100);
+  const animRef = useRef<number | null>(null);
+  const scaleStartRef = useRef(scale);
+  scaleStartRef.current = scale;
+
+  const animateTo = useCallback(
+    (target: number) => {
+      if (!onZoomSet) return;
+      const start = performance.now();
+      const initial = scaleStartRef.current;
+      const duration = 180; // ms
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+      const frame = (ts: number) => {
+        const t = Math.min(1, (ts - start) / duration);
+        // easeOutCubic
+        const eased = 1 - Math.pow(1 - t, 3);
+        const next = initial + (target - initial) * eased;
+        onZoomSet(next);
+        if (t < 1) animRef.current = requestAnimationFrame(frame);
+        else animRef.current = null;
+      };
+      animRef.current = requestAnimationFrame(frame);
+    },
+    [onZoomSet]
+  );
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+    embedded ? (
+      <div ref={containerRef} className={className}>{children}</div>
+    ) : (
+      <div
+        ref={containerRef}
+        className={`pointer-events-auto select-none fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-3 z-[120] ${
+          mobileOnly ? "md:hidden" : ""
+        } ${className}`}
+      >
+        {children}
+      </div>
+    );
 
   return (
-    <div
-      ref={containerRef}
-      className={`pointer-events-auto select-none fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-3 z-[120] ${
-        mobileOnly ? "md:hidden" : ""
-      } ${className}`}
-    >
+    <Wrapper>
       <div
         className="flex flex-col items-center gap-1"
         aria-label="Zoom controls"
@@ -51,6 +88,23 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
           >
             +
           </button>
+          {/* Slider (mobile vertical) */}
+          <div className="my-2 h-full flex items-center justify-center px-1">
+            <Slider
+              orientation="vertical"
+              min={50}
+              max={300}
+              value={[percent]}
+              onValueChange={(vals) => {
+                const p = vals[0];
+                const target = Math.max(0.5, Math.min(3, p / 100));
+                animateTo(target);
+              }}
+              className="h-full data-[orientation=vertical]:w-6"
+              aria-label="Zoom level"
+            />
+            <span className="sr-only" role="status" aria-live="polite">Zoom {percent}%</span>
+          </div>
           <button
             onClick={onZoomReset}
             aria-label="Reset zoom"
@@ -84,7 +138,7 @@ export const ZoomController: React.FC<ZoomControllerProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

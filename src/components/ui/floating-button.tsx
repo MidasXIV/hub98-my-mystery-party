@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { ReactNode, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { ReactNode, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 type FloatingButtonProps = {
   className?: string;
-  children: ReactNode;
+  children?: ReactNode;
   triggerContent: ReactNode;
 };
 
@@ -18,47 +18,62 @@ const list = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      staggerDirection: -1
-    }
+      staggerDirection: -1,
+    },
   },
   hidden: {
     opacity: 0,
     transition: {
-      when: 'afterChildren',
-      staggerChildren: 0.1
-    }
-  }
+      when: "afterChildren",
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const item = {
   visible: { opacity: 1, y: 0 },
-  hidden: { opacity: 0, y: 5 }
+  hidden: { opacity: 0, y: 5 },
 };
 
 const btn = {
-  visible: { rotate: '45deg' },
-  hidden: { rotate: 0 }
+  visible: { rotate: "45deg" },
+  hidden: { rotate: 0 },
 };
 
-function FloatingButton({ className, children, triggerContent }: FloatingButtonProps) {
+function FloatingButton({
+  className,
+  children,
+  triggerContent,
+}: FloatingButtonProps) {
   const ref = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex flex-col items-center relative">
+    <div className={`flex flex-col items-center relative ${className || ""}`}>
       <AnimatePresence>
         <motion.ul
+          key={"floating-button"}
           className="flex flex-col items-center absolute bottom-14 gap-2"
           initial="hidden"
-          animate={isOpen ? 'visible' : 'hidden'}
-          variants={list}>
-          {children}
+          animate={isOpen ? "visible" : "hidden"}
+          variants={list}
+        >
+          {children &&
+            (Array.isArray(children)
+              ? children.map((child, idx) => (
+                  <FloatingButtonItem key={`fb-item-${idx}`}>
+                    {child}
+                  </FloatingButtonItem>
+                ))
+              : children)}
         </motion.ul>
         <motion.div
+          key={"floating-button-trigger"}
           variants={btn}
-          animate={isOpen ? 'visible' : 'hidden'}
+          animate={isOpen ? "visible" : "hidden"}
           ref={ref}
-          onClick={() => setIsOpen(!isOpen)}>
+          onClick={() => setIsOpen(!isOpen)}
+        >
           {triggerContent}
         </motion.div>
       </AnimatePresence>
