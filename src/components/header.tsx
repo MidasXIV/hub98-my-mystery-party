@@ -4,11 +4,16 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 
 const Header = () => {
-  const { theme, resolvedTheme, setTheme } = useTheme();
-  // Use resolvedTheme so 'system' doesn't cause ambiguous flicker.
-  const current = resolvedTheme || theme; // fallback
+  // Only rely on resolvedTheme; next-themes injects an inline script that
+  // applies the correct html.class BEFORE React hydration, so we can lean
+  // on Tailwind's dark: variants for initial paint without hiding both icons.
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
+  const effectiveTheme = mounted ? resolvedTheme : undefined; // undefined during SSR/hydration
   const toggleTheme = () => {
-    const next = current === "light" ? "dark" : "light";
+    const next = effectiveTheme === "dark" ? "light" : "dark";
     setTheme(next);
   };
 
@@ -42,7 +47,7 @@ const Header = () => {
           strokeWidth={1.5}
           stroke="currentColor"
           className={`size-5 transition-all duration-300 ${
-            current === "light"
+            effectiveTheme === "light"
               ? "opacity-100 rotate-0"
               : "opacity-0 -rotate-90 scale-50 absolute"
           }`}
@@ -60,7 +65,7 @@ const Header = () => {
           strokeWidth={1.5}
           stroke="currentColor"
           className={`size-5 transition-all duration-300 ${
-            current === "dark"
+            effectiveTheme === "dark"
               ? "opacity-100 rotate-0"
               : "opacity-0 rotate-90 scale-50 absolute"
           }`}
