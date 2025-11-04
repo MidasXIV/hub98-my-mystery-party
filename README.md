@@ -20,6 +20,21 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Cases Directory
+
+An index page listing all available cold case games now lives at `src/app/cases/page.tsx` and is served at `/cases`. Each case card links to its detailed page under `/cases/[slug]`.
+
+Reusable card component: `src/components/case-card.tsx`.
+
+Data source: `src/data/coldCases.ts`.
+
+To add a new case:
+1. Append an object to the `coldCases` array with a unique `slug`.
+2. Add any referenced images under `public/cold_cases/thumbnails/`.
+3. Visit `/cases` to verify it appears.
+
+Optional: Add Open Graph / Twitter images similar to existing dynamic case routes if needed.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
