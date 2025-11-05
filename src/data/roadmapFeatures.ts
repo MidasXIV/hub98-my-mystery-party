@@ -1,6 +1,8 @@
 export type RoadmapFeatureStatus = "idea" | "planned" | "in-progress" | "beta" | "launched";
 export type RoadmapCategory = "core" | "ui" | "performance" | "gameplay" | "integrations";
 
+export type RoadmapPriority = "low" | "medium" | "high";
+
 export interface RoadmapFeature {
   id: string;
   title: string;
@@ -10,6 +12,11 @@ export interface RoadmapFeature {
   votes: number;
   createdAt: string; // ISO string
   tags?: string[];
+  /**
+   * Relative prioritization independent of votes.
+   * Used internally to surface strategically important items (e.g. offline support).
+   */
+  priority?: RoadmapPriority;
 }
 
 // Initial hard-coded features (replace with DB/API later)
@@ -64,10 +71,35 @@ export const roadmapFeatures: RoadmapFeature[] = [
     description:
       "Cache board data & evidence so investigations continue with flaky connections.",
     category: "performance",
-    status: "planned",
-    votes: 24,
+    status: "in-progress",
+    votes: 90,
+    priority: "high",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
     tags: ["pwa"],
+  },
+  {
+    id: "downloadable-case-files",
+    title: "Downloadable Case Files (Offline Packs)",
+    description:
+      "Allow players to download encrypted case bundles for travel or limited connectivity sessions.",
+    category: "core",
+    status: "planned",
+    votes: 55,
+    priority: "medium",
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 0.5).toISOString(),
+    tags: ["offline", "portability"],
+  },
+  {
+    id: "character-location-customization",
+    title: "Character & Location Customization",
+    description:
+      "Enable renaming suspects and customizing investigation locations for personalized or themed game nights.",
+    category: "gameplay",
+    status: "idea",
+    votes: 38,
+    priority: "medium",
+    createdAt: new Date(Date.now()).toISOString(),
+    tags: ["personalization"],
   },
   {
     id: "discord-integration",
@@ -96,4 +128,10 @@ export const categoryLabels: Record<RoadmapCategory, string> = {
   performance: "Performance",
   gameplay: "Gameplay",
   integrations: "Integrations",
+};
+
+export const priorityLabels: Record<RoadmapPriority, string> = {
+  low: "Low",
+  medium: "Medium",
+  high: "High Priority",
 };
