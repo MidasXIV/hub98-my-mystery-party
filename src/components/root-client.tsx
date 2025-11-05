@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollSmoother } from "gsap/dist/ScrollSmoother";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
 import Header from "./header";
+import RoadmapPreview from "./roadmap-preview";
 import { usePathname } from "next/navigation";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
@@ -22,7 +23,9 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
       enableSystem
       disableTransitionOnChange
     >
-      {!hideGlobalHeader && <Header />}
+  {/* Roadmap preview ribbon (shows even when header hidden? Keep consistent with header visibility) */}
+  {/* {!hideGlobalHeader && <RoadmapPreview />} */}
+  {!hideGlobalHeader && <Header />}
       <div id="smooth-content">{children}</div>
       <Analytics />
     </ThemeProvider>

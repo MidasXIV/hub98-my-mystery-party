@@ -35,6 +35,37 @@ To add a new case:
 
 Optional: Add Open Graph / Twitter images similar to existing dynamic case routes if needed.
 
+## Roadmap Voting Prototype
+
+A local-only community roadmap voting UI is available at `/roadmap`.
+
+Source files:
+- `src/data/roadmapFeatures.ts` – Hard-coded feature list (replace with DB later).
+- `src/components/roadmap-voting.tsx` – Interactive voting/filter/sort component.
+- `src/app/roadmap/page.tsx` – Page that renders the component.
+
+Features:
+- Filter by category and status.
+- Sort modes: Trending (votes), Newest (created date), A–Z.
+- Search across title, description, and tags.
+- Local voting with persistence in `localStorage` (keys `roadmapVotes_v1` & `roadmapVoted_v1`).
+- Basic status badges and tag chips.
+
+Limitations (until backend integration):
+- Votes are per-browser and not shared.
+- No authentication or fraud prevention.
+- No pagination (list is small for now).
+
+Planned backend integration steps:
+1. Create an API route (e.g. `src/app/api/roadmap/[id]/vote/route.ts`).
+2. Store votes & feature metadata in a database (Postgres / PlanetScale / Supabase).
+3. Add optimistic UI + server reconciliation.
+4. Implement auth & per-user vote limits (e.g. 1 per feature, ability to revoke).
+5. Rate limiting (IP + user) and minimal bot protection.
+6. Add real-time updates via WebSockets or Server-Sent Events.
+
+You can safely modify the feature list in `roadmapFeatures.ts` to experiment—IDs should remain unique.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

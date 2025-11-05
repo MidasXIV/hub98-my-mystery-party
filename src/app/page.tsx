@@ -1,22 +1,19 @@
 "use client";
 // import Image from "next/image"; // (Removed unused import)
-import Link from "next/link";
 
 import React, { useEffect, useRef } from "react";
-import type { Metadata } from "next";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Hero from "@/components/Hero";
+import RoadmapHomePreview from "@/components/roadmap-home-preview";
 import Testimonials from "@/components/testimonials";
 import CallToAction from "@/components/call-to-action";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/footer";
 import Features from "@/components/features";
 
-
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
-
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -73,31 +70,34 @@ function ColdCaseFiles() {
     };
   }, [updateScrollState]);
 
-  const scrollByCard = React.useCallback((direction: "left" | "right") => {
-    const el = scrollContainerRef.current;
-    if (!el) return;
-    const cards = el.querySelectorAll<HTMLElement>(".case-card");
-    if (!cards.length) return;
-    const first = cards[0];
-    // Use distance between first and second card to account for spacing utilities (space-x-*)
-    let delta = first.offsetWidth;
-    if (cards.length > 1) {
-      const second = cards[1];
-      delta = second.offsetLeft - first.offsetLeft; // includes margin created by space-x utilities
-    }
-    if (direction === "left") delta = -delta;
-    el.scrollBy({ left: delta, behavior: "smooth" });
-    // Continuously update scroll state during smooth scroll animation
-    const start = performance.now();
-    const duration = 500; // ms
-    const step = () => {
-      updateScrollState();
-      if (performance.now() - start < duration) {
-        requestAnimationFrame(step);
+  const scrollByCard = React.useCallback(
+    (direction: "left" | "right") => {
+      const el = scrollContainerRef.current;
+      if (!el) return;
+      const cards = el.querySelectorAll<HTMLElement>(".case-card");
+      if (!cards.length) return;
+      const first = cards[0];
+      // Use distance between first and second card to account for spacing utilities (space-x-*)
+      let delta = first.offsetWidth;
+      if (cards.length > 1) {
+        const second = cards[1];
+        delta = second.offsetLeft - first.offsetLeft; // includes margin created by space-x utilities
       }
-    };
-    requestAnimationFrame(step);
-  }, [updateScrollState]);
+      if (direction === "left") delta = -delta;
+      el.scrollBy({ left: delta, behavior: "smooth" });
+      // Continuously update scroll state during smooth scroll animation
+      const start = performance.now();
+      const duration = 500; // ms
+      const step = () => {
+        updateScrollState();
+        if (performance.now() - start < duration) {
+          requestAnimationFrame(step);
+        }
+      };
+      requestAnimationFrame(step);
+    },
+    [updateScrollState]
+  );
 
   // Keyboard accessibility: arrow keys scroll container when focus is on buttons or container
   useEffect(() => {
@@ -117,7 +117,8 @@ function ColdCaseFiles() {
   }, [scrollByCard]);
 
   return (
-    <section id="cases"
+    <section
+      id="cases"
       ref={sectionRef}
       className="bg-surface text-text-primary py-24 px-4 sm:px-6 lg:px-8 font-sans overflow-hidden"
     >
@@ -145,11 +146,24 @@ function ColdCaseFiles() {
             type="button"
             aria-label="Scroll left"
             onClick={() => scrollByCard("left")}
-            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${canScrollLeft ? "opacity-100" : "opacity-30 cursor-not-allowed"}`}
+            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              canScrollLeft ? "opacity-100" : "opacity-30 cursor-not-allowed"
+            }`}
             disabled={!canScrollLeft}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-7 h-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
           </button>
           <button
@@ -157,11 +171,24 @@ function ColdCaseFiles() {
             type="button"
             aria-label="Scroll right"
             onClick={() => scrollByCard("right")}
-            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${canScrollRight ? "opacity-100" : "opacity-30 cursor-not-allowed"}`}
+            className={`flex items-center justify-center w-14 h-14 rounded-2xl bg-black/40 text-white shadow-lg border border-white/10 transition-all hover:bg-black/60 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+              canScrollRight ? "opacity-100" : "opacity-30 cursor-not-allowed"
+            }`}
             disabled={!canScrollRight}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-7 h-7"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           </button>
         </div>
@@ -195,8 +222,6 @@ function App() {
   // handles system preference and localStorage. Keeping these effects caused
   // rapid toggling when system vs stored preference conflicted under StrictMode.
 
-
-
   return (
     <div
       ref={rootRef}
@@ -214,6 +239,7 @@ function App() {
           <FAQ />
           {/* <TeamSection /> */}
         </main>
+        <RoadmapHomePreview />
         <CallToAction />
         <Footer footerRef={footerRef as React.RefObject<HTMLElement>} />
       </div>
