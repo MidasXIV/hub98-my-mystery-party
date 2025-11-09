@@ -22,6 +22,17 @@ export interface RoadmapFeature {
 // Initial hard-coded features (replace with DB/API later)
 export const roadmapFeatures: RoadmapFeature[] = [
   {
+    id: "digital-evidence-board",
+    title: "Digital Evidence Board",
+    description:
+      "A virtual board for organizing and visualizing evidence, timelines, and connections between clues.",
+    category: "core",
+    status: "launched",
+    votes: 123,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9).toISOString(),
+    tags: ["multiplayer", "realtime"],
+  },
+  {
     id: "timeline-collaboration",
     title: "Real‑time Collaborative Timeline Editing",
     description:
