@@ -25,8 +25,34 @@ import { FloatingButton } from "@/components/ui/floating-button";
 
 // Removed unused PlayPageProps interface
 
-const PREDEFINED_IMAGES = {
+// Helper to build absolute URL if you ever need full origin (e.g. for sharing outside Next.js)
+// Set NEXT_PUBLIC_SITE_URL on Vercel if required; otherwise we just return a root-relative path.
+const withBase = (path: string) => {
+  const base = process.env.NEXT_PUBLIC_SITE_URL;
+  if (base) {
+    try {
+      return new URL(path, base).toString();
+    } catch {
+      return path; // fallback
+    }
+  }
+  return path; // root-relative works both locally and on Vercel
+};
+
+// Local images must live under /public. Use leading '/': no need for Vercel domain.
+// Updated incorrect filename still_cass.jpeg -> profile_cass.jpeg (file present in directory listing).
+// Mapped case character names to available station_zero assets as placeholders – adjust as you add specific photos.
+// const PREDEFINED_IMAGES: Record<string, string> = {
+//   "Dr Verma image": withBase("/cold_case_data/station_zero/profile_cass.jpeg"),
+//   "Mrs Sharma image": withBase("/cold_case_data/station_zero/profile_elara.jpeg"),
+//   "Nurse Agnes image": withBase("/cold_case_data/station_zero/profile_ren.jpeg"),
+//   "Rohan Sharma image": withBase("/cold_case_data/station_zero/profile_zane.jpeg"),
+//   "Karan Kholi image": withBase("/cold_case_data/station_zero/profile_jax.jpeg"),
+//   hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
+// };
+const PREDEFINED_IMAGES: Record<string, string> = {
   "Dr Verma image":
+    // withBase("./cold_case_data/station_zero/still_cass.jpeg"),
     "https://github.com/user-attachments/assets/83616c10-f1b9-4d45-924b-f7e2d06fea61",
   "Mrs Sharma image":
     "https://github.com/user-attachments/assets/5bc1200d-2c58-47a2-83fe-b9834eb1bd60",
@@ -36,6 +62,7 @@ const PREDEFINED_IMAGES = {
     "https://github.com/user-attachments/assets/5e7a703d-2dbf-4661-8838-4e7fce270f91",
   "Karan Kholi image":
     "https://github.com/user-attachments/assets/ca6bea85-0753-4a2d-8114-1c537df204e3",
+  // hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
 };
 
 const PREDEFINED_CLUES = [
@@ -1269,6 +1296,26 @@ export default function PlayBoardPage({
     }, 500);
   };
 
+  // Auto-fit once on initial load so the user can immediately zoom without needing to press Reset.
+  const didInitialFitRef = useRef(false);
+  useEffect(() => {
+    if (
+      !didInitialFitRef.current &&
+      boardData &&
+      visibleItems.length > 0 &&
+      viewportRef.current
+    ) {
+      // Allow DOM & refs to settle before measuring; call the same logic as Reset.
+      requestAnimationFrame(() => {
+        handleResetView();
+      });
+      didInitialFitRef.current = true;
+    }
+    // We intentionally exclude handleResetView from deps to avoid re-fitting on every render
+    // after its identity changes; the guard ref ensures one-time execution.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boardData, visibleItems.length]);
+
   // Declutter: collision-aware grouping by type into columns without overlap.
   // Store original item positions keyed by id for robust undo (preserves new items added after declutter)
   const previousPositionsRef = useRef<Map<
@@ -2055,10 +2102,10 @@ export default function PlayBoardPage({
             embedded
             mobileOnly
             scale={scale}
-            onZoomIn={() => 
+            onZoomIn={() =>
               setScale((s) => Math.max(0.5, Math.min(3, s * 1.1)))
             }
-            onZoomOut={() => 
+            onZoomOut={() =>
               setScale((s) => Math.max(0.5, Math.min(3, s / 1.1)))
             }
             onZoomReset={() => setScale(1)}
