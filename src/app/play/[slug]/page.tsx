@@ -88,6 +88,7 @@ import {
   Objective,
 } from "../../../lib/boardTypes";
 import { computeDeclutterLayout } from "../../../lib/declutter";
+import FeedbackPanel from "@/components/feedback-panel";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -2040,6 +2041,7 @@ export default function PlayBoardPage({
               onAttemptSolve={handleAttemptSolve}
             />
           )}
+          <FeedbackPanel />
         </div>
       )}
 
