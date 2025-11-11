@@ -39,6 +39,15 @@ export const RoadmapVoting: React.FC = () => {
   const [statusFilter, setStatusFilter] = React.useState<RoadmapFeatureStatus | "all">("all");
   const [search, setSearch] = React.useState("");
   const [votedIds, setVotedIds] = React.useState<string[]>([]);
+  // Suggestion form state
+  const [suggestion, setSuggestion] = React.useState("");
+  const [suggestStatus, setSuggestStatus] = React.useState<"idle"|"submitting"|"success"|"error">("idle");
+  const [suggestError, setSuggestError] = React.useState<string | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = React.useState<number>(0);
+
+  const SUGGESTION_MAX = 800; // char limit
+  const COOLDOWN_MS = 5 * 60 * 1000; // 5 minutes
+  const COOLDOWN_KEY = "roadmapSuggestionCooldown_v1";
 
   // Hydrate local votes & voted flags
   React.useEffect(() => {
@@ -54,6 +63,24 @@ export const RoadmapVoting: React.FC = () => {
       console.warn("Failed to hydrate roadmap votes", e);
     }
   }, []);
+
+  // Cooldown ticker for suggestions
+  React.useEffect(() => {
+    const check = () => {
+      try {
+        const last = localStorage.getItem(COOLDOWN_KEY);
+        if (!last) { setCooldownRemaining(0); return; }
+        const lastNum = parseInt(last, 10);
+        const remaining = lastNum + COOLDOWN_MS - Date.now();
+        setCooldownRemaining(remaining > 0 ? remaining : 0);
+      } catch {
+        setCooldownRemaining(0);
+      }
+    };
+    check();
+    const id = setInterval(check, 1000);
+    return () => clearInterval(id);
+  }, [COOLDOWN_MS]);
 
   function persistVote(id: string) {
     try {
@@ -106,6 +133,42 @@ export const RoadmapVoting: React.FC = () => {
         return a.title.localeCompare(b.title);
     }
   });
+
+  async function submitSuggestion(e: React.FormEvent) {
+    e.preventDefault();
+    if (suggestStatus === "submitting") return;
+    setSuggestError(null);
+    const trimmed = suggestion.trim();
+    if (!trimmed) { setSuggestError("Please enter a suggestion."); return; }
+    if (trimmed.length > SUGGESTION_MAX) { setSuggestError("Suggestion is too long."); return; }
+    if (cooldownRemaining > 0) { setSuggestError("Please wait before submitting another suggestion."); return; }
+    setSuggestStatus("submitting");
+    try {
+      const res = await fetch("https://discord.com/api/webhooks/1437897241162551316/4EiPQZ6DNabOBNqSpxT64bgxeUossytmJ8tDFdZvMT-Dt-fU4qP-AQGJ9hxWcQcuHGZK", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: `New roadmap suggestion:\n${trimmed}\n\nUser Agent: ${navigator.userAgent}`.slice(0, 1900) }) // Discord limit safeguard
+      });
+      if (!res.ok) throw new Error("Failed to post");
+      setSuggestStatus("success");
+      setSuggestion("");
+      try { localStorage.setItem(COOLDOWN_KEY, Date.now().toString()); } catch {}
+    } catch (err: unknown) {
+      console.error(err);
+      setSuggestError("Something went wrong sending your suggestion.");
+      setSuggestStatus("error");
+    } finally {
+      setTimeout(() => setSuggestStatus("idle"), 4000); // reset after a short delay (except keeping success UI)
+    }
+  }
+
+  function formatMs(ms: number) {
+    const s = Math.ceil(ms / 1000);
+    if (s < 60) return s + "s";
+    const m = Math.floor(s / 60);
+    const rs = s % 60;
+    return `${m}m ${rs}s`;
+  }
 
   return (
     <div className="relative mx-auto max-w-5xl px-4 py-16">
@@ -259,6 +322,46 @@ export const RoadmapVoting: React.FC = () => {
             </li>
           )}
         </ul>
+        {/* Suggestion form */}
+        <section className="mt-14">
+          <div className="mb-4 space-y-1">
+            <h2 className="text-2xl font-semibold tracking-tight">Suggest a Feature</h2>
+            <p className="text-sm text-muted-foreground max-w-2xl">Have an idea that would make this better? Share it here and it will be sent to the team. One suggestion every 5 minutes.</p>
+          </div>
+          <form onSubmit={submitSuggestion} className="group relative overflow-hidden rounded-xl border border-border bg-card/60 backdrop-blur shadow-sm p-5 space-y-4">
+            <div className="flex flex-col gap-2">
+              <label htmlFor="suggestion" className="text-sm font-medium">Your suggestion</label>
+              <textarea
+                id="suggestion"
+                value={suggestion}
+                onChange={e => setSuggestion(e.target.value)}
+                // allow a little overflow before manual trim message
+                        rows={4}
+                        aria-invalid={!!suggestError}
+                        className={cn("resize-y rounded-md border bg-background/80 backdrop-blur px-3 py-2 text-sm leading-relaxed focus-visible:ring-ring focus-visible:outline-none min-h-32", suggestError && "border-destructive focus-visible:ring-destructive/30")}
+                        placeholder="Describe the feature, why it's valuable, any context, and please include your name so we can follow up."
+                        />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{suggestion.trim().length}/{SUGGESTION_MAX}</span>
+                {cooldownRemaining > 0 && (
+                  <span className="font-medium text-amber-600 dark:text-amber-400">Cooldown: {formatMs(cooldownRemaining)}</span>
+                )}
+              </div>
+            </div>
+            {suggestError && <div className="text-xs text-destructive" role="alert">{suggestError}</div>}
+            {suggestStatus === "success" && <div className="text-xs text-green-600 dark:text-green-400" role="status">Thanks! Suggestion sent.</div>}
+            <div className="flex items-center gap-3">
+              <Button
+                type="submit"
+                disabled={suggestStatus === "submitting" || cooldownRemaining > 0}
+                className="rounded-full"
+              >
+                {suggestStatus === "submitting" ? "Sending…" : suggestStatus === "success" ? "Sent" : "Submit Suggestion"}
+              </Button>
+              <span className="text-[11px] text-muted-foreground">Posts go directly to our Discord collection channel.</span>
+            </div>
+          </form>
+        </section>
         <footer className="pt-8 text-xs text-muted-foreground">
           <p>
             Prototype only. Votes aren&apos;t shared globally yet. Backend integration will add auth, rate limiting, and anti‑fraud.
