@@ -1,42 +1,59 @@
 import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
 
-// It's a good practice to register the GSAP plugin you are using.
-// gsap.registerPlugin(ScrollTrigger);
-
+// Updated FAQ content for Beta launch of the digital cold case experience.
+// Keep answers conversational, concise, and focused on current (free) feature set.
 const faqs = [
-    {
-        question: "So, how does this actually work?",
-        answer: "Super simple! You pick a mystery you love, purchase it, and you'll get an email with a link to instantly download all the materials as a PDF. Just print them out, invite your friends, and you're ready to host a killer party."
-    },
-    {
-        question: "What do I get with my download?",
-        answer: "You get everything you need to play. The download includes a complete host guide with instructions, character booklets for all the suspects, clues to be revealed during the game, and themed invitations to send to your guests."
-    },
-    {
-        question: "Do I need to be a professional actor to play?",
-        answer: "Not at all! The games are designed for everyone to have fun. Each character booklet has all the information, secrets, and lines your guests will need. The main goal is to laugh and have a great time sleuthing together."
-    },
-    {
-        question: "Is it difficult to host a party?",
-        answer: "We've made it as easy as possible. The Host Guide walks you through everything, step-by-step, from setting up to solving the crime. You're not a performer; you're just the guide who keeps the story moving. If you can read instructions, you can host!"
-    },
-    {
-        question: "What if I have more or fewer guests than the game says?",
-        answer: "Each game is designed for a specific number of suspects, as these are the core characters needed for the story to work. Some games have optional characters you can add to include more people, which will be clearly noted in the game's description."
-    },
-    {
-        question: "Can I play the same mystery more than once?",
-        answer: "Since the murderer is the same every time, you can only be a *player* once. However, you can absolutely host the same mystery again and again for different groups of friends!"
-    },
-    {
-        question: "What do I need to provide myself?",
-        answer: "Besides a fun group of people, you'll just need a printer, some paper (we recommend around 20-30 sheets, but it varies by game), and a pair of scissors to cut out the clues. That's it!"
-    },
-    {
-        question: "How long does a typical game last?",
-        answer: "Most games are designed to be played over 2-3 hours. This gives everyone enough time to get into character, mingle, review clues, and make their accusations without feeling rushed."
-    }
+  {
+    question: "What is My Mystery Party?",
+    answer:
+      "It's a digital sleuthing platform where you and your friends investigate interactive cold case files directly in your browser—no PDFs, no printing, just pure detective work."
+  },
+  {
+    question: "Are we in Beta right now?",
+    answer:
+      "Yes! You're using the open beta. That means features are still evolving, some panels may feel bare, and we're actively gathering feedback before full launch."
+  },
+  {
+    question: "What makes it different from traditional mystery party kits?",
+    answer:
+      "Instead of hosting with printed packets, everything—objectives, evidence, timelines, suspects—is structured as dynamic panels you explore and unlock digitally. It's built for easier sharing, faster setup, and replay hosting."
+  },
+  {
+    question: "Is everything free right now?",
+    answer:
+      "Yep. During beta all available cases are 100% free to play. Paid cases, add‑ons, and premium features will roll out after we stabilize core gameplay."
+  },
+  {
+    question: "Can I download or buy cases yet?",
+    answer:
+      "Not yet. Downloads and purchase flows are disabled in beta. Your progress lives in the app. A marketplace + optional printable bundles are planned post‑beta."
+  },
+  {
+    question: "How do I start playing a case?",
+    answer:
+      "Pick a cold case from the Cases page, open its board, and dive into objectives and evidence. You can collaborate live by sharing your screen or playing side‑by‑side. Multiplayer accounts and synced sessions are coming later."
+  },
+  {
+    question: "Can I replay a case?",
+    answer:
+      "You can absolutely host or guide new players through the same case again. If you've already solved it, the core culprit won't change—so it's best to take a facilitator role on replays."
+  },
+  {
+    question: "How long does a typical case take?",
+    answer:
+      "Most current beta cases take 1–2 hours for focused groups; casual play or thorough clue combing can stretch to ~2–3. Feel free to pause—your progress persists locally."
+  },
+  {
+    question: "Do I need any special setup?",
+    answer:
+      "Just a modern browser and a reasonably sized screen. Mobile optimization is underway; desktop/laptop gives the best experience right now."
+  },
+  {
+    question: "Where can I suggest features or report bugs?",
+    answer:
+      "Head to the Roadmap section to see what's coming and drop feedback. We're prioritizing based on player input during beta."
+  }
 ];
 // Reusable Chevron Icon Component
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
