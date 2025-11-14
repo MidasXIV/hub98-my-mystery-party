@@ -1,44 +1,76 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 
+// Beta-focused player testimonials highlighting the digital cold case experience.
 const testimonials = [
   {
     stars: 5,
-    title: "One of the most helpful tools",
-    text: "This app is one of the most helpful tools I have ever come across. The sheer volume of groups and helpful connections are amazing. There's so many to choose from and I have not found one that I did not find helpful and adequate at delivering a good message.",
+    title: "No printing. Just vibes + clues.",
+    text: "We literally opened a case and started poking around in like 30 seconds. No PDFs. No 47-page host guide. Bless whoever decided to kill the printer drama.",
   },
   {
     stars: 5,
-    title: "Benefit to mind and body",
-    text: "If you are pursuing a sober life do not go at it alone. Download the app, select and event and get connected to great people.",
+    title: "Feels like an actual evidence wall",
+    text: "The board got messy (in a good way). Timelines, suspect stuff, little clue cards popping open—chef's kiss. My friend said, 'I feel like the over-caffeinated detective in a show.' Accurate.",
   },
   {
     stars: 4,
-    title: "Long overdue",
-    text: "This app is long overdue. I wish I would have had something like this years ago. It might have saved me a lot of heartache and trouble. I always struggled with having something to do that didn't revolve around drinking, or meeting people that were in the same boat.",
+    title: "Beta rough edges but I'm hooked",
+    text: "Some panels are a bit 'coming soon' but chasing the threads was legit fun. We argued about a receipt for 15 straight minutes. Needed snacks. Worth it.",
   },
   {
     stars: 5,
-    title: "Amazing for all walks of recovery",
-    text: "I have 5 years in recovery and work in the field and this app is perfect all stages of recovery and all walks of recovery. Super excited to spread the word about this app. Good job your team did phenomenal.",
+    title: "Zero prep. Maximum drama.",
+    text: "Invited people over. Opened a case after dessert. Everyone instantly suspicious of literally everyone. I barely 'hosted'. 10/10 lazy GM experience.",
   },
   {
     stars: 5,
-    title: "How apps should be",
-    text: "I love that NewForm it's easy to navigate and has so many cool communities.",
+    title: "Replay totally works if you narrate",
+    text: "Already solved it, came back as the 'ghost narrator' guiding new players. Watching them chase the wrong lead? Pure entertainment.",
+  },
+  {
+    stars: 5,
+    title: "Group brain mode activated",
+    text: "We all huddled around my monitor like it was a forbidden artifact. Digital layout keeps the chaos contained vs paper piles. My table is thankful.",
+  },
+  {
+    stars: 5,
+    title: "It's FREE?? Okay then",
+    text: "Beta being totally free feels kind of outrageous. I'm mentally ready to throw money at premium stuff when it lands ngl.",
+  },
+  {
+    stars: 4,
+    title: "Need multi-device sync asap",
+    text: "Screen sharing works but I want everyone clicking around in real time like gremlins. Devs, I believe in you. Make the chaos scalable.",
+  },
+  {
+    stars: 5,
+    title: "Accidentally stayed up late",
+    text: "Case said '1–2 hours'. We took 3 because we overthought everything and someone made a suspect spreadsheet. Zero regrets though.",
+  },
+  {
+    stars: 4,
+    title: "UI mostly smooth, one hiccup",
+    text: "Had a clue load kinda slow once; we mocked it and moved on. Otherwise buttery. Dark mode supremacy.",
   },
 ];
 
-function AppleIcon() {
+function MagnifierIcon() {
   return (
     <svg
       className="h-4 w-4 text-gray-400"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path d="M15.228 9.752a2.472 2.472 0 0 1-1.203-2.083 2.53 2.53 0 0 1 .535-1.637c.562-.642.983-1.42 1.132-2.296a2.46 2.46 0 0 0-2.228-2.695c-.88-.124-1.768.1-2.583.504a4.93 4.93 0 0 0-2.028 1.558 4.92 4.92 0 0 0-1.542 2.379c-.43.995-.492 2.043-.194 3.056.492 1.69 1.637 2.972 2.93 3.738-.995.535-2.043 1.02-3.11 1.403a5.54 5.54 0 0 0-2.613.829c-1.28.845-2.18 2.228-2.42 3.77a.49.49 0 0 0 .492.57c.309-.016.632-.047.969-.093a4.91 4.91 0 0 1 4.41-2.812 4.92 4.92 0 0 1 3.282 1.48C14.24 20.298 15.652 22 17.58 22a2.44 2.44 0 0 0 2.42-2.436c0-1.42-.83-2.643-2.06-3.266a4.87 4.87 0 0 0-2.706-.324Z" />
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
     </svg>
   );
 }
@@ -115,7 +147,7 @@ function Testimonials() {
   };
 
   function horizontalLoop(items: HTMLElement[], config: HorizontalLoopConfig) {
-    items = gsap.utils.toArray(items);
+  items = gsap.utils.toArray(items);
     config = config || {};
     const tl = gsap.timeline({
         repeat: config.repeat,
@@ -198,8 +230,9 @@ function Testimonials() {
     }
     function toIndex(index: number, vars: any) {
       vars = vars || {};
-      Math.abs(index - curIndex) > length / 2 &&
-        (index += index > curIndex ? -length : length);
+      if (Math.abs(index - curIndex) > length / 2) {
+        index += index > curIndex ? -length : length;
+      }
       const newIndex = gsap.utils.wrap(0, length, index);
       let time = times[newIndex];
       if (time > tl.time() !== index > curIndex) {
@@ -229,9 +262,9 @@ function Testimonials() {
     <section className="bg-black text-white py-24 sm:py-32 font-sans overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-4 lg:px-6 mb-12">
         <div className="flex items-center gap-2.5">
-          <AppleIcon />
+          <MagnifierIcon />
           <h2 className="text-lg font-medium text-gray-400">
-            App Store Reviews
+            Beta Player Feedback
           </h2>
         </div>
       </div>
