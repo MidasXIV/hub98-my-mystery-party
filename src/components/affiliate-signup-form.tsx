@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useTransition } from "react";
@@ -43,14 +44,14 @@ export function AffiliateSignupForm({ className }: AffiliateSignupFormProps) {
   async function handleSubmit(formData: FormData) {
     const errors = validate(formData);
     setClientErrors(errors);
-    if (Object.keys(errors).length) return; // Don't proceed
+    if (Object.keys(errors).length) return; // Don&apos;t proceed
 
     setFormState({ status: "submitting" });
     startTransition(async () => {
       try {
         const res = await submitAffiliateApplication(formData);
         if (res?.success) {
-          setFormState({ status: "success", message: "Application received! We'll email you once affiliate codes go live." });
+          setFormState({ status: "success", message: "Application received! We&apos;ll email you once affiliate codes go live." });
         } else {
           setFormState({ status: "error", message: res?.error || "Something went wrong." });
         }
@@ -107,7 +108,7 @@ export function AffiliateSignupForm({ className }: AffiliateSignupFormProps) {
             placeholder="JANEINVESTIGATES"
             className={cn("w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:ring focus-visible:ring-ring/50", clientErrors.desiredCode && "border-destructive")}
           />
-          <p className="text-xs text-muted-foreground">We'll try to reserve this. If taken, we'll reach out with alternates.</p>
+          <p className="text-xs text-muted-foreground">We&apos;ll try to reserve this. If taken, we&apos;ll reach out with alternates.</p>
           {clientErrors.desiredCode && <p className="text-xs text-destructive">{clientErrors.desiredCode}</p>}
         </div>
         <div className="space-y-1">
@@ -139,12 +140,12 @@ export function AffiliateSignupForm({ className }: AffiliateSignupFormProps) {
             id="notes"
             name="notes"
             rows={4}
-            placeholder="Tell us how you'll promote the cold cases."
+            placeholder="Tell us how you&apos;ll promote the cold cases."
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:ring focus-visible:ring-ring/50 resize-y"
           />
         </div>
         <div className="text-xs leading-relaxed text-muted-foreground bg-muted/50 dark:bg-muted/10 rounded-md p-3 border border-border/50">
-          <p><strong>Heads up:</strong> Affiliate codes will activate when purchasing launches. You'll still be able to onboard now so you're first in line.</p>
+          <p><strong>Heads up:</strong> Affiliate codes will activate when purchasing launches. You&apos;ll still be able to onboard now so you&apos;re first in line.</p>
           <p className="mt-2">By submitting you agree to receive onboarding emails and occasional product updates. We never sell your data.</p>
         </div>
         <div className="flex items-center gap-3 pt-2">
