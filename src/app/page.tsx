@@ -11,6 +11,7 @@ import CallToAction from "@/components/call-to-action";
 import FAQ from "@/components/FAQ";
 import Footer from "@/components/footer";
 import Features from "@/components/features";
+import AffiliatePromo from "@/components/affiliate-promo";
 
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
@@ -236,6 +237,7 @@ function App() {
           <Features />
           {/* <HowItWorks /> */}
           <ColdCaseFiles />
+          {/* <AffiliatePromo /> */}
           <FAQ />
           {/* <TeamSection /> */}
         </main>

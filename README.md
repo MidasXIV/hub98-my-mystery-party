@@ -66,6 +66,35 @@ Planned backend integration steps:
 
 You can safely modify the feature list in `roadmapFeatures.ts` to experiment—IDs should remain unique.
 
+## Referral Interest (Quiet Exploratory Form)
+
+There is a low-key interest form at `src/app/affiliates/page.tsx` (`/affiliates`). It is NOT a formal affiliate launch and should not be marketed as such.
+
+Purpose:
+1. Gauge authentic creator/community interest around investigative puzzle content.
+2. Provide a private list we may contact if/when referral experiments begin.
+3. Collect preferred code ideas (not guaranteed or reserved).
+
+Current mechanics:
+- Form collects basic details (name, email, site/channel, preferred code, payout preference placeholder, notes).
+- Client-side validation for required fields & simple format checks.
+- Server action (`src/app/affiliates/actions.ts`) only logs payloads – no persistence, no commitments.
+- All language intentionally avoids promises: no guaranteed payouts, codes, dashboards, or timelines.
+
+If formalization happens later we would add:
+- Database persistence & uniqueness checks.
+- Private onboarding emails (opt-in only).
+- Metrics dashboard & tracked referral events.
+- Explicit commission schedule & payout mechanics.
+
+Extending the server action (future):
+```ts
+// Replace console.log with DB insert
+// await db.insert(applicationsTable).values(payload)
+```
+
+Homepage contains an understated `AffiliatePromo` section (`src/components/affiliate-promo.tsx`) describing this as a quiet interest list to avoid hype.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
