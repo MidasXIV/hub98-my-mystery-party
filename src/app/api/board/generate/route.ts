@@ -1,5 +1,19 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenAI, Type } from '@google/genai';
+import { getCaseBySlug } from '@/data/coldCases';
+
+  const images = { Dr_Verma_image:
+    "https://github.com/user-attachments/assets/83616c10-f1b9-4d45-924b-f7e2d06fea61",
+  Mrs_Sharma_image:
+    "https://github.com/user-attachments/assets/5bc1200d-2c58-47a2-83fe-b9834eb1bd60",
+  Nurse_Agnes_image:
+    "https://github.com/user-attachments/assets/8cbb6265-dcda-4a03-aca4-cf57cfff4ccf",
+  Rohan_Sharma_image:
+    "https://github.com/user-attachments/assets/5e7a703d-2dbf-4661-8838-4e7fce270f91",
+  Karan_Kholi_image:
+    "https://github.com/user-attachments/assets/ca6bea85-0753-4a2d-8114-1c537df204e3",
+    
+  };
 
 const mockData = {
   "items": [
@@ -8,40 +22,45 @@ const mockData = {
       "type": "photo",
       "content": "Dr Verma image",
       "position": { "x": 10, "y": 15 },
-      "size": { "width": 35, "height": 45 },
-      "rotation": 5
+      "size": { "width": 180, "height": 180 },
+      "rotation": 5,
+      "imageUrl": images.Dr_Verma_image,
     },
     {
       "id": "photo_sharma_mrs",
       "type": "photo",
       "content": "Mrs Sharma image",
       "position": { "x": -5, "y": 60 },
-      "size": { "width": 32, "height": 42 },
-      "rotation": -3
+      "size": { "width": 180, "height": 180 },
+      "rotation": -3,
+      "imageUrl": images.Mrs_Sharma_image,
     },
     {
       "id": "photo_agnes",
       "type": "photo",
       "content": "Nurse Agnes image",
       "position": { "x": 20, "y": 100 },
-      "size": { "width": 38, "height": 48 },
-      "rotation": 8
+      "size": { "width": 180, "height": 180 },
+      "rotation": 8,
+      "imageUrl": images.Nurse_Agnes_image,
     },
     {
       "id": "photo_sharma_rohan",
       "type": "photo",
       "content": "Rohan Sharma image",
       "position": { "x": 40, "y": 5 },
-      "size": { "width": 30, "height": 40 },
-      "rotation": -7
+      "size": { "width": 180, "height": 180 },
+      "rotation": -7,
+      "imageUrl": images.Rohan_Sharma_image,
     },
     {
       "id": "photo_kholi",
       "type": "photo",
       "content": "Karan Kholi image",
       "position": { "x": 70, "y": 20 },
-      "size": { "width": 33, "height": 43 },
-      "rotation": 10
+      "size": { "width": 180, "height": 180 },
+      "rotation": 10,
+      "imageUrl": images.Karan_Kholi_image,
     },
     {
       "id": "alibi_verma",
@@ -220,6 +239,74 @@ const mockData = {
   ]
 };
 
+const caseData = `
+### **Case File: 734-Alpha ("The Ghost of Station Zero")**
+
+**Primary Investigator:** [User's Name/ID]
+**Case Status:** Cold. Crew presumed lost.
+**Objective:** Analyze the recovered data logs from Station Zero to determine the cause of the "incident" and the fate of its six crew members.
+
+### **The Core Narrative: The "Haunting"**
+
+On October 31st, during a solar storm, Station Zero reported a series of inexplicable events. The crew experienced shared hallucinations, whispered voices over the comms, and fleeting apparitions on the station's periphery. The station's life support systems began to fail intermittently, and the crew's bio-monitors showed signs of extreme psychological distress. The final data transmission was a garbled, panicked message from Communications Officer Cass, mentioning a "ghost in the machine" before the station went dark. The prevailing theory at the time was a mass psychotic event induced by radiation, but the logs you are about to review may suggest something far more deliberate.
+
+**The "Supernatural" Element (The Deception):** The station's experimental hydroponics bay, tended by REN, was cultivating a new strain of bioluminescent fungi, designated "Myco-Veridia." Unbeknownst to the crew, when this fungus is exposed to a specific combination of radiation (from the solar storm) and a unique frequency emitted by the station's communication array, it releases a potent hallucinogenic neurotoxin into the air recycling system. This toxin is what caused the shared hallucinations and the feeling of a supernatural presence. The "ghosts" were nothing more than products of their own terrified minds, amplified by the station's failing systems.
+
+**The Murder (The Reality):** Amidst the chaos of the "haunting," one crew member used the confusion as a cover to sabotage the station and eliminate the rest of the crew. The motive was not supernatural, but deeply personal and rooted in a secret held by one of the crew. The death was not a singular event but a slow, calculated process of letting the station's systems fail while the crew was too disoriented to notice until it was too late.
+
+### **The Characters and Their Secrets**
+
+*   **JAX (The Engineer):** The workhorse of the station, Jax was secretly in love with Ren. He was growing increasingly concerned about her obsession with the Myco-Veridia and believed she was pushing herself too hard. He has a history of minor infractions for overriding safety protocols to "get the job done faster."
+*   **REN (The Botanist):** Passionate and brilliant, Ren was under immense pressure from the corporation funding the station to produce results from her research. She had discovered the hallucinogenic properties of the fungi but kept it a secret, hoping to study and control it, seeing it as a potential breakthrough in psychological treatment.
+*   -   **CASS (The Communications Officer):** Calm and collected, Cass was the station's information hub. She was also an undercover corporate auditor, sent to ensure the mission was on track and to report any "unnecessary risks." She was growing suspicious of Ren's secrecy.
+*   **KAI (The Medic):** The crew's confidant, Kai was a compassionate and empathetic presence. He was treating several crew members for anxiety and sleep deprivation, including Zane, who was having recurring nightmares. Kai was also the first to notice the subtle cognitive decline in the crew.
+*   **ELARA (The Pilot):** A sharp and ambitious pilot, Elara was laser-focused on her career. She saw Station Zero as a stepping stone to a command position on the first mission to Mars. She had a rivalry with Zane, viewing him as reckless and unprofessional.
+*   **ZANE (The Crew Member on Break / The Victim):** Seemingly relaxed and easy-going, Zane was actually a disgraced ex-pilot who had been involved in a fatal training accident years ago. Elara was the only other person on the station who knew the full story, as her former mentor was the one who died in the accident. Zane was on this mission as a form of penance, a last chance to prove himself.
+
+### **The Evidence Files**
+
+Here is a series of data logs and evidence that you, the investigator, will piece together.
+
+**File #1: Audio Log - CASS 10.30.XXXX**
+*   **Transcript:** "Station log, Cass speaking. We're getting hit with some serious interference from this solar storm. The comms are full of static... whispers. It's unsettling. Jax says it's just 'crossed wires,' but it sounds... organic. Almost like voices. I've logged a formal request for a full diagnostic."
+
+**File #2: CCTV Still - Hydroponics Bay - 10.31.XXXX 02:13 GMT**
+*   **Description:** The image is dark, lit only by the eerie green glow of the Myco-Veridia. Ren is visible, her back to the camera, working on a control panel. In the reflection of the glass, for a split second, a distorted, elongated face seems to be looking over her shoulder. *This is a key piece of "supernatural" evidence.*
+
+**File #3: Medical Log - KAI 10.31.XXXX**
+*   **Entry:** "Zane came to me again last night. Severe paranoia. Says he keeps seeing 'shadows' out of the corner of his eye. He's convinced the station is haunted. I've prescribed a sedative, but his vitals are erratic. I'm concerned about the cumulative stress on the crew. I've noticed a tremor in my own hands."
+
+**File #4: Encrypted Email - From CASS to Corporate HQ (Undelivered)**
+*   **Subject:** URGENT: Anomaly in Project Veridia
+*   **Body:** "Ren's research has taken an unauthorized turn. The fungal spores are exhibiting unexpected psychoactive properties. My preliminary analysis suggests she has been aware of this for some time. This is a direct violation of protocol. Requesting immediate intervention. The crew is not safe."
+
+**File #5: Engineering Log - JAX 10.31.XXXX**
+*   **Entry:** "Life support is on the fritz. The CO2 scrubbers are failing intermittently. Every time I think I've fixed it, the system glitches again. It's not a hardware issue. It's like something is rewriting the code as I work. And this damn headache won't go away."
+
+**File #6: Audio Log - Black Box Recording - Cockpit 10.31.XXXX (FINAL TRANSMISSION)**
+*   **Transcript:**
+    *   **ELARA:** (Shouting) "The nav-system is gone! I'm flying blind!"
+    *   **ZANE:** (Static, strained) "...not the storm... it's her..."
+    *   **CASS:** (Panicked) "Mayday, Mayday! Station Zero... there's a ghost in the machine! It's in the walls! It's—"
+    *   *(A loud, metallic screech, followed by silence)*
+
+### **The Twist and the Truth**
+
+**The Red Herring:** The evidence points to Ren as the likely culprit. Her secret research, the hallucinogenic fungi, and Zane's cryptic final words ("it's her") seem to frame her perfectly. It would appear she lost control of her experiment, leading to the crew's demise.
+
+**The Real Killer: ELARA**
+
+*   **Motive:** Elara's career was everything. She discovered Zane was on board and knew he was a black mark on her record by association. The "haunting" provided the perfect opportunity. She saw a way to eliminate Zane and create a narrative that would paint her as the sole, heroic survivor of a tragic, unexplainable event.
+*   **The How:**
+    1.  **Amplifying the "Haunting":** Elara used her access as a pilot to subtly manipulate the station's communication frequency, increasing the potency of the neurotoxin being released by Ren's fungi. She wanted the crew disoriented and paranoid.
+    2.  **The Sabotage:** While the crew was hallucinating, Elara used her intimate knowledge of the station's systems to sabotage life support and the navigation systems from the cockpit. She made it look like the station itself was failing.
+    3.  **Framing Ren:** Elara knew about Cass's suspicions of Ren. She planted a corrupted data file on Ren's personal terminal that made it look like Ren was maliciously releasing the toxin.
+    4.  **Zane's Final Words:** Zane wasn't referring to Ren. He had started to piece together that the system failures were too precise for a random event and that they all originated from the cockpit. He was trying to warn Cass about Elara before she cut the comms.
+    5.  **The Escape:** Elara's plan was to use the station's only emergency escape pod, claiming the rest of the crew had succumbed to the "madness." However, her sabotage was too effective, and a power surge she initiated to cover her tracks fried the pod's launch system, trapping her on the dying station with the rest of the crew.
+
+The player, as the investigator, must connect the dots: the comms frequency manipulation, the origin of the system failures in the cockpit, and the rivalry between Elara and Zane, to see past the supernatural smokescreen and expose the cold, calculated murder that lies beneath.
+`;
+
 // Shared schema definitions (can be extracted later)
 const boardItemSchema = {
   type: Type.OBJECT,
@@ -279,7 +366,18 @@ const boardSchema = {
   required: ['items', 'connections', 'objectives'],
 };
 
-export async function POST() {
+/**
+ * POST /api/board/generate
+ * Request Body (JSON): { "case": "station-zero" }
+ * or Query Param: /api/board/generate?case=station-zero
+ * Returns a mock evidence board for the requested case slug.
+ * Supported slugs:
+ *  - station-zero (deep space sabotage scenario)
+ *  - operation-shadowfall (John Doe neurotoxin homicide; legacy mock)
+ *  - default / any other valid cold case slug -> currently returns the Shadowfall mock until bespoke data added.
+ */
+
+export async function POST(req: Request) {
   if (!process.env.API_KEY) {
     return NextResponse.json({ error: 'Missing API_KEY on server' }, { status: 500 });
   }
@@ -288,12 +386,18 @@ export async function POST() {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 //     const response = await ai.models.generateContent({
 //       model: 'gemini-2.5-flash',
-//       contents: `Generate a JSON for an evidence board about 'Operation Shadowfall'.
-// 1.  Create five specific photo items with the exact content "Dr Verma image", "Mrs Sharma image", "Nurse Agnes image", "Rohan Sharma image", and "Karan Kholi image".
+//       contents: `Generate a JSON for an evidence board about the following case data:
+
+//       ## Case Data:
+// ${caseData}
+
+// ***
+
+// ## Requirements:
+// Create evidence for the above case including:
 // 2.  Create five items of type 'formal-alibi', one for each of the five suspects listed above. The content should be a plausible, formal alibi statement for each person.
 // 3.  Create five items of type 'interrogation-transcript', one for each suspect. The content must be a tense, revealing interview snippet. It MUST begin with two lines: 'INTERVIEW DATE: [Month Day, YYYY]' and 'SUBJECT: [Suspect Name]'.
 // 4.  Create one item of type 'autopsy-report' with detailed, multi-section content for a victim named John Doe.
-// 5.  Include the following three pieces of evidence pointing to Dr. Verma as 'document' items: a deleted email, a witness statement, and a forensic search history report.
 // 6.  Include 1-2 other items like classified documents or handwritten notes.
 // 7.  Do not include any maps.
 // 8.  Create 2 newspaper items with stringified JSON (headline, date, body).
@@ -303,23 +407,67 @@ export async function POST() {
 //       config: { responseMimeType: 'application/json', responseSchema: boardSchema },
 //     });
 
-//     // Guard against undefined or empty model response text
-//     const raw = response.text?.trim();
-//     if (!raw) {
-//       return NextResponse.json({ error: 'Empty response from model' }, { status: 502 });
-//     }
-    const raw = JSON.stringify(mockData);
-
-    let data;
+    // Guard against undefined or empty model response text
+    // const raw = response.text?.trim();
+    // if (!raw) {
+    //   return NextResponse.json({ error: 'Empty response from model' }, { status: 502 });
+    // }
+    // Determine requested case slug from body or query param.
+    let caseSlug: string | undefined;
+    // Try body first
     try {
-      data = JSON.parse(raw);
-      console.log(raw)
-    } catch (parseErr) {
-      console.error('Failed to parse model JSON', raw, parseErr);
-      return NextResponse.json({ error: 'Invalid JSON from model' }, { status: 500 });
+      // referer: 'http://localhost:3000/play/her-shadows-name'
+      const referer = req.headers?.get?.('referer') ?? req.headers?.get?.('referrer');
+      caseSlug = referer ? String(referer).split('/play/')[1]?.trim() : undefined;
+    } catch {/* ignore body parse errors */}
+
+    console.log('caseSlug from body:', caseSlug);
+    // Fallback to query param
+    if (!caseSlug) {
+      const url = new URL(req.url);
+      const qp = url.searchParams.get('case');
+      if (qp) caseSlug = qp.trim();
     }
 
-    return NextResponse.json(data);
+    if (!caseSlug) {
+      return NextResponse.json({ error: 'Missing case slug. Provide { "case": "station-zero" } in body or ?case=station-zero.' }, { status: 400 });
+    }
+
+    // Special handling for station-zero (reuse rich evidence defined in coldCases data file).
+    if (caseSlug === 'station-zero') {
+      const station = getCaseBySlug('station-zero');
+      const stationBoard = (station?.evidence && 'items' in station.evidence) ? station.evidence : undefined;
+      if (!stationBoard) {
+        return NextResponse.json({ error: 'Board data not available for station-zero.' }, { status: 404 });
+      }
+      return NextResponse.json(stationBoard);
+    }
+
+    if(caseSlug === 'her-shadows-name') {
+      const board = getCaseBySlug('her-shadows-name');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for her_shadows_name.' }, { status: 404 });
+      }
+      return NextResponse.json(boardData);
+    }
+
+    // Legacy homicide board for operation-shadowfall / john-doe scenario.
+    if (caseSlug === 'operation-shadowfall' || caseSlug === 'john-doe') {
+      return NextResponse.json(mockData);
+    }
+
+    // If the slug matches another cold case, return placeholder (currently Shadowfall mock until bespoke data is authored).
+    const existing = getCaseBySlug(caseSlug);
+    if (existing) {
+      return NextResponse.json({
+        warning: 'No bespoke board yet for this case; returning default mock.',
+        ...mockData,
+      });
+    }
+
+    // Unknown slug entirely.
+    return NextResponse.json({ error: `Unknown case slug '${caseSlug}'.` }, { status: 404 });
   } catch (err) {
     console.error('Board generation failed', err);
     return NextResponse.json({ error: 'Failed to generate board' }, { status: 500 });

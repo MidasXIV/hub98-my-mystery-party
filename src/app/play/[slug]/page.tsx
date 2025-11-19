@@ -39,31 +39,23 @@ const withBase = (path: string) => {
   return path; // root-relative works both locally and on Vercel
 };
 
-// Local images must live under /public. Use leading '/': no need for Vercel domain.
-// Updated incorrect filename still_cass.jpeg -> profile_cass.jpeg (file present in directory listing).
-// Mapped case character names to available station_zero assets as placeholders – adjust as you add specific photos.
-// const PREDEFINED_IMAGES: Record<string, string> = {
-//   "Dr Verma image": withBase("/cold_case_data/station_zero/profile_cass.jpeg"),
-//   "Mrs Sharma image": withBase("/cold_case_data/station_zero/profile_elara.jpeg"),
-//   "Nurse Agnes image": withBase("/cold_case_data/station_zero/profile_ren.jpeg"),
-//   "Rohan Sharma image": withBase("/cold_case_data/station_zero/profile_zane.jpeg"),
-//   "Karan Kholi image": withBase("/cold_case_data/station_zero/profile_jax.jpeg"),
-//   hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
-// };
-const PREDEFINED_IMAGES: Record<string, string> = {
-  "Dr Verma image":
-    // withBase("./cold_case_data/station_zero/still_cass.jpeg"),
-    "https://github.com/user-attachments/assets/83616c10-f1b9-4d45-924b-f7e2d06fea61",
-  "Mrs Sharma image":
-    "https://github.com/user-attachments/assets/5bc1200d-2c58-47a2-83fe-b9834eb1bd60",
-  "Nurse Agnes image":
-    "https://github.com/user-attachments/assets/8cbb6265-dcda-4a03-aca4-cf57cfff4ccf",
-  "Rohan Sharma image":
-    "https://github.com/user-attachments/assets/5e7a703d-2dbf-4661-8838-4e7fce270f91",
-  "Karan Kholi image":
-    "https://github.com/user-attachments/assets/ca6bea85-0753-4a2d-8114-1c537df204e3",
-  // hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
-};
+// Image handling strategy:
+// Instead of maintaining a PREDEFINED_IMAGES map keyed by the textual content, items of type 'photo'
+// can now include an explicit `imageUrl` field (added to BoardItem). If `imageUrl` is present it will be used directly.
+// Fallback: if `content` itself looks like a path or URL (starts with '/' or 'http'), treat it as an image reference.
+// This lets you define items like:
+// {
+//   id: 'photo_verma',
+//   type: 'photo',
+//   content: 'Dr Verma',          // alt text
+//   imageUrl: '/cold_case_data/station_zero/profile_cass.jpeg',
+//   position: { x: 10, y: 15 },
+//   size: { width: 220, height: 220 },
+//   rotation: 5
+// }
+// or simply set content to the path if you prefer (less explicit):
+// { id: 'photo_verma', type: 'photo', content: '/cold_case_data/station_zero/profile_cass.jpeg', ... }
+// For remote assets you can still use full https URLs.
 
 const PREDEFINED_CLUES = [
   "A faint scent of almond in the air...",
@@ -89,6 +81,7 @@ import {
 } from "../../../lib/boardTypes";
 import { computeDeclutterLayout } from "../../../lib/declutter";
 import FeedbackPanel from "@/components/feedback-panel";
+import ContextMenu from "@/components/board-context-menu";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -97,86 +90,6 @@ function Tape({ rotation }: { rotation?: number }) {
       className="absolute top-1 left-1 w-10 h-4 bg-yellow-300/80 opacity-70 mix-blend-multiply"
       style={{ transform: `rotate(${rotation || 0}deg)` }}
     />
-  );
-}
-
-interface ContextMenuProps {
-  x: number;
-  y: number;
-  onEdit: () => void;
-  onDelete: () => void;
-  onConnect: () => void;
-  onClose: () => void;
-}
-
-// Simplified context menu (replacing earlier extracted component)
-function ContextMenu({
-  x,
-  y,
-  onEdit,
-  onDelete,
-  onConnect,
-  onClose,
-}: ContextMenuProps) {
-  const menuRef = useRef(null);
-  const [position, setPosition] = useState({ x, y });
-
-  useLayoutEffect(() => {
-    if (menuRef.current) {
-      const { innerWidth, innerHeight } = window;
-      const { offsetWidth, offsetHeight } = menuRef.current;
-      let newX = x;
-      let newY = y;
-      if (x + offsetWidth > innerWidth) {
-        newX = innerWidth - offsetWidth - 5;
-      }
-      if (y + offsetHeight > innerHeight) {
-        newY = innerHeight - offsetHeight - 5;
-      }
-      setPosition({ x: newX, y: newY });
-    }
-  }, [x, y]);
-
-  useEffect(() => {
-    const handleClickOutside = () => onClose();
-    const handleEsc = (e: { key: string }) => {
-      if (e.key === "Escape") onClose();
-    };
-
-    window.addEventListener("click", handleClickOutside);
-    window.addEventListener("keydown", handleEsc);
-    return () => {
-      window.removeEventListener("click", handleClickOutside);
-      window.removeEventListener("keydown", handleEsc);
-    };
-  }, [onClose]);
-
-  return (
-    <div
-      ref={menuRef}
-      style={{ top: position.y, left: position.x }}
-      className="absolute z-[200] bg-gray-900/80 backdrop-blur-sm border border-gray-600 rounded-md shadow-lg py-1 animate-fade-in"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        onClick={onEdit}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
-      >
-        Edit
-      </button>
-      <button
-        onClick={onDelete}
-        className="block w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-700 cursor-pointer"
-      >
-        Delete
-      </button>
-      <button
-        onClick={onConnect}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-700 cursor-pointer"
-      >
-        Connect to...
-      </button>
-    </div>
   );
 }
 
@@ -199,11 +112,30 @@ const DEFAULT_ITEM_SIZES: Record<
 function normalizeItemSize(item: BoardItem): BoardItem {
   const defaults = DEFAULT_ITEM_SIZES[item.type];
   if (!defaults) return item;
-  const minWidth = defaults.width * 0.7;
-  const minHeight = defaults.height * 0.7;
+  // Revised normalization: allow small custom sizes for photos (user intent),
+  // but keep a sensible minimum for textual/document items so they don't render cramped.
+  // Documents/notes/etc previously relied on a 70% minimum; we restore that selectively.
   let { width, height } = item.size;
-  if (!width || width < minWidth) width = defaults.width;
-  if (!height || height < minHeight) height = defaults.height;
+  const providedWidth = width;
+  const providedHeight = height;
+
+  // Safety fallback if values missing or invalid
+  if (typeof width !== "number" || width <= 0) width = defaults.width;
+  if (typeof height !== "number" || height <= 0) height = defaults.height;
+
+  if (item.type !== "photo") {
+    const minWidth = defaults.width * 0.7;
+    const minHeight = defaults.height * 0.7;
+    // Only override if the caller did NOT explicitly set a large enough size.
+    // If AI/user supplied very tiny dimensions (< min), bump to default for legibility.
+    if (providedWidth < minWidth) width = defaults.width;
+    if (providedHeight < minHeight) height = defaults.height;
+  } else {
+    // For photos, respect provided dimensions but enforce an absolute floor to avoid near-zero rendering.
+    const ABS_MIN = 40; // pixels
+    if (width < ABS_MIN) width = ABS_MIN;
+    if (height < ABS_MIN) height = ABS_MIN;
+  }
   return { ...item, size: { width, height } };
 }
 
@@ -714,7 +646,7 @@ export default function PlayBoardPage({
   const [loadingMessage, setLoadingMessage] = useState<string | null>(
     "CLASSIFIED: Generating Mission Briefing..."
   );
-  const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
+  // Direct image resolution is handled per item now (see getItemImageUrl); no separate state map needed.
 
   // Interaction states
   const [draggingItem, setDraggingItem] = useState<{
@@ -792,24 +724,15 @@ export default function PlayBoardPage({
     generateBoard();
   }, []);
 
-  // Set image URLs from predefined list
-  useEffect(() => {
-    if (!boardData) return;
-
-    const photoItems = boardData.items.filter((item) => item.type === "photo");
-
-    const newUrls: Record<string, string> = {};
-    for (const item of photoItems) {
-      const matchingKey = Object.keys(PREDEFINED_IMAGES).find((key) =>
-        item.content.includes(key)
-      );
-      if (matchingKey) {
-        newUrls[item.id] =
-          PREDEFINED_IMAGES[matchingKey as keyof typeof PREDEFINED_IMAGES];
-      }
-    }
-    setImageUrls(newUrls);
-  }, [boardData]);
+  // Helper: derive the usable image URL for a photo item.
+  const getItemImageUrl = (item: BoardItem): string | undefined => {
+    if (item.type !== "photo") return undefined;
+    if (item.imageUrl && item.imageUrl.trim().length > 0)
+      return withBase(item.imageUrl.trim());
+    // Fallback: treat content as path/URL if it matches pattern
+    if (/^(https?:\/\/|\/)/.test(item.content)) return withBase(item.content.trim());
+    return undefined;
+  };
 
   const visibleItems = useMemo(
     () => boardData?.items.filter((item) => activeFilters.has(item.type)) || [],
@@ -1648,6 +1571,12 @@ export default function PlayBoardPage({
             typeof it.rotation === "number"
               ? it.rotation
               : Math.random() * 6 - 3;
+          const imageUrl =
+            typeof it.imageUrl === "string" && it.imageUrl.trim() !== ""
+              ? it.imageUrl.trim()
+              : typeof it.image === "string" && it.image.trim() !== ""
+              ? it.image.trim()
+              : undefined;
           return normalizeItemSize({
             id,
             type,
@@ -1655,6 +1584,7 @@ export default function PlayBoardPage({
             position,
             size,
             rotation,
+            imageUrl,
           });
         })
       : [];
@@ -1750,7 +1680,7 @@ export default function PlayBoardPage({
 
     switch (item.type) {
       case "photo":
-        const imageUrl = imageUrls[item.id];
+        const imageUrl = getItemImageUrl(item);
         return (
           // FIX: Ref callback should not return a value and should handle unmounting.
           <div
@@ -1767,8 +1697,9 @@ export default function PlayBoardPage({
               <Image
                 src={imageUrl}
                 alt={item.content}
-                width={300}
-                height={300}
+                // Use the dynamic item dimensions instead of a hardcoded 300x300 so sizing follows data.
+                width={item.size.width}
+                height={item.size.height}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -2011,7 +1942,7 @@ export default function PlayBoardPage({
         <Modal
           item={modalItem}
           onClose={() => setModalItem(null)}
-          imageUrl={imageUrls[modalItem.id]}
+          imageUrl={getItemImageUrl(modalItem)}
         />
       )}
       {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}
@@ -2046,7 +1977,7 @@ export default function PlayBoardPage({
       )}
 
       <PlayHeader
-        titleOverride="OPERATION SHADOWFALL"
+        titleOverride={caseFile.title}
         boardControlsProps={{
           activeFilters,
           allTypes: [...ITEM_TYPES] as string[],

@@ -20,6 +20,8 @@ export interface BoardItem {
   position: { x: number; y: number }; // percentage values relative to viewport
   size: { width: number; height: number }; // pixel dimensions
   rotation: number; // degrees
+  /** Optional direct image URL/path for photo items. If provided and item.type === 'photo', this is used instead of any name-based lookup. */
+  imageUrl?: string;
 }
 
 export interface Connection {

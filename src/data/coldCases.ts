@@ -4,6 +4,28 @@ export interface Evidence {
   imageUrl?: string;
 }
 
+const PREDEFINED_IMAGES: Record<string, string> = {
+  Dr_Verma_image:
+    "https://github.com/user-attachments/assets/83616c10-f1b9-4d45-924b-f7e2d06fea61",
+  Mrs_Sharma_image:
+    "https://github.com/user-attachments/assets/5bc1200d-2c58-47a2-83fe-b9834eb1bd60",
+  Nurse_Agnes_image:
+    "https://github.com/user-attachments/assets/8cbb6265-dcda-4a03-aca4-cf57cfff4ccf",
+  Rohan_Sharma_image:
+    "https://github.com/user-attachments/assets/5e7a703d-2dbf-4661-8838-4e7fce270f91",
+  Karan_Kholi_image:
+    "https://github.com/user-attachments/assets/ca6bea85-0753-4a2d-8114-1c537df204e3",
+  // hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
+  HSN_Ellie_portrait: "/cold_case_data/her_shadows_name/ellie.png",
+  HSN_Grandma_photo: "/cold_case_data/her_shadows_name/grandMA.png",
+  HSN_Uncle_photo: "/cold_case_data/her_shadows_name/uncle.png",
+  HSN_Meave_photo: "/cold_case_data/her_shadows_name/meave.png",
+  HSN_guy_photo: "/cold_case_data/her_shadows_name/guy.png",
+  HSN_sherrif_photo: "/cold_case_data/her_shadows_name/sherrif.png",
+  HSN_shopkeeper_photo: "/cold_case_data/her_shadows_name/shopkeeper.png",
+  HSN_maine_map_photo: "/cold_case_data/her_shadows_name/maine_map.png",
+};
+
 export interface ColdCase {
   id: number;
   slug: string;
@@ -23,6 +45,108 @@ export interface ColdCase {
 }
 
 export const coldCases: ColdCase[] = [
+  {
+    id: 7,
+    slug: "her-shadows-name",
+    title: "Her Shadow's Name",
+    imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
+    tags: ["Missing", "1-2 Players", "High Difficulty"],
+    description: `
+      In the secluded, fog-choked town of Black Creek, Maine, some secrets are woven into the very wood and stone.
+On October 28th, Eleanor Vance, Age 24, disappeared.
+Her last location was 412 Hemlock Lane—a house heavy with its own history—where her grandmother, Edith Vance, maintained that Eleanor simply left. The front door was found unlocked. Her keys and wallet were on the counter.
+The only item missing: Eleanor's private journal.
+Days later, it was found near the old Black Creek Bridge. Its pages were not the record of a sane mind, but a chilling testament to a descent into shared madness:
+> ...the calls come after three. He never speaks my name. Only hers.
+> 
+The local report cites "severe isolation and self-induced psychosis," pointing to Ellie's obsession with the single, whispered word in her diary: Cora.
+Yet, in Black Creek, a name is never just a name. It is a promise. It is a warning.
+Eleanor Vance's body was never recovered. The file is closed. But if you look closely at the faded photographs and the scribbled entries, you have to ask:
+Did Eleanor wander off? Or did she answer the call of her shadow's name?
+      `,
+    difficulty: "Hard",
+    players: "1-2",
+    duration: "4-5 hours",
+    price: 49.99,
+    evidence: {
+      items: [
+        {
+          id: "ellie_portrait",
+          type: "photo",
+          content: "Ellie portrait",
+          imageUrl: PREDEFINED_IMAGES.HSN_Ellie_portrait,
+          position: { x: 10, y: -10 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "grandma_photo",
+          type: "photo",
+          content: "Grandma photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_Grandma_photo,
+          position: { x: 30, y: -10 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "uncle_photo",
+          type: "photo",
+          content: "Uncle photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_Uncle_photo,
+          position: { x: 10, y: 45 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "meave_photo",
+          type: "photo",
+          content: "Meave photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_Meave_photo,
+          position: { x: 30, y: 45 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "sherrif_photo",
+          type: "photo",
+          content: "Sheriff photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_sherrif_photo,
+          position: { x: 50, y: 45 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "guy_photo",
+          type: "photo",
+          content: "Guy photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_guy_photo,
+          position: { x: 70, y: 45 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+        {
+          id: "shopkeeper_photo",
+          type: "photo",
+          content: "Shopkeeper photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_shopkeeper_photo,
+          position: { x: 90, y: 45 },
+          size: { width: 210, height: 360 },
+          rotation: 0,
+        },
+                {
+          id: "maine_map_photo",
+          type: "photo",
+          content: "Maine map photo",
+          imageUrl: PREDEFINED_IMAGES.HSN_maine_map_photo,
+          position: { x: 10, y: 100 },
+          size: { width: 1200, height: 600 },
+          rotation: 0,
+        },
+      ],
+    },
+    isPurchasable: false,
+    hasDownloadSample: false,
+  },
   {
     id: 1,
     slug: "mayfield-manor-mystery",
