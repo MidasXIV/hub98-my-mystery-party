@@ -82,6 +82,7 @@ import {
 import { computeDeclutterLayout } from "../../../lib/declutter";
 import FeedbackPanel from "@/components/feedback-panel";
 import ContextMenu from "@/components/board-context-menu";
+import DiaryViewer from "@/components/diary-viewer";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -107,6 +108,7 @@ const DEFAULT_ITEM_SIZES: Record<
   "formal-alibi": { width: 250, height: 160 },
   "interrogation-transcript": { width: 270, height: 170 },
   newspaper: { width: 300, height: 200 },
+  diary: { width: 220, height: 160 }, // compact representation; modal handles full paged view
 };
 
 function normalizeItemSize(item: BoardItem): BoardItem {
@@ -316,6 +318,8 @@ function Modal({
         );
       case "newspaper":
         return <NewspaperClipping content={item.content} isModal={true} />;
+      case "diary":
+        return <DiaryViewer content={item.content} />;
       case "folder-tab":
         return (
           <div className="bg-yellow-600 text-white text-2xl p-4 uppercase font-staatliches tracking-wider">
@@ -1891,6 +1895,42 @@ export default function PlayBoardPage({
             className={`${commonClasses} ${dynamicClasses} bg-yellow-600 text-white text-xs p-1 px-3 flex items-center justify-center uppercase font-staatliches tracking-wider`}
           >
             {item.content}
+          </div>
+        );
+      case "diary":
+        // Show a stylized closed journal summarizing number of days.
+        let diarySummary: { days: number; title?: string } = { days: 0 };
+        try {
+          const parsed = JSON.parse(item.content);
+          const days = Array.isArray(parsed?.diaryEntries)
+            ? parsed.diaryEntries.length
+            : 0;
+          diarySummary = { days, title: parsed?.title };
+        } catch {
+          // treat raw text as single day entry
+          diarySummary = { days: 1 };
+        }
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} bg-[#3b2f24] text-amber-100 text-xs p-2 font-special-elite border-2 border-[#6d543d] flex flex-col justify-between`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="uppercase tracking-wider font-staatliches text-[11px]">Diary</span>
+              <span className="text-[10px] opacity-70">{diarySummary.days} {diarySummary.days === 1 ? "day" : "days"}</span>
+            </div>
+            <div className="flex-1 flex items-center justify-center text-center px-1">
+              <span className="font-semibold truncate w-full" title={diarySummary.title || item.content}>
+                {diarySummary.title || "Field Notes"}
+              </span>
+            </div>
+            <div className="h-2 bg-gradient-to-r from-[#6d543d] to-[#3b2f24] rounded-sm mt-1" />
           </div>
         );
       default:

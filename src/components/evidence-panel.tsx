@@ -26,6 +26,7 @@ const TYPE_ORDER = [
   "formal-alibi",
   "interrogation-transcript",
   "newspaper",
+  "diary", // newly supported journal/log items
   "clue",
 ];
 

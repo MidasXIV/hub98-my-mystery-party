@@ -1,3 +1,5 @@
+import HER_SHADOWS_NAME_DATA from "./her-shadows-name-data";
+
 export interface Evidence {
   title: string;
   description: string;
@@ -16,14 +18,7 @@ const PREDEFINED_IMAGES: Record<string, string> = {
   Karan_Kholi_image:
     "https://github.com/user-attachments/assets/ca6bea85-0753-4a2d-8114-1c537df204e3",
   // hydroponics: withBase("/cold_case_data/station_zero/still_cockpit.jpeg"),
-  HSN_Ellie_portrait: "/cold_case_data/her_shadows_name/ellie.png",
-  HSN_Grandma_photo: "/cold_case_data/her_shadows_name/grandMA.png",
-  HSN_Uncle_photo: "/cold_case_data/her_shadows_name/uncle.png",
-  HSN_Meave_photo: "/cold_case_data/her_shadows_name/meave.png",
-  HSN_guy_photo: "/cold_case_data/her_shadows_name/guy.png",
-  HSN_sherrif_photo: "/cold_case_data/her_shadows_name/sherrif.png",
-  HSN_shopkeeper_photo: "/cold_case_data/her_shadows_name/shopkeeper.png",
-  HSN_maine_map_photo: "/cold_case_data/her_shadows_name/maine_map.png",
+
 };
 
 export interface ColdCase {
@@ -68,82 +63,7 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     players: "1-2",
     duration: "4-5 hours",
     price: 49.99,
-    evidence: {
-      items: [
-        {
-          id: "ellie_portrait",
-          type: "photo",
-          content: "Ellie portrait",
-          imageUrl: PREDEFINED_IMAGES.HSN_Ellie_portrait,
-          position: { x: 10, y: -10 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "grandma_photo",
-          type: "photo",
-          content: "Grandma photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_Grandma_photo,
-          position: { x: 30, y: -10 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "uncle_photo",
-          type: "photo",
-          content: "Uncle photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_Uncle_photo,
-          position: { x: 10, y: 45 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "meave_photo",
-          type: "photo",
-          content: "Meave photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_Meave_photo,
-          position: { x: 30, y: 45 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "sherrif_photo",
-          type: "photo",
-          content: "Sheriff photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_sherrif_photo,
-          position: { x: 50, y: 45 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "guy_photo",
-          type: "photo",
-          content: "Guy photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_guy_photo,
-          position: { x: 70, y: 45 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-        {
-          id: "shopkeeper_photo",
-          type: "photo",
-          content: "Shopkeeper photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_shopkeeper_photo,
-          position: { x: 90, y: 45 },
-          size: { width: 210, height: 360 },
-          rotation: 0,
-        },
-                {
-          id: "maine_map_photo",
-          type: "photo",
-          content: "Maine map photo",
-          imageUrl: PREDEFINED_IMAGES.HSN_maine_map_photo,
-          position: { x: 10, y: 100 },
-          size: { width: 1200, height: 600 },
-          rotation: 0,
-        },
-      ],
-    },
+    evidence: HER_SHADOWS_NAME_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
   },
@@ -173,114 +93,6 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     ],
     isPurchasable: false,
     hasDownloadSample: false,
-  },
-  {
-    id: 2,
-    slug: "golden-lotus-conspiracy",
-    title: "Golden Lotus Conspiracy",
-    imageUrl: "/cold_cases/thumbnails/golden_lotus.png",
-    tags: ["True Crime", "Group Fun", "Hard Difficulty"],
-    description:
-      "A shadowy society, a priceless artifact, and a trail of coded messages. Decode the conspiracy before it vanishes without a trace.",
-    difficulty: "Hard",
-    players: "2-4",
-    duration: "2-4 hours",
-    price: 34.99,
-    evidence: [
-      {
-        title: "Coded Message",
-        description: "A message written in cipher.",
-        imageUrl: "/cold_cases/thumbnails/evidence_code.png",
-      },
-      {
-        title: "Artifact Photo",
-        description: "A blurry photo of the stolen artifact.",
-        imageUrl: "/cold_cases/thumbnails/evidence_artifact.png",
-      },
-    ],
-    isPurchasable: true,
-    hasDownloadSample: true,
-  },
-  {
-    id: 3,
-    slug: "silent-starlet",
-    title: "The Silent Starlet",
-    imageUrl: "/cold_cases/thumbnails/andi_bell.png",
-    tags: ["Solo Mission", "2-3 Hours", "Historical"],
-    description:
-      "A 1940s Hollywood star disappears on the eve of her biggest premiere. Examine studio memos, film stills, and gossip columns to uncover the truth.",
-    difficulty: "Medium",
-    players: "1-3",
-    duration: "2-3 hours",
-    price: 27.5,
-    evidence: [
-      {
-        title: "Studio Memo",
-        description: "A memo from the film studio.",
-        imageUrl: "/cold_cases/thumbnails/evidence_memo.png",
-      },
-      {
-        title: "Gossip Column",
-        description: "A newspaper clipping with rumors.",
-        imageUrl: "/cold_cases/thumbnails/evidence_gossip.png",
-      },
-    ],
-    isPurchasable: true,
-    hasDownloadSample: true,
-  },
-  {
-    id: 4,
-    slug: "gone-before-dawn",
-    title: "Gone Before Dawn",
-    imageUrl: "/cold_cases/thumbnails/free_the_bees.png",
-    tags: ["4+ Players", "Twisted Plot", "Easy Difficulty"],
-    description:
-      "A small town wakes to a missing person and a cryptic mural overnight. Unravel overlapping timelines to bring the victim home.",
-    difficulty: "Easy",
-    players: "3-6",
-    duration: "1.5-2.5 hours",
-    price: 24.99,
-    evidence: [
-      {
-        title: "Mural Photo",
-        description: "A photo of the mysterious mural.",
-        imageUrl: "/cold_cases/thumbnails/evidence_mural.png",
-      },
-      {
-        title: "Timeline Chart",
-        description: "A chart of overlapping timelines.",
-        imageUrl: "/cold_cases/thumbnails/evidence_timeline.png",
-      },
-    ],
-    isPurchasable: true,
-    hasDownloadSample: true,
-  },
-  {
-    id: 5,
-    slug: "echoes-of-the-deep",
-    title: "Echoes of the Deep",
-    imageUrl: "/cold_cases/thumbnails/missing_person.png",
-    tags: ["Date Night", "Puzzle Heavy", "High Difficulty"],
-    description:
-      "A marine research station sends one last garbled transmission. Dive into sonar maps, lab notes, and encrypted logs to find what lurks beneath.",
-    difficulty: "Hard",
-    players: "1-4",
-    duration: "3-5 hours",
-    price: 39.0,
-    evidence: [
-      {
-        title: "Sonar Map",
-        description: "A sonar map with strange readings.",
-        imageUrl: "/cold_cases/thumbnails/evidence_sonar.png",
-      },
-      {
-        title: "Lab Notes",
-        description: "Encrypted lab notes from the station.",
-        imageUrl: "/cold_cases/thumbnails/evidence_lab.png",
-      },
-    ],
-    isPurchasable: true,
-    hasDownloadSample: true,
   },
   {
     id: 6,
