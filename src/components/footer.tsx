@@ -1,8 +1,38 @@
+"use client";
 import React from 'react';
+import { useTheme } from 'next-themes';
+import clsx from 'clsx';
 
 // The component is now very simple. It only needs the ref.
 // All animation is handled by the parent.
-function Footer({ footerRef }: { footerRef: React.RefObject<HTMLElement | null> }) {
+// footerRef is optional so server components can render <Footer /> without creating a ref.
+function Footer({ footerRef }: { footerRef?: React.RefObject<HTMLElement | null> }) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  // Inversion logic: when overall theme is dark, footer uses light styling; vice versa.
+  const containerClasses = clsx(
+    'p-8 md:p-16 relative transition-colors',
+    isDark
+      ? 'bg-white text-black'
+      : 'bg-black text-white'
+  );
+  const subtleText = clsx(
+    'mt-2',
+    isDark ? 'text-black/60' : 'text-white/60'
+  );
+  const tertiaryBadge = clsx(
+    'border rounded-full px-3 py-1 text-xs',
+    isDark ? 'border-black/20 text-black/50' : 'border-white/20 text-white/50'
+  );
+  const linkClass = clsx(
+    'transition-colors',
+    isDark ? 'hover:text-black/70' : 'hover:text-white/70'
+  );
+  const accentButton = clsx(
+    'absolute bottom-8 right-8 w-12 h-12 rounded-full flex items-center justify-center transition-opacity',
+    isDark ? 'bg-black text-white hover:bg-black/80' : 'bg-white text-black hover:bg-white/80'
+  );
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -14,49 +44,41 @@ function Footer({ footerRef }: { footerRef: React.RefObject<HTMLElement | null> 
   // The positioning (fixed/sticky behavior) is handled entirely by the GSAP pinning logic.
   return (
     <footer ref={footerRef} className="font-sans w-full relative z-0">
-      {/* --- YOUR JSX IS 100% UNCHANGED --- */}
-      <div className="bg-surface text-text-secondary p-8 md:p-16 relative">
+      <div className={containerClasses}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="md:col-span-1">
-            <h1 className="text-8xl lg:text-9xl font-bold text-text-primary tracking-tighter">
+            <h1 className={clsx('text-8xl lg:text-9xl font-bold tracking-tighter', isDark ? 'text-black' : 'text-white')}>
               hub98
             </h1>
-            <p className="mt-2 text-text-tertiary">
+            <p className={subtleText}>
               Immersive Entertainment Experiences
             </p>
           </div>
           <div className="space-y-4">
-            <span className="border border-subtle-stroke rounded-full px-3 py-1 text-xs text-text-tertiary">
-              Contact
-            </span>
-            <div>
+            <span className={tertiaryBadge}>Contact</span>
+            <div className={clsx(isDark ? 'text-black/80' : 'text-white/80')}>
               <p>My Mystery Party</p>
               <p>A Hub98 Entertainment Product</p>
               <a
                 href="mailto:hello@mymysteryparty.com"
-                className="hover:text-text-primary transition-colors"
+                className={linkClass}
               >
                 hello@mymysteryparty.com
               </a>
             </div>
           </div>
           <div className="space-y-4">
-            <span className="border border-subtle-stroke rounded-full px-3 py-1 text-xs text-text-tertiary">
-              Links
-            </span>
+            <span className={tertiaryBadge}>Links</span>
             <ul className="space-y-2">
-              <li><a href="#" className="hover:text-text-primary transition-colors">Instagram</a></li>
-              <li><a href="#" className="hover:text-text-primary transition-colors">Facebook</a></li>
-              <li><a href="#" className="hover:text-text-primary transition-colors">Newsletter</a></li>
-              <li><a href="#" className="hover:text-text-primary transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-text-primary transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-text-primary transition-colors">Privacy Policy</a></li>
+              {['Instagram','Facebook','Newsletter','FAQ','Terms of Service','Privacy Policy'].map(label => (
+                <li key={label}><a href="#" className={linkClass}>{label}</a></li>
+              ))}
             </ul>
           </div>
         </div>
         <button
           onClick={scrollToTop}
-          className="absolute bottom-8 right-8 w-12 h-12 bg-surface-accent rounded-full flex items-center justify-center text-text-primary hover:bg-opacity-70 transition-opacity"
+          className={accentButton}
           aria-label="Scroll to top"
         >
           <svg

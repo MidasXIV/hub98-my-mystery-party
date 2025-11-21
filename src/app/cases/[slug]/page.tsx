@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { coldCases, getCaseBySlug } from "@/data/coldCases";
 import { CaseActions } from "@/components/case-actions";
+import Footer from "@/components/footer";
 
 // Next.js 15: params is now async (a Promise) in certain dynamic APIs.
 interface CasePageProps {
@@ -39,9 +40,6 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
             />
           </div>
 
-          {/* SUGGESTION: For better text readability against the embossed background,
-              you could add a subtle background color to this div in your CSS.
-              e.g., `bg-background/90 backdrop-blur-sm` if using Tailwind. */}
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex-grow">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
@@ -80,7 +78,6 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
             </div>
             
             <div className="mt-auto">
-              {/* 2. Moved price above the actions for better context */}
               {caseFile.price != null && (
                 <div className="text-4xl font-bold mb-6">${caseFile.price.toFixed(2)}</div>
               )}
@@ -90,7 +87,6 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
         </div>
         
         <div className="mt-24 border-t border-subtle-stroke pt-12 relative z-10">
-           {/* 3. Using a regular apostrophe for better code readability */}
           <h2 className="text-2xl font-semibold mb-4">What You&apos;ll Receive</h2>
           <p className="text-text-secondary max-w-3xl leading-relaxed">
             Each Cold Case File contains high-quality printable evidence, immersive
@@ -100,6 +96,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

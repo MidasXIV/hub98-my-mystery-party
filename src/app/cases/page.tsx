@@ -1,5 +1,6 @@
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
+import Footer from "@/components/footer";
 
 export const metadata = {
   title: "All Cold Case Files | Mystery Party",
@@ -22,6 +23,7 @@ export default function CasesIndexPage() {
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
