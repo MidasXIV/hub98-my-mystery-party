@@ -9,6 +9,7 @@ export const metadata = {
 
 export default function CasesIndexPage() {
   return (
+    <>
     <div className="bg-background text-text-primary min-h-screen px-4 sm:px-6 lg:px-8 py-20 font-sans">
       <div className="max-w-7xl mx-auto mb-12">
         <h1 className="text-5xl md:text-6xl font-bold mb-4">All Cold Case Files</h1>
@@ -23,7 +24,9 @@ export default function CasesIndexPage() {
           ))}
         </div>
       </div>
-      <Footer />
     </div>
+
+      <Footer />
+    </>
   );
 }
