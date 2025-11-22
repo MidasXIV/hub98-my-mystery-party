@@ -243,7 +243,7 @@ function App() {
         </main>
         <RoadmapHomePreview />
         <CallToAction />
-        <Footer footerRef={footerRef as React.RefObject<HTMLElement>} />
+        <Footer />
       </div>
     </div>
   );
