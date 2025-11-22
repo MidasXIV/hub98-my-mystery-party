@@ -36,33 +36,33 @@ function AnimatedContainer({
 // The component is now very simple. It only needs the ref.
 // All animation is handled by the parent.
 // footerRef is optional so server components can render <Footer /> without creating a ref.
-function Footer({
-  footerRef,
-}: {
-  footerRef?: React.RefObject<HTMLElement | null>;
-}) {
+function Footer() {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+  const isDark = mounted && resolvedTheme === "dark";
 
   // Inversion logic: when overall theme is dark, footer uses light styling; vice versa.
+  // Before mounted, rely on Tailwind dark: variants to avoid hydration mismatch flash.
   const containerClasses = clsx(
     "p-8 md:p-16 relative transition-colors",
-    isDark ? "bg-white text-black" : "bg-black text-white"
+    mounted ? (isDark ? "bg-white text-black" : "bg-black text-white") : "bg-black text-white dark:bg-white dark:text-black"
   );
-  const subtleText = clsx("mt-2", isDark ? "text-black/60" : "text-white/60");
+  const subtleText = clsx(
+    "mt-2",
+    mounted ? (isDark ? "text-black/60" : "text-white/60") : "text-white/60 dark:text-black/60"
+  );
   const tertiaryBadge = clsx(
     "border rounded-full px-3 py-1 text-xs",
-    isDark ? "border-black/20 text-black/50" : "border-white/20 text-white/50"
+    mounted ? (isDark ? "border-black/20 text-black/50" : "border-white/20 text-white/50") : "border-white/20 text-white/50 dark:border-black/20 dark:text-black/50"
   );
   const linkClass = clsx(
     "transition-colors",
-    isDark ? "hover:text-black/70" : "hover:text-white/70"
+    mounted ? (isDark ? "hover:text-black/70" : "hover:text-white/70") : "hover:text-white/70 dark:hover:text-black/70"
   );
   const accentButton = clsx(
     "absolute bottom-8 right-8 w-12 h-12 rounded-full flex items-center justify-center transition-opacity",
-    isDark
-      ? "bg-black text-white hover:bg-black/80"
-      : "bg-white text-black hover:bg-white/80"
+    mounted ? (isDark ? "bg-black text-white hover:bg-black/80" : "bg-white text-black hover:bg-white/80") : "bg-white text-black hover:bg-white/80 dark:bg-black dark:text-white dark:hover:bg-black/80"
   );
   const scrollToTop = () => {
     window.scrollTo({
@@ -75,16 +75,24 @@ function Footer({
   // The positioning (fixed/sticky behavior) is handled entirely by the GSAP pinning logic.
   return (
     <>
-      <div id="footer-divider" className={clsx("relative z-10 h-6", isDark ? "bg-white" : "bg-black")}>
-        <div className={clsx("absolute inset-0 rounded-b-xl", isDark ? "bg-black" : "bg-white")}></div>
+      <div
+        id="footer-divider"
+        className={clsx("relative z-10 h-6", isDark ? "bg-white" : "bg-black")}
+      >
+        <div
+          className={clsx(
+            "absolute inset-0 rounded-b-xl",
+            isDark ? "bg-black" : "bg-white"
+          )}
+        ></div>
         <div className="absolute inset-0 shadow-xl"></div>
       </div>
       <footer
-        className="relative h-[400px] w-full"
+        className="relative h-[750px] md:h-[400px] w-full"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
-        <div className="fixed bottom-0 h-[400px] w-full">
-          <div className="sticky top-[calc(100vh-400px)] h-full overflow-y-auto">
+        <div className="fixed bottom-0 h-[750px] md:h-[400px] w-full">
+          <div className="sticky top-[calc(100vh-750px)] md:top-[calc(100vh-400px)] h-full overflow-y-auto">
             <div className={clsx("size-full border-t", containerClasses)}>
               {/* Decorative radial gradients retained */}
               <div
