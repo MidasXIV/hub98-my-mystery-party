@@ -73,6 +73,16 @@ function Footer() {
 
   // The footer is now just a standard component. The `bg-surface` will be the dark gray.
   // The positioning (fixed/sticky behavior) is handled entirely by the GSAP pinning logic.
+  const links: { label: string; href: string; external?: boolean }[] = [
+    { label: "FAQ", href: "/#faq" },
+    { label: "Newsletter", href: "#newsletter" },
+    { label: "Terms of Service", href: "/terms-of-service" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Disclaimer", href: "/disclaimer" },
+    { label: "Accessibility", href: "/accessibility-statement" },
+    { label: "Instagram", href: "https://instagram.com/mymysteryparty", external: true },
+    { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
+  ];
   return (
     <>
       <div
@@ -135,17 +145,16 @@ function Footer() {
                 <AnimatedContainer className="space-y-4">
                   <span className={tertiaryBadge}>Links</span>
                   <ul className="space-y-2">
-                    {[
-                      "Instagram",
-                      "Facebook",
-                      "Newsletter",
-                      "FAQ",
-                      "Terms of Service",
-                      "Privacy Policy",
-                    ].map((label) => (
-                      <li key={label}>
-                        <a href="#" className={linkClass}>
-                          {label}
+                    {links.map((link) => (
+                      <li key={link.label}>
+                        <a
+                          href={link.href}
+                          className={linkClass}
+                          {...(link.external
+                            ? { target: "_blank", rel: "noopener noreferrer" }
+                            : {})}
+                        >
+                          {link.label}
                         </a>
                       </li>
                     ))}
