@@ -9,7 +9,6 @@ export const ITEM_TYPES = [
   "formal-alibi",
   "interrogation-transcript",
   "newspaper",
-  // New multi-entry log / journal item type
   "diary",
 ] as const;
 
