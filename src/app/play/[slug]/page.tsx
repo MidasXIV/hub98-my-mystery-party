@@ -1269,6 +1269,7 @@ export default function PlayBoardPage({
         y: y_percent,
       },
       size: { width: 150, height: 150 },
+      packIn: [],
       rotation: Math.random() * 4 - 2, // -2 to 2 degrees
     };
 
@@ -1323,6 +1324,7 @@ export default function PlayBoardPage({
       position: { x: x_percent, y: y_percent },
       size: { width: 160, height: 80 },
       rotation: Math.random() * 5 - 2.5,
+      packIn: ["clues"],
     };
 
     setBoardData((prev) => {
@@ -1523,6 +1525,7 @@ export default function PlayBoardPage({
               : undefined;
           const title = 
             typeof it.title === "string" ? it.title : undefined;
+          const packIn = Array.isArray(it.packIn) ? it.packIn : [];
           return normalizeItemSize({
             id,
             title,
@@ -1532,6 +1535,7 @@ export default function PlayBoardPage({
             size,
             rotation,
             imageUrl,
+            packIn,
           });
         })
       : [];

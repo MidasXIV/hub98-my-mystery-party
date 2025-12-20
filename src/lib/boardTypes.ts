@@ -25,7 +25,7 @@ export const ITEM_TYPES = [
 
 export type BoardItemType = (typeof ITEM_TYPES)[number];
 
-export type PackagingSlot = "suspect" | "evidence" | "bonus";
+export type PackagingSlot = "suspect" | "evidence" | "bonus" | "clues";
 
 export interface BoardItem {
   id: string;
