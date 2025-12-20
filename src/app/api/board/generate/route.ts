@@ -451,6 +451,22 @@ export async function POST(req: Request) {
       }
       return NextResponse.json(boardData);
     }
+    if( caseSlug === 'palazzo-of-bones') {
+      const board = getCaseBySlug('palazzo-of-bones');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
+      }
+      return NextResponse.json(boardData);
+    }
+    if( caseSlug === 'zero-sum') {
+      const board = getCaseBySlug('zero-sum');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
+      }
+      return NextResponse.json(boardData);
+    }
 
     // Legacy homicide board for operation-shadowfall / john-doe scenario.
     if (caseSlug === 'operation-shadowfall' || caseSlug === 'john-doe') {

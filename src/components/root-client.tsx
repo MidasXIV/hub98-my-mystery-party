@@ -15,7 +15,7 @@ if (typeof window !== "undefined") {
 
 export default function RootClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideGlobalHeader = pathname.startsWith("/play/");
+  const hideGlobalHeader = pathname.startsWith("/play/") || pathname.startsWith("/print/");
   return (
     <ThemeProvider
       attribute="class"

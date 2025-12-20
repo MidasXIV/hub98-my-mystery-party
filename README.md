@@ -104,6 +104,52 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Export evidence to PDF (batch)
+
+You can export all evidence for any case (in their full “viewer” format) as a single print‑ready PDF using a built‑in print page and a small headless browser script.
+
+What was added:
+- New route: `/print/[slug]` (e.g. `/print/station-zero`) renders every evidence item using the same viewer components used in play modals, with page breaks between items.
+- Script `scripts/export-pdfs.mjs` that opens the print page and saves to `exported-pdfs/<slug>.pdf`.
+
+### One‑time setup
+
+If PowerShell blocks Yarn on Windows, either use cmd.exe or temporarily bypass just for this session.
+
+Option A (cmd.exe):
+
+```bat
+cmd /c yarn add -D puppeteer
+```
+
+Option B (PowerShell bypass, current process only):
+
+```powershell
+PowerShell -ExecutionPolicy Bypass -Command "yarn add -D puppeteer"
+```
+
+### Run the exporter
+
+1) Start the dev server (in a separate terminal):
+
+```powershell
+yarn dev
+```
+
+2) Export Station Zero (default example):
+
+```powershell
+yarn export:pdf:case
+```
+
+Or export any case by slug and optionally choose output dir or base URL:
+
+```powershell
+yarn export:pdf --base=http://localhost:3000 --out=exported-pdfs station-zero palazzo-of-bones her-shadows-name
+```
+
+Output files will be written under `exported-pdfs/`. The print pages include print CSS so background colors and textures render correctly.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

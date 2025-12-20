@@ -3,6 +3,7 @@ import Image from "next/image";
 import { coldCases, getCaseBySlug } from "@/data/coldCases";
 import { CaseActions } from "@/components/case-actions";
 import Footer from "@/components/footer";
+import TestimonialCard, { Testimonial } from "@/components/multi-media-testimonial";
 
 // Next.js 15: params is now async (a Promise) in certain dynamic APIs.
 interface CasePageProps {
@@ -21,6 +22,19 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
   if (!caseFile) {
     notFound();
   }
+
+  // Map new ColdCase.preview entries into Testimonial cards
+  const previews: Testimonial[] = Array.isArray(caseFile.preview)
+    ? caseFile.preview.map((p) => ({
+        name: p.name || caseFile.title,
+        designation: p.typeOfPreview || "Preview",
+        title: p.title || undefined,
+        profile: p.profile || caseFile.imageUrl,
+        content: p.content || "",
+        mediaUrl: p.mediaUrl,
+        thumbnail: p.thumbnail || p.profile || caseFile.imageUrl,
+      }))
+    : [];
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans">
@@ -94,6 +108,18 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
             and creativity. Perfect for an unforgettable evening of mystery and
             deduction.
           </p>
+
+          {/* Evidence previews as testimonial cards */}
+          {Array.isArray(previews) && previews.length > 0 ? (
+            <section className="mt-10">
+              <h3 className="text-2xl font-semibold mb-6">Case Previews</h3>
+              <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 [column-fill:_balance]">
+                {previews.map((t, i) => (
+                  <TestimonialCard key={i} testimonial={t} hideProfile />
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       </div>
       <Footer />

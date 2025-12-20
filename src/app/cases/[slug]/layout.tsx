@@ -2,12 +2,19 @@ import React from "react";
 import { getCaseBySlug } from "@/data/coldCases";
 import type { Metadata } from "next";
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const { slug } = params;
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const resolved = params instanceof Promise ? await params : params;
+  const slug = resolved.slug;
   const caseFile = getCaseBySlug(slug);
   const titleBase = caseFile ? caseFile.title : "Case Not Found";
   const title = `${titleBase} | Cold Case File`;
-  const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
+  const description =
+    caseFile?.description ||
+    "Interactive mystery experience on My Mystery Party.";
 
   const ogImages = [
     {
@@ -56,6 +63,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   };
 }
 
-export default function CaseLayout({ children }: { children: React.ReactNode }) {
+export default function CaseLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return <>{children}</>;
 }

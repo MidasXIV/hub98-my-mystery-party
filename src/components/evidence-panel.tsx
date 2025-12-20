@@ -5,6 +5,7 @@ import GenericFloatingPanel from "./floating-panel";
 // Align with BoardItem shape used in play/[slug]/page.tsx
 export interface EvidencePanelItem {
   id: string;
+  title?: string;
   type: string; // We'll accept raw type strings; consumer ensures validity.
   content: string;
 }
@@ -18,6 +19,7 @@ export interface EvidencePanelProps {
 
 // Display order (mirrors ITEM_TYPES ordering for familiarity)
 const TYPE_ORDER = [
+  "case-briefing",
   "photo",
   "document",
   "note",
@@ -28,6 +30,16 @@ const TYPE_ORDER = [
   "newspaper",
   "diary", // newly supported journal/log items
   "clue",
+  "person-of-interest-report",
+  "receipt",
+  "ticket",
+  "phoneLog",
+  "activity-log",
+  "map",
+  "search-and-rescue-report",
+  "missing-person-report",
+  "electronic-messages",
+  "transmission-log",
 ];
 
 // Utility: group items by type preserving defined type order
@@ -80,7 +92,7 @@ export default function EvidencePanel({
         </span>
       }
       onClose={onClose}
-    //   initialSize={{ height: 420 }}
+      //   initialSize={{ height: 420 }}
       contentStyle={{
         height: "100%",
         maxHeight: "420px",
@@ -115,9 +127,10 @@ export default function EvidencePanel({
               <ul className="flex flex-col gap-1">
                 {items.map((it) => {
                   // Derive a short label from content (first 40 chars)
-                  const preview =
-                    it.content.replace(/\n+/g, " ").slice(0, 40).trim() +
-                    (it.content.length > 40 ? "…" : "");
+                  const preview = it.title
+                    ? it.title
+                    : it.content.replace(/\n+/g, " ").slice(0, 40).trim() +
+                      (it.content.length > 40 ? "…" : "");
                   return (
                     <li key={it.id}>
                       <button

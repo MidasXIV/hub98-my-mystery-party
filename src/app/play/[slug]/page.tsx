@@ -3,6 +3,10 @@
 import MissionLoading from "@/components/mission-loading";
 
 import React from "react";
+import InterrogationTranscriptViewer from "@/components/interrogation-transcript-viewer";
+import InterrogationTranscriptPreview from "@/components/interrogation-transcript-preview";
+import FormalAlibiViewer from "@/components/formal-alibi-viewer";
+import FormalAlibiPreview from "@/components/formal-alibi-preview";
 import { getCaseBySlug } from "@/data/coldCases";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -39,24 +43,6 @@ const withBase = (path: string) => {
   return path; // root-relative works both locally and on Vercel
 };
 
-// Image handling strategy:
-// Instead of maintaining a PREDEFINED_IMAGES map keyed by the textual content, items of type 'photo'
-// can now include an explicit `imageUrl` field (added to BoardItem). If `imageUrl` is present it will be used directly.
-// Fallback: if `content` itself looks like a path or URL (starts with '/' or 'http'), treat it as an image reference.
-// This lets you define items like:
-// {
-//   id: 'photo_verma',
-//   type: 'photo',
-//   content: 'Dr Verma',          // alt text
-//   imageUrl: '/cold_case_data/station_zero/profile_cass.jpeg',
-//   position: { x: 10, y: 15 },
-//   size: { width: 220, height: 220 },
-//   rotation: 5
-// }
-// or simply set content to the path if you prefer (less explicit):
-// { id: 'photo_verma', type: 'photo', content: '/cold_case_data/station_zero/profile_cass.jpeg', ... }
-// For remote assets you can still use full https URLs.
-
 const PREDEFINED_CLUES = [
   "A faint scent of almond in the air...",
   "The victim's watch is stopped at 3:14.",
@@ -83,6 +69,32 @@ import { computeDeclutterLayout } from "../../../lib/declutter";
 import FeedbackPanel from "@/components/feedback-panel";
 import ContextMenu from "@/components/board-context-menu";
 import DiaryViewer from "@/components/diary-viewer";
+import PersonOfInterestPreview from "@/components/person-of-interest-preview";
+import PersonOfInterestViewer from "@/components/person-of-interest-viewer";
+import AutopsyReportViewer from "@/components/autopsy-report-viewer";
+import AutopsyReportPreview from "@/components/autopsy-report-preview";
+import NewspaperPreview from "@/components/newspaper-preview";
+import NewspaperViewer from "@/components/newspaper-viewer";
+import ReceiptViewer from "@/components/receipt-viewer";
+import ReceiptPreview from "@/components/receipt-preview";
+import TicketStubPreview from "@/components/ticket-stub-preview";
+import TicketStubViewer from "@/components/ticket-stub-viewer";
+import TelephoneLogPreview from "@/components/telephone-log-preview";
+import TelephoneLogViewer from "@/components/telephone-log-viewer";
+import ActivityLogPreview from "@/components/activity-log-preview";
+import ActivityLogViewer from "@/components/activity-log-viewer";
+import SearchAndRescueReportPreview from "@/components/search-and-rescue-report-preview";
+import SearchAndRescueReportViewer from "@/components/search-and-rescue-report-viewer";
+import MapPreview from "@/components/map-preview";
+import MapViewer from "@/components/map-viewer";
+import MissingPersonReportPreview from "@/components/missing-person-report-preview";
+import MissingPersonReportViewer from "@/components/missing-person-report-viewer";
+import ElectronicMessagesPreview from "@/components/electronic-messages-preview";
+import ElectronicMessagesViewer from "@/components/electronic-messages-viewer";
+import CaseBriefingPreview from "@/components/case-briefing-preview";
+import CaseBriefingViewer from "@/components/case-briefing-viewer";
+import TransmissionLogPreview from "@/components/transmission-log-preview";
+import TransmissionLogViewer from "@/components/transmission-log-viewer";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -109,6 +121,17 @@ const DEFAULT_ITEM_SIZES: Record<
   "interrogation-transcript": { width: 270, height: 170 },
   newspaper: { width: 300, height: 200 },
   diary: { width: 220, height: 160 }, // compact representation; modal handles full paged view
+  "person-of-interest-report": { width: 260, height: 160 },
+  receipt: { width: 220, height: 360 },
+  ticket: { width: 260, height: 120 },
+  phoneLog: { width: 260, height: 160 },
+  "activity-log": { width: 260, height: 160 },
+  "search-and-rescue-report": { width: 300, height: 170 },
+  map: { width: 280, height: 180 },
+  "missing-person-report": { width: 280, height: 160 },
+  "electronic-messages": { width: 280, height: 160 },
+  "case-briefing": { width: 300, height: 170 },
+  "transmission-log": { width: 280, height: 160 },
 };
 
 function normalizeItemSize(item: BoardItem): BoardItem {
@@ -142,92 +165,6 @@ function normalizeItemSize(item: BoardItem): BoardItem {
 }
 
 // Lightweight viewers extracted from earlier inline markup accidentally injected.
-function AutopsyReportViewer({ content }: { content: string }) {
-  let parsedContent: Record<string, string> = {};
-  try {
-    const maybe = JSON.parse(content);
-    if (maybe && typeof maybe === "object") parsedContent = maybe;
-  } catch {
-    // Fallback: attempt to split by lines with KEY: VALUE pattern
-    content.split(/\n+/).forEach((line) => {
-      const match = line.match(/^(.*?):\s*(.*)$/);
-      if (match) parsedContent[match[1].trim()] = match[2].trim();
-    });
-  }
-  return (
-    <div className="bg-[#f6f2e8] text-black p-6 font-special-elite max-w-3xl w-full">
-      <h2 className="text-2xl font-bold text-center mb-2">
-        OFFICE OF THE CHIEF MEDICAL EXAMINER
-      </h2>
-      <h3 className="text-lg text-center border-b-2 border-black pb-4 mb-6">
-        AUTOPSY REPORT
-      </h3>
-      <div className="grid grid-cols-2 gap-x-8 gap-y-4 mb-6 text-sm">
-        {Object.entries(parsedContent).map(([key, value], idx) => {
-          if (key.toLowerCase().includes("findings")) return null;
-          const safeKey = key && key.length > 0 ? key : `field-${idx}`;
-          return (
-            <div key={safeKey}>
-              <p className="font-bold text-gray-600">{key}:</p>
-              <p className="pl-2 whitespace-pre-wrap">{String(value)}</p>
-            </div>
-          );
-        })}
-      </div>
-      <div className="text-sm">
-        {(parsedContent["SUMMARY OF FINDINGS"] ||
-          parsedContent["FINDINGS"]) && (
-          <>
-            <h4 className="font-bold text-gray-600 border-b border-black/50 mb-2">
-              SUMMARY OF FINDINGS
-            </h4>
-            <p className="whitespace-pre-wrap">
-              {parsedContent["SUMMARY OF FINDINGS"] ||
-                parsedContent["FINDINGS"]}
-            </p>
-          </>
-        )}
-      </div>
-      <div className="mt-16 text-sm">
-        <div className="w-1/2 float-right text-center">
-          <p className="border-t border-black pt-2">
-            SIGNATURE OF MEDICAL EXAMINER
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function NewspaperClipping({
-  content,
-  isModal,
-}: {
-  content: string;
-  isModal: boolean;
-}) {
-  let data: { headline?: string; body?: string; date?: string } = {};
-  try {
-    data = JSON.parse(content);
-  } catch {
-    data = { headline: "UNPARSEABLE CLIPPING", body: content };
-  }
-  return (
-    <div
-      className={`bg-[#fdf7e3] text-black font-special-elite p-3 border border-gray-500 ${
-        isModal ? "max-w-2xl" : "text-[10px]"
-      }`}
-    >
-      <h4 className="font-bold text-center tracking-wide mb-1 uppercase">
-        {data.headline || "UNTITLED"}
-      </h4>
-      {data.date && (
-        <p className="text-center text-[10px] mb-2 opacity-70">{data.date}</p>
-      )}
-      <p className="whitespace-pre-wrap leading-snug">{data.body || ""}</p>
-    </div>
-  );
-}
 
 // FIX: Add explicit prop types to resolve TypeScript error on `item.content`.
 function Modal({
@@ -293,39 +230,41 @@ function Modal({
       case "autopsy-report":
         return <AutopsyReportViewer content={item.content} />;
       case "formal-alibi":
-        return (
-          <div className="bg-slate-100 text-black p-6 font-special-elite max-w-2xl whitespace-pre-wrap">
-            <h3 className="font-bold text-xl mb-1 text-center">
-              OFFICIAL STATEMENT OF ALIBI
-            </h3>
-            <p className="text-center text-xs mb-4 border-b-2 border-black pb-2">
-              CASE FILE: 044-SHADOWFALL
-            </p>
-            <p>{item.content}</p>
-          </div>
-        );
+        return <FormalAlibiViewer content={item.content} />;
       case "interrogation-transcript":
-        return (
-          <div className="bg-gray-200 text-black p-6 font-mono text-sm max-w-3xl whitespace-pre-wrap">
-            <h3 className="font-bold text-lg mb-1 text-center">
-              INTERROGATION TRANSCRIPT
-            </h3>
-            <p className="text-center text-xs mb-4 border-b-2 border-black pb-2">
-              CLASSIFIED // EYES ONLY
-            </p>
-            <p>{item.content}</p>
-          </div>
-        );
+        return <InterrogationTranscriptViewer content={item.content} />;
       case "newspaper":
-        return <NewspaperClipping content={item.content} isModal={true} />;
+        return <NewspaperViewer content={item.content} />;
       case "diary":
         return <DiaryViewer content={item.content} />;
+      case "person-of-interest-report":
+        return <PersonOfInterestViewer content={item.content} />;
+      case "ticket":
+        return <TicketStubViewer content={item.content} />;
+      case "phoneLog":
+        return <TelephoneLogViewer content={item.content} />;
+      case "activity-log":
+        return <ActivityLogViewer content={item.content} />;
+      case "search-and-rescue-report":
+        return <SearchAndRescueReportViewer content={item.content} />;
+      case "map":
+        return <MapViewer content={item.content} />;
+      case "missing-person-report":
+        return <MissingPersonReportViewer content={item.content} />;
+      case "electronic-messages":
+        return <ElectronicMessagesViewer content={item.content} />;
+      case "case-briefing":
+        return <CaseBriefingViewer content={item.content} />;
+      case "transmission-log":
+        return <TransmissionLogViewer content={item.content} />;
       case "folder-tab":
         return (
           <div className="bg-yellow-600 text-white text-2xl p-4 uppercase font-staatliches tracking-wider">
             {item.content}
           </div>
         );
+      case "receipt":
+        return <ReceiptViewer content={item.content} />;
       default:
         return <p className="p-4">{item.content}</p>;
     }
@@ -734,7 +673,8 @@ export default function PlayBoardPage({
     if (item.imageUrl && item.imageUrl.trim().length > 0)
       return withBase(item.imageUrl.trim());
     // Fallback: treat content as path/URL if it matches pattern
-    if (/^(https?:\/\/|\/)/.test(item.content)) return withBase(item.content.trim());
+    if (/^(https?:\/\/|\/)/.test(item.content))
+      return withBase(item.content.trim());
     return undefined;
   };
 
@@ -1581,8 +1521,11 @@ export default function PlayBoardPage({
               : typeof it.image === "string" && it.image.trim() !== ""
               ? it.image.trim()
               : undefined;
+          const title = 
+            typeof it.title === "string" ? it.title : undefined;
           return normalizeItemSize({
             id,
+            title,
             type,
             content,
             position,
@@ -1798,7 +1741,6 @@ export default function PlayBoardPage({
         );
       case "autopsy-report":
         return (
-          // FIX: Ref callback should not return a value and should handle unmounting.
           <div
             {...interactionHandlers}
             ref={(el) => {
@@ -1807,21 +1749,10 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} bg-[#f0e6d6] text-black text-xs p-2 px-3 flex items-center justify-center uppercase font-staatliches tracking-wider border-2 border-gray-600/50`}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 mr-2"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                clipRule="evenodd"
-              />
-            </svg>
-            AUTOPSY REPORT
+            <AutopsyReportPreview content={item.content} />
+            <Tape rotation={5} />
           </div>
         );
       case "newspaper":
@@ -1834,9 +1765,131 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} newspaper-clipping-effect`}
+            className={`${commonClasses} ${dynamicClasses}`}
           >
-            <NewspaperClipping content={item.content} isModal={false} />
+            <NewspaperPreview content={item.content} />
+          </div>
+        );
+      case "ticket":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <TicketStubPreview content={item.content} />
+          </div>
+        );
+      case "activity-log":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <ActivityLogPreview content={item.content} />
+          </div>
+        );
+      case "map":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <MapPreview content={item.content} />
+          </div>
+        );
+      case "electronic-messages":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <ElectronicMessagesPreview content={item.content} />
+          </div>
+        );
+      case "case-briefing":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <CaseBriefingPreview content={item.content} />
+          </div>
+        );
+      case "transmission-log":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <TransmissionLogPreview content={item.content} />
+          </div>
+        );
+      case "missing-person-report":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <MissingPersonReportPreview content={item.content} />
+            <Tape rotation={-4} />
+          </div>
+        );
+      case "search-and-rescue-report":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <SearchAndRescueReportPreview content={item.content} />
+            <Tape rotation={3} />
           </div>
         );
       case "formal-alibi":
@@ -1849,14 +1902,9 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} bg-gray-200 text-black text-xs p-3 font-special-elite border border-gray-400 overflow-hidden`}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
-            <h4 className="font-bold text-center text-sm border-b border-black/30 mb-2">
-              ALIBI STATEMENT
-            </h4>
-            <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-              {item.content}
-            </p>
+            <FormalAlibiPreview content={item.content} />
             <Tape rotation={-5} />
           </div>
         );
@@ -1870,14 +1918,9 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} bg-gray-300 text-black text-xs p-3 font-mono border-2 border-gray-500 overflow-hidden`}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
-            <h4 className="font-bold text-center text-sm border-b-2 border-black/30 pb-1 mb-2">
-              INTERVIEW NOTES
-            </h4>
-            <p className="whitespace-nowrap overflow-hidden text-ellipsis">
-              {item.content}
-            </p>
+            <InterrogationTranscriptPreview content={item.content} />
             <Tape rotation={8} />
           </div>
         );
@@ -1922,15 +1965,69 @@ export default function PlayBoardPage({
             className={`${commonClasses} ${dynamicClasses} bg-[#3b2f24] text-amber-100 text-xs p-2 font-special-elite border-2 border-[#6d543d] flex flex-col justify-between`}
           >
             <div className="flex items-center justify-between">
-              <span className="uppercase tracking-wider font-staatliches text-[11px]">Diary</span>
-              <span className="text-[10px] opacity-70">{diarySummary.days} {diarySummary.days === 1 ? "day" : "days"}</span>
+              <span className="uppercase tracking-wider font-staatliches text-[11px]">
+                Diary
+              </span>
+              <span className="text-[10px] opacity-70">
+                {diarySummary.days} {diarySummary.days === 1 ? "day" : "days"}
+              </span>
             </div>
             <div className="flex-1 flex items-center justify-center text-center px-1">
-              <span className="font-semibold truncate w-full" title={diarySummary.title || item.content}>
+              <span
+                className="font-semibold truncate w-full"
+                title={diarySummary.title || item.content}
+              >
                 {diarySummary.title || "Field Notes"}
               </span>
             </div>
             <div className="h-2 bg-gradient-to-r from-[#6d543d] to-[#3b2f24] rounded-sm mt-1" />
+          </div>
+        );
+      case "person-of-interest-report":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <PersonOfInterestPreview content={item.content} />
+            <Tape rotation={-7} />
+          </div>
+        );
+      case "receipt":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <ReceiptPreview content={item.content} />
+            <Tape rotation={12} />
+          </div>
+        );
+      case "phoneLog":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <TelephoneLogPreview content={item.content} />
           </div>
         );
       default:
@@ -1993,6 +2090,7 @@ export default function PlayBoardPage({
               id: i.id,
               type: i.type,
               content: i.content,
+              title: i.title,
             }))}
             onFocus={(id) => handleFocusItem(id)}
           />
