@@ -1819,26 +1819,36 @@ Good luck.`,
       id: "obj_01",
       description:
         "Uncover the scientific explanation for the crew's shared hallucinations and the 'ghostly' phenomena.",
+      solution:
+        "tHE HALLUCINATIONS WERE CAUSED BY THE MYCO-VERIDIA FUNGUS RELEASED SPORES AFFECTING THE CREW'S PERCEPTIONS. The solar storm amplified THE EFFECTS. Elara Voss witnessed the manifestations of these hallucinations in the cockpit.",
     },
     {
       id: "obj_02",
       description:
         "Prove that the life support and system failures were a result of deliberate sabotage, not the solar storm.",
+      solution:
+        "Analyze system logs and crew interactions leading up to the failures.",
     },
     {
       id: "obj_03",
       description:
         "Expose the secret rivalry and past trauma that created the motive for murder.",
+      solution:
+        "In the backstory of Elara Voss and the diary of Zane Moerno it is mentioned that Elara's mentor died because of something Zane did which led to a deep-seated resentment.",
     },
     {
       id: "obj_04",
       description:
         "Identify the saboteur who orchestrated the 'haunting' and manipulated the station's systems from the cockpit.",
+      solution:
+        "Elara Voss is the saboteur, and the haunting was hallucinations.",
     },
     {
       id: "obj_05",
       description:
         "Determine how the killer's own plan for a perfect escape ultimately sealed their fate aboard Station Zero.",
+      solution:
+        "Elara tried to divert the power from the cockpit and amplify the frequencies to make the myco-verdia spores more potent, but the plan caused the increase in power to fuse the safety pods shut.",
     },
   ],
 };

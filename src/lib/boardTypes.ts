@@ -49,6 +49,7 @@ export interface Connection {
 export interface Objective {
   id: string;
   description: string;
+  solution?: string;
 }
 
 export interface BoardData {

@@ -1430,34 +1430,29 @@ export default function PlayBoardPage({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           boardData,
+          objectiveId,
           objectiveDescription: solvedObjective?.description,
           solutionText,
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const newEvidence = await res.json();
-      // Normalize sizes of new items before merging so they aren't minuscule.
-      newEvidence.items = newEvidence.items.map(normalizeItemSize);
-
-      setBoardData((prev) => {
-        if (!prev) return prev;
-        const updatedItems = [...prev.items, ...newEvidence.items];
-        const updatedConnections = [
-          ...prev.connections,
-          ...newEvidence.connections,
-        ];
-        return {
-          ...prev,
-          items: updatedItems,
-          connections: updatedConnections,
-        };
-      });
-
-      setCompletedObjectives((prev) => {
-        const newSet = new Set(prev);
-        newSet.add(objectiveId);
-        return newSet;
-      });
+      const result = await res.json();
+      if (!result.allowed) {
+        alert(
+          result.reason ||
+            "Your submission was blocked. Please provide a respectful, honest attempt."
+        );
+        return;
+      }
+      if (result.correct) {
+        setCompletedObjectives((prev) => {
+          const newSet = new Set(prev);
+          newSet.add(objectiveId);
+          return newSet;
+        });
+      } else {
+        alert("Not quite right yet. Keep investigating and try again!");
+      }
     } catch (err) {
       console.error("Failed to generate new evidence:", err);
       alert("Failed to process findings. Intel connection may be unstable.");
@@ -1523,8 +1518,7 @@ export default function PlayBoardPage({
               : typeof it.image === "string" && it.image.trim() !== ""
               ? it.image.trim()
               : undefined;
-          const title = 
-            typeof it.title === "string" ? it.title : undefined;
+          const title = typeof it.title === "string" ? it.title : undefined;
           const packIn = Array.isArray(it.packIn) ? it.packIn : [];
           return normalizeItemSize({
             id,
