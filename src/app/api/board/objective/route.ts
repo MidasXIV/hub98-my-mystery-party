@@ -114,6 +114,40 @@ function scoreAnswer(user: string, truth: string): number {
   return match / t.length; // 0..1 coverage of truth-keywords present in user answer
 }
 
+// Lightweight gibberish/quality checks (no AI, no deps)
+const COMMON_ENGLISH_WORDS = new Set([
+  'the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us'
+]);
+
+function isLikelyGibberish(input: string): boolean {
+  const text = (input || '').trim();
+  if (text.length < 8) return true; // too short
+  const letters = text.match(/[a-zA-Z]/g) || [];
+  const letterRatio = letters.length / Math.max(1, text.length);
+  if (letterRatio < 0.5) return true; // mostly non-letters
+
+  const lower = text.toLowerCase();
+  const vowels = (lower.match(/[aeiou]/g) || []).length;
+  const vowelRatio = vowels / Math.max(1, letters.length);
+  if (vowelRatio < 0.2 || vowelRatio > 0.9) return true; // unlikely distribution
+
+  // long consonant runs (e.g., fdfngdigndfgidgf)
+  if (/[bcdfghjklmnpqrstvwxyz]{7,}/i.test(lower)) return true;
+
+  // excessive repeated same char
+  if (/(.)\1{4,}/.test(lower)) return true;
+
+  // word-level checks
+  const words = lower.split(/\s+/).filter(Boolean);
+  const avgLen = words.reduce((a, w) => a + w.length, 0) / Math.max(1, words.length);
+  if (avgLen > 14) return true;
+
+  const commonHits = words.filter((w) => COMMON_ENGLISH_WORDS.has(w)).length;
+  if (letters.length > 20 && commonHits === 0) return true; // no common words in a longer input
+
+  return false;
+}
+
 // --- Cheap rate limiting and caching ---
 // Note: In-memory stores reset when the serverless instance recycles.
 // This is acceptable for free tier; consider external KV for stronger guarantees.
@@ -183,6 +217,24 @@ export async function POST(req: Request) {
   if (!boardData || !solutionText) {
     return NextResponse.json(
       { error: "Missing required fields" },
+      { status: 400 }
+    );
+  }
+
+  // Quick non-AI quality gate to block obvious gibberish/spam
+  if (isLikelyGibberish(solutionText)) {
+    return NextResponse.json(
+      {
+        allowed: false,
+        reason:
+          "Please enter a meaningful answer (your current input looks like gibberish).",
+        hints: [
+          "Write in complete sentences—state your theory clearly.",
+          "Reference specific evidence (documents, transcripts, photos) that support your claim.",
+          "Include key names, places, and causal links (who did what, why, and how).",
+          "Avoid random characters; use plain language and relevant case terms.",
+        ],
+      },
       { status: 400 }
     );
   }
