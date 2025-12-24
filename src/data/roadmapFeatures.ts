@@ -38,7 +38,7 @@ export const roadmapFeatures: RoadmapFeature[] = [
     description:
       "Allow multiple players to annotate and rearrange the investigation timeline simultaneously with presence indicators.",
     category: "core",
-    status: "planned",
+    status: "idea",
     votes: 42,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 9).toISOString(),
     tags: ["multiplayer", "realtime"],
@@ -60,7 +60,7 @@ export const roadmapFeatures: RoadmapFeature[] = [
     description:
       "Interactive filters for enlarging, enhancing, and marking photographs like a real forensic darkroom.",
     category: "ui",
-    status: "in-progress",
+    status: "idea",
     votes: 58,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(),
     tags: ["images", "filters"],
@@ -94,9 +94,9 @@ export const roadmapFeatures: RoadmapFeature[] = [
     description:
       "Allow players to download encrypted case bundles for travel or limited connectivity sessions.",
     category: "core",
-    status: "planned",
+    status: "in-progress",
     votes: 55,
-    priority: "medium",
+    priority: "high",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 0.5).toISOString(),
     tags: ["offline", "portability"],
   },
@@ -106,7 +106,7 @@ export const roadmapFeatures: RoadmapFeature[] = [
     description:
       "Enable renaming suspects and customizing investigation locations for personalized or themed game nights.",
     category: "gameplay",
-    status: "idea",
+    status: "planned",
     votes: 38,
     priority: "medium",
     createdAt: new Date(Date.now()).toISOString(),

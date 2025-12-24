@@ -43,77 +43,7 @@ export interface ColdCase {
 }
 
 export const coldCases: ColdCase[] = [
-  {
-    id: 7,
-    slug: "her-shadows-name",
-    title: "Her Shadow's Name",
-    imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
-    tags: ["Missing", "1-2 Players", "High Difficulty"],
-    description: `
-      In the secluded, fog-choked town of Black Creek, Maine, some secrets are woven into the very wood and stone.
-On October 28th, Eleanor Vance, Age 24, disappeared.
-Her last location was 412 Hemlock Lane—a house heavy with its own history—where her grandmother, Edith Vance, maintained that Eleanor simply left. The front door was found unlocked. Her keys and wallet were on the counter.
-The only item missing: Eleanor's private journal.
-Days later, it was found near the old Black Creek Bridge. Its pages were not the record of a sane mind, but a chilling testament to a descent into shared madness:
-> ...the calls come after three. He never speaks my name. Only hers.
-> 
-The local report cites "severe isolation and self-induced psychosis," pointing to Ellie's obsession with the single, whispered word in her diary: Cora.
-Yet, in Black Creek, a name is never just a name. It is a promise. It is a warning.
-Eleanor Vance's body was never recovered. The file is closed. But if you look closely at the faded photographs and the scribbled entries, you have to ask:
-Did Eleanor wander off? Or did she answer the call of her shadow's name?
-      `,
-    difficulty: "Hard",
-    players: "1-2",
-    duration: "4-5 hours",
-    price: 49.99,
-    evidence: HER_SHADOWS_NAME_DATA,
-    isPurchasable: false,
-    hasDownloadSample: false,
-  },
-  // {
-  //   id: 1,
-  //   slug: "mayfield-manor-mystery",
-  //   title: "The Mayfield Manor Mystery",
-  //   imageUrl: "/cold_cases/thumbnails/shining_star.png",
-  //   tags: ["Date Night", "1-2 Players", "High Difficulty"],
-  //   description:
-  //     "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
-  //   difficulty: "Hard",
-  //   players: "1-2",
-  //   duration: "2-3 hours",
-  //   price: 29.99,
-  //   evidence: [
-  //     {
-  //       title: "Letter from the Manor",
-  //       description: "A cryptic letter found in the study.",
-  //       imageUrl: "/cold_cases/thumbnails/evidence_letter.png",
-  //     },
-  //     {
-  //       title: "Blueprints",
-  //       description: "Blueprints of the manor with hidden markings.",
-  //       imageUrl: "/cold_cases/thumbnails/evidence_blueprint.png",
-  //     },
-  //   ],
-  //   isPurchasable: false,
-  //   hasDownloadSample: false,
-  // },
-  {
-    id: 2,
-    slug: "palazzo-of-bones",
-    title: "The Palazzo of Bones",
-    imageUrl: "/cold_cases/thumbnails/palazzo_of_bones.jpeg",
-    tags: ["Date Night", "1-2 Players", "High Difficulty"],
-    description:
-      "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
-    difficulty: "Hard",
-    players: "1-2",
-    duration: "2-3 hours",
-    price: 29.99,
-    evidence: PALAZZO_OF_BONES_DATA,
-    isPurchasable: false,
-    hasDownloadSample: false,
-  },
-  {
+    {
     id: 6,
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
@@ -202,6 +132,77 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
       },
     ],
   },
+  {
+    id: 7,
+    slug: "her-shadows-name",
+    title: "Her Shadow's Name",
+    imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
+    tags: ["Missing", "1-2 Players", "High Difficulty"],
+    description: `
+      In the secluded, fog-choked town of Black Creek, Maine, some secrets are woven into the very wood and stone.
+On October 28th, Eleanor Vance, Age 24, disappeared.
+Her last location was 412 Hemlock Lane—a house heavy with its own history—where her grandmother, Edith Vance, maintained that Eleanor simply left. The front door was found unlocked. Her keys and wallet were on the counter.
+The only item missing: Eleanor's private journal.
+Days later, it was found near the old Black Creek Bridge. Its pages were not the record of a sane mind, but a chilling testament to a descent into shared madness:
+> ...the calls come after three. He never speaks my name. Only hers.
+> 
+The local report cites "severe isolation and self-induced psychosis," pointing to Ellie's obsession with the single, whispered word in her diary: Cora.
+Yet, in Black Creek, a name is never just a name. It is a promise. It is a warning.
+Eleanor Vance's body was never recovered. The file is closed. But if you look closely at the faded photographs and the scribbled entries, you have to ask:
+Did Eleanor wander off? Or did she answer the call of her shadow's name?
+      `,
+    difficulty: "Hard",
+    players: "1-2",
+    duration: "4-5 hours",
+    price: 49.99,
+    evidence: HER_SHADOWS_NAME_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+  },
+  // {
+  //   id: 1,
+  //   slug: "mayfield-manor-mystery",
+  //   title: "The Mayfield Manor Mystery",
+  //   imageUrl: "/cold_cases/thumbnails/shining_star.png",
+  //   tags: ["Date Night", "1-2 Players", "High Difficulty"],
+  //   description:
+  //     "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
+  //   difficulty: "Hard",
+  //   players: "1-2",
+  //   duration: "2-3 hours",
+  //   price: 29.99,
+  //   evidence: [
+  //     {
+  //       title: "Letter from the Manor",
+  //       description: "A cryptic letter found in the study.",
+  //       imageUrl: "/cold_cases/thumbnails/evidence_letter.png",
+  //     },
+  //     {
+  //       title: "Blueprints",
+  //       description: "Blueprints of the manor with hidden markings.",
+  //       imageUrl: "/cold_cases/thumbnails/evidence_blueprint.png",
+  //     },
+  //   ],
+  //   isPurchasable: false,
+  //   hasDownloadSample: false,
+  // },
+  {
+    id: 2,
+    slug: "palazzo-of-bones",
+    title: "The Palazzo of Bones",
+    imageUrl: "/cold_cases/thumbnails/palazzo_of_bones.jpeg",
+    tags: ["Date Night", "1-2 Players", "High Difficulty"],
+    description:
+      "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
+    difficulty: "Hard",
+    players: "1-2",
+    duration: "2-3 hours",
+    price: 79.99,
+    evidence: PALAZZO_OF_BONES_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+  },
+
   {
     id: 3,
     slug: "zero-sum",
