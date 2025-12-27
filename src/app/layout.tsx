@@ -99,6 +99,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="p:domain_verify"
+          content="9a25a6bb9453f23e496ad1750b3fe069"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
       >
