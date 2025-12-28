@@ -47,7 +47,7 @@ export default function Hero() {
             {/* Left Stats Card */}
             <div className="w-full max-w-xs rounded-xl bg-black/60 p-5 text-white/90 shadow-xl backdrop-blur-lg">
               <p className="text-sm leading-relaxed">
-                Join over 500,000 active detectives and solve cases inspired by
+                Join over 5,000 active detectives and solve cases inspired by
                 real-world mysteries. New case files added monthly.
               </p>
               <button className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-white/95 transition-opacity hover:opacity-80">

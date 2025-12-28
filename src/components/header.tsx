@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 
 const Header = () => {
@@ -10,6 +11,9 @@ const Header = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
+  // Detect current route to conditionally show a Home button when not on the homepage
+  const pathname = usePathname();
+  const showHomeButton = pathname !== "/";
 
   const effectiveTheme = mounted ? resolvedTheme : undefined; // undefined during SSR/hydration
   const toggleTheme = () => {
@@ -21,6 +25,28 @@ const Header = () => {
     <header
       className="fixed left-1/2 top-8 z-50 transform -translate-x-1/2 flex items-center px-4 py-2 bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl rounded-full w-[360px] max-w-full gap-3 backdrop-blur-md"
     >
+      {showHomeButton && (
+        <Link
+          href="/"
+          aria-label="Go to homepage"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-300/60 dark:border-white/10 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 shadow transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            className="size-5"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 10.5l9-7.5 9 7.5M5.25 9.75V20.25h5.25v-4.5h3v4.5h5.25V9.75"
+            />
+          </svg>
+        </Link>
+      )}
       <Link
         href="/#cases"
         className="font-mono text-sm px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 font-semibold shadow border border-gray-300/60 dark:border-white/10 transition"

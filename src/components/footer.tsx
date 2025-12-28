@@ -80,8 +80,9 @@ function Footer() {
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Disclaimer", href: "/disclaimer" },
     { label: "Accessibility", href: "/accessibility-statement" },
-    { label: "Instagram", href: "https://instagram.com/mymysteryparty", external: true },
-    { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
+    { label: "Pinterest", href: "https://www.pinterest.com/mymysterypartypins/", external: true },
+    // { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
+    // { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
   ];
   return (
     <>
@@ -101,7 +102,7 @@ function Footer() {
         className="relative h-[750px] md:h-[400px] w-full"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
-        <div className="fixed bottom-0 h-[750px] md:h-[400px] w-full">
+        <div className="fixed bottom-0 h-[750px] md:h-[400px] w-full z-50">
           <div className="sticky top-[calc(100vh-750px)] md:top-[calc(100vh-400px)] h-full overflow-y-auto">
             <div className={clsx("size-full border-t", containerClasses)}>
               {/* Decorative radial gradients retained */}
