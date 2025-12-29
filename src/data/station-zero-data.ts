@@ -69,10 +69,10 @@ Good luck.`,
       packIn: ["suspect"],
     },
     {
-      id: "doc_crew_profile_cassandra_holt",
+      id: "doc_crew_profile_cassandra_hale",
       type: "document",
       content:
-        "CREW PROFILE — CASSANDRA HOLT\nROLE: Corporate Auditor / Compliance & Oversight\n\nBACKGROUND:\nCass Holt transferred to Internal Oversight after reporting financial misconduct by a former supervisor. The move was lateral, not promotional.\n\nPERSONAL NOTES:\nFormally distant. Socially isolated. Displays strong belief in institutional rules and accountability.\n\nBEHAVIORAL OBSERVATIONS:\nExtensive private logs tracking minor anomalies and personnel behavior. Drafted an unsent priority report to Corporate during the final days.\n\nINVESTIGATIVE NOTE:\nCass’s access to internal communications, logs, and reporting systems places her at the center of information flow. Her actions suggest both protective intent and potential motive for concealment.",
+        "CREW PROFILE — CASSANDRA HALE\nROLE: Corporate Auditor / Compliance & Oversight\n\nBACKGROUND:\nCass Hale transferred to Internal Oversight after reporting financial misconduct by a former supervisor. The move was lateral, not promotional.\n\nPERSONAL NOTES:\nFormally distant. Socially isolated. Displays strong belief in institutional rules and accountability.\n\nBEHAVIORAL OBSERVATIONS:\nExtensive private logs tracking minor anomalies and personnel behavior. Drafted an unsent priority report to Corporate during the final days.\n\nINVESTIGATIVE NOTE:\nCass’s access to internal communications, logs, and reporting systems places her at the center of information flow. Her actions suggest both protective intent and potential motive for concealment.",
       position: { x: 25, y: 105 },
       size: { width: 48, height: 62 },
       rotation: -1,
