@@ -155,3 +155,55 @@ Output files will be written under `exported-pdfs/`. The print pages include pri
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Blog & Guides (Markdown)
+
+We added a simple, SEO‑friendly blog system using Markdown files.
+
+- Content lives under `content/blog/<category>/<slug>.md`
+- Categories are simple folders, e.g. `party-planning-tips`, `top-costumes`, `mystery-party-guides`
+- Each post includes frontmatter:
+
+```
+---
+slug: how-to-host-an-epic-mystery-party
+title: How to Host an Epic Mystery Party
+description: A step‑by‑step guide to planning an unforgettable mystery party—theme, clues, pacing, and reveal.
+date: 2025-12-20
+author: Hub98 Editorial
+category: party-planning-tips
+tags:
+	- planning
+	- hosting
+heroImage: /opengraph/hero.png
+---
+```
+
+Routes:
+- `/blog` – index with categories + latest posts
+- `/blog/category/<category>` – list posts by category
+- `/blog/<slug>` – single article
+- `/rss.xml` – RSS feed
+- `/sitemap.xml` – Sitemap including blog URLs
+
+SEO features:
+- Per‑page metadata + canonical URLs
+- OpenGraph/Twitter cards (uses `heroImage` if provided)
+- JSON‑LD Article schema on post pages
+- Internal links to categories and index
+
+Writing guidelines:
+- Keep titles concise (55–65 chars); include a focus keyword early
+- Use a clear meta description (120–160 chars)
+- Structure with H2/H3 headings; add lists and short paragraphs
+- Add 1–2 internal links to relevant cases or categories
+
+Styling:
+- Basic Tailwind card styles are included; you can enhance with components
+- If you want richer typography, consider adding `@tailwindcss/typography`
+
+Adding a new post:
+1. Create the Markdown file under `content/blog/<category>/<slug>.md`
+2. Fill out frontmatter; set `date` to ISO (YYYY-MM-DD)
+3. Commit and deploy; pages are statically generated
+

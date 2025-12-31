@@ -330,6 +330,36 @@ button {
   }
 }
 
+/* Prose defaults for Markdown rendering */
+/* Keep headings tight and readable across themes */
+:where(.prose) {
+  max-width: 65ch;
+}
+:where(.prose h1) {
+  @apply text-3xl md:text-4xl font-bold tracking-tight;
+}
+:where(.prose h2) {
+  @apply text-2xl md:text-3xl font-semibold tracking-tight mt-8;
+}
+:where(.prose h3) {
+  @apply text-xl md:text-2xl font-semibold mt-6;
+}
+:where(.prose p), :where(.prose li) {
+  @apply leading-relaxed;
+}
+:where(.prose a) {
+  @apply text-primary underline-offset-2 hover:underline;
+}
+:where(.prose code) {
+  @apply rounded bg-muted px-1 py-0.5;
+}
+:where(.prose pre) {
+  @apply rounded bg-muted p-4 overflow-x-auto;
+}
+:where(.prose img) {
+  @apply rounded-lg;
+}
+
 /* Embossed backdrop typography utility */
 .embossed-backdrop {
   position: absolute;

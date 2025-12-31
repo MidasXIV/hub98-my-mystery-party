@@ -15,6 +15,8 @@ import AffiliatePromo from "@/components/affiliate-promo";
 
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
+import AnimatedCardStack from "@/components/animate-card-animation";
+import HowItWorks from "@/components/how-it-works-section";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -240,6 +242,7 @@ function App() {
           {/* <AffiliatePromo /> */}
           <FAQ />
           {/* <TeamSection /> */}
+          {/* <AnimatedCardStack /> */}
         </main>
         <RoadmapHomePreview />
         <CallToAction />
