@@ -8,7 +8,7 @@ import { coldCases } from "@/data/coldCases";
 
 type HeaderMegaMenuProps = {
   open: boolean;
-  anchorRef: React.RefObject<HTMLElement>;
+  anchorRef: React.RefObject<HTMLDivElement | null>;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 };
