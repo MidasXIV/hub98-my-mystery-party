@@ -93,6 +93,27 @@ Extending the server action (future):
 // await db.insert(applicationsTable).values(payload)
 ```
 
+## Waitlist
+
+There is a `/waitlist` page with an email signup form.
+
+Current mechanics:
+- The server action validates the email.
+- It logs signups to the server console.
+- Optionally, it can forward the signup to a Discord webhook.
+
+### Discord webhook notifications (optional)
+
+Set an environment variable:
+- `DISCORD_WAITLIST_WEBHOOK_URL`
+
+Local dev:
+1. Copy `.env.example` to `.env.local`
+2. Set `DISCORD_WAITLIST_WEBHOOK_URL` to your Discord webhook URL
+
+Vercel:
+- Add `DISCORD_WAITLIST_WEBHOOK_URL` under Project Settings → Environment Variables.
+
 Homepage contains an understated `AffiliatePromo` section (`src/components/affiliate-promo.tsx`) describing this as a quiet interest list to avoid hype.
 
 ## Learn More
