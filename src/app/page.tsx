@@ -15,8 +15,10 @@ import AffiliatePromo from "@/components/affiliate-promo";
 
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
-import AnimatedCardStack from "@/components/animate-card-animation";
-import HowItWorks from "@/components/how-it-works-section";
+// Removed unused imports for lint cleanliness
+// import AnimatedCardStack from "@/components/animate-card-animation";
+// import HowItWorks from "@/components/how-it-works-section";
+import ColdCaseCTA from "@/components/cold-case-cta";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -219,7 +221,7 @@ function App() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const mainContentRef = useRef<HTMLElement | null>(null);
   const mainContainerRef = useRef(null);
-  const footerRef = useRef<HTMLElement>(null);
+  // Removed unused footerRef to satisfy lint rules.
 
   // Removed manual theme initialization & persistence: next-themes already
   // handles system preference and localStorage. Keeping these effects caused
@@ -239,8 +241,9 @@ function App() {
           <Features />
           {/* <HowItWorks /> */}
           <ColdCaseFiles />
-          {/* <AffiliatePromo /> */}
+          <ColdCaseCTA />
           <FAQ />
+          <AffiliatePromo />
           {/* <TeamSection /> */}
           {/* <AnimatedCardStack /> */}
         </main>
