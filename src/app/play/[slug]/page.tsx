@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import PlayHeader from "@/components/play-header";
 import EvidencePanel from "@/components/evidence-panel";
 import TimelinePanel from "@/components/timeline-panel";
+import { useSearchParams } from "next/navigation";
 
 // Removed unused Type import (schemas are server-side)
 import {
@@ -580,6 +581,20 @@ export default function PlayBoardPage({
   const { slug } = React.use(params);
   const caseFile = getCaseBySlug(slug);
 
+  const searchParams = useSearchParams();
+  const debugParam = (searchParams?.get("debug") || "").toLowerCase();
+  const debugEnabledByParam =
+    debugParam === "true" ||
+    debugParam === "1" ||
+    debugParam === "yes" ||
+    debugParam === "on";
+
+  // Optional safety gate: only show dev tools for a dedicated debug case slug.
+  // This avoids accidentally exposing the drawer on real case URLs.
+  const debugEnabledBySlug = slug === "debug";
+
+  const debugMode = debugEnabledByParam || debugEnabledBySlug;
+
   // FIX: Strongly type the boardData state to resolve property access errors on 'unknown' type for items.
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [lineCoords, setLineCoords] = useState<
@@ -633,6 +648,189 @@ export default function PlayBoardPage({
   const [usedClueIndices, setUsedClueIndices] = useState(new Set<number>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
   // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
+
+  // Debug mode (/?debug=true): allow injecting a new item at runtime.
+  const [debugJson, setDebugJson] = useState<string>("");
+  const [debugError, setDebugError] = useState<string | null>(null);
+  const [debugLastAddedId, setDebugLastAddedId] = useState<string | null>(null);
+  const [isDebugDrawerOpen, setIsDebugDrawerOpen] = useState(true);
+  const [debugSelectedType, setDebugSelectedType] = useState<BoardItemType>(
+    "photo"
+  );
+  const [debugParsedPreview, setDebugParsedPreview] = useState<{
+    ok: boolean;
+    message: string;
+    item?: BoardItem;
+  } | null>(null);
+
+  const DEBUG_DEFAULT_PACKIN: BoardItem["packIn"] = ["evidence"];
+
+  const isBoardItemType = (value: unknown): value is BoardItemType =>
+    typeof value === "string" && (ITEM_TYPES as readonly string[]).includes(value);
+
+  const coerceToBoardItem = (raw: any): BoardItem => {
+    const typeCandidate = raw?.type;
+    if (!isBoardItemType(typeCandidate)) {
+      throw new Error(
+        `Invalid or missing 'type'. Must be one of: ${ITEM_TYPES.join(", ")}`
+      );
+    }
+
+    const type: BoardItemType = typeCandidate;
+    const id =
+      typeof raw?.id === "string" && raw.id.trim().length > 0
+        ? raw.id
+        : `debug-${Date.now().toString(36)}-${Math.random()
+            .toString(36)
+            .slice(2, 8)}`;
+
+    const content =
+      typeof raw?.content === "string"
+        ? raw.content
+        : raw?.content != null
+          ? JSON.stringify(raw.content)
+          : "";
+
+    const imageUrl = typeof raw?.imageUrl === "string" ? raw.imageUrl : undefined;
+    const title = typeof raw?.title === "string" ? raw.title : undefined;
+
+    const position = {
+      x:
+        typeof raw?.position?.x === "number"
+          ? raw.position.x
+          : 45 + Math.random() * 10,
+      y:
+        typeof raw?.position?.y === "number"
+          ? raw.position.y
+          : 30 + Math.random() * 12,
+    };
+
+    const defaults = DEFAULT_ITEM_SIZES[type];
+    const size = {
+      width:
+        typeof raw?.size?.width === "number" ? raw.size.width : defaults.width,
+      height:
+        typeof raw?.size?.height === "number" ? raw.size.height : defaults.height,
+    };
+
+    const rotation = typeof raw?.rotation === "number" ? raw.rotation : 0;
+    const packIn = Array.isArray(raw?.packIn)
+      ? raw.packIn
+      : DEBUG_DEFAULT_PACKIN;
+
+    const item: BoardItem = {
+      id,
+      type,
+      title,
+      content,
+      imageUrl,
+      position,
+      size,
+      rotation,
+      packIn,
+    };
+
+    return normalizeItemSize(item);
+  };
+
+  const buildExampleForType = (type: BoardItemType) => {
+    // Keep examples intentionally minimal and renderer-friendly.
+    switch (type) {
+      case "photo":
+        return {
+          type,
+          title: "Debug photo",
+          content: "/cold_case_data/station_zero/previews/example.jpg",
+        };
+      case "note":
+        return { type, content: "This is a debug note." };
+      case "clue":
+        return { type, content: "A suspicious detail worth noting." };
+      case "newspaper":
+        return {
+          type,
+          content: {
+            date: "1998-03-14",
+            headline: "Breaking: Debug Evidence Arrives",
+            body: "This payload will be stringified before rendering.",
+          },
+        };
+      default:
+        return { type, content: "Debug content for this evidence type." };
+    }
+  };
+
+  const handleDebugLoadExample = (type: BoardItemType) => {
+    setDebugError(null);
+    setDebugParsedPreview(null);
+    setDebugSelectedType(type);
+    setDebugJson(JSON.stringify(buildExampleForType(type), null, 2));
+  };
+
+  const handleDebugPreview = () => {
+    setDebugError(null);
+    setDebugParsedPreview(null);
+    if (!boardData) {
+      setDebugParsedPreview({
+        ok: false,
+        message: "Board data not loaded yet.",
+      });
+      return;
+    }
+    try {
+      const parsed = JSON.parse(debugJson);
+      // If user didn't specify a type, use the dropdown.
+      if (parsed && typeof parsed === "object" && parsed.type == null) {
+        parsed.type = debugSelectedType;
+      }
+      const item = coerceToBoardItem(parsed);
+      setDebugParsedPreview({
+        ok: true,
+        message: `Looks good. Will add type '${item.type}' (id: ${item.id}).`,
+        item,
+      });
+    } catch (e: any) {
+      setDebugParsedPreview({
+        ok: false,
+        message: e?.message || "Invalid JSON or unsupported shape.",
+      });
+    }
+  };
+
+  const handleDebugAdd = () => {
+    setDebugError(null);
+    setDebugLastAddedId(null);
+    if (!boardData) {
+      setDebugError("Board data not loaded yet.");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(debugJson);
+      if (parsed && typeof parsed === "object" && parsed.type == null) {
+        parsed.type = debugSelectedType;
+      }
+      const item = coerceToBoardItem(parsed);
+      setBoardData((prev) => {
+        if (!prev) return prev;
+        return { ...prev, items: [...prev.items, item] };
+      });
+      setNewItemId(item.id);
+      setDebugLastAddedId(item.id);
+      // Auto-focus the newly added item so you immediately see it on the board
+      setTimeout(() => {
+        handleFocusItem(item.id);
+      }, 50);
+      setDebugParsedPreview({
+        ok: true,
+        message: `Added '${item.type}' (id: ${item.id}).`,
+        item,
+      });
+    } catch (e: any) {
+      setDebugError(e?.message || "Invalid JSON or unsupported shape.");
+      setDebugParsedPreview(null);
+    }
+  };
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -2049,6 +2247,141 @@ export default function PlayBoardPage({
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
+      {debugMode && (
+        <div className="fixed left-0 right-0 bottom-0 z-[500] pointer-events-none">
+          <div
+            className={`mx-auto w-[min(980px,calc(100vw-1rem))] pointer-events-auto bg-gray-950/95 border border-yellow-500/30 rounded-t-lg shadow-2xl backdrop-blur transition-transform duration-200 ${
+              isDebugDrawerOpen ? "translate-y-0" : "translate-y-[calc(100%-2.75rem)]"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={() => setIsDebugDrawerOpen((v) => !v)}
+              className="w-full flex items-center justify-between gap-2 px-4 py-3 border-b border-gray-800 hover:bg-white/5"
+              aria-expanded={isDebugDrawerOpen}
+            >
+              <div className="flex items-center gap-3">
+                <span className="font-staatliches tracking-wider text-yellow-400">
+                  Debug Board
+                </span>
+                <span className="text-[11px] font-mono text-gray-400">
+                  /?debug=true
+                </span>
+              </div>
+              <span className="text-xs font-mono text-gray-400">
+                {isDebugDrawerOpen ? "hide" : "show"}
+              </span>
+            </button>
+
+            <div className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-1">
+                <div className="text-xs font-special-elite text-gray-300 mb-2">
+                  Type helper (optional)
+                </div>
+                <select
+                  value={debugSelectedType}
+                  onChange={(e) => setDebugSelectedType(e.target.value as BoardItemType)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-sm text-gray-200 p-2 font-mono text-xs"
+                >
+                  {ITEM_TYPES.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleDebugLoadExample(debugSelectedType)}
+                    className="flex-1 px-3 py-2 rounded-sm bg-gray-800 text-gray-100 hover:bg-gray-700 font-staatliches tracking-wider"
+                  >
+                    Load example
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDebugJson("");
+                      setDebugError(null);
+                      setDebugParsedPreview(null);
+                      setDebugLastAddedId(null);
+                    }}
+                    className="px-3 py-2 rounded-sm bg-gray-900 text-gray-300 hover:bg-gray-800 font-staatliches tracking-wider"
+                  >
+                    Clear
+                  </button>
+                </div>
+                <p className="mt-3 text-[11px] font-special-elite text-gray-400 leading-relaxed">
+                  You can omit <span className="font-mono">type</span> from JSON and use the dropdown.
+                  If <span className="font-mono">content</span> is an object/array, it will be stringified
+                  to match existing evidence renderers.
+                </p>
+              </div>
+
+              <div className="md:col-span-2">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-xs font-special-elite text-gray-300">JSON payload</div>
+                  <div className="text-[11px] font-mono text-gray-500">
+                    tip: Ctrl+A, paste
+                  </div>
+                </div>
+                <textarea
+                  value={debugJson}
+                  onChange={(e) => setDebugJson(e.target.value)}
+                  placeholder='{
+  "type": "photo",
+  "content": "/cold_case_data/station_zero/previews/example.jpg",
+  "title": "Example"
+}'
+                  className="w-full h-44 p-2 bg-gray-900 border border-gray-700 rounded-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 font-mono text-xs"
+                />
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mt-2">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDebugPreview}
+                      className="px-3 py-2 rounded-sm bg-gray-800 text-gray-100 hover:bg-gray-700 font-staatliches tracking-wider"
+                    >
+                      Validate / preview
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDebugAdd}
+                      className="px-3 py-2 rounded-sm bg-yellow-500 text-black hover:bg-yellow-400 font-staatliches tracking-wider"
+                    >
+                      Add to board
+                    </button>
+                  </div>
+
+                  {debugLastAddedId && (
+                    <span className="text-xs font-mono text-green-400">
+                      added: {debugLastAddedId}
+                    </span>
+                  )}
+                </div>
+
+                {debugParsedPreview && (
+                  <div
+                    className={`mt-2 text-xs font-mono whitespace-pre-wrap rounded-sm border p-2 ${
+                      debugParsedPreview.ok
+                        ? "text-green-300 border-green-500/30 bg-green-500/10"
+                        : "text-red-300 border-red-500/30 bg-red-500/10"
+                    }`}
+                  >
+                    {debugParsedPreview.message}
+                  </div>
+                )}
+
+                {debugError && (
+                  <div className="mt-2 text-xs font-mono text-red-400 whitespace-pre-wrap">
+                    {debugError}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {solvingObjective && (
         <ObjectiveSolverModal
           objective={solvingObjective}

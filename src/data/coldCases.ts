@@ -43,6 +43,23 @@ export interface ColdCase {
 }
 
 export const coldCases: ColdCase[] = [
+  {
+    id: 0,
+    slug: "debug",
+    title: "Debug Case",
+    imageUrl: "/opengraph/opengraph-image.png",
+    tags: ["Development", "Internal"],
+    description:
+      "Internal sandbox case used for testing debug tools and runtime evidence injection.",
+    difficulty: "Easy",
+    players: "1",
+    duration: "N/A",
+    price: 0,
+    // No evidence bundle needed; board generator returns mock data.
+    isPurchasable: false,
+    hasDownloadSample: false,
+    packagingColumns: ["evidence"],
+  },
     {
     id: 6,
     slug: "station-zero",
