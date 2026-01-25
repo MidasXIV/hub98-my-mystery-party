@@ -4,8 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { HeaderMegaMenu } from "./header-coldcases-menu";
+import { HeaderGuidesMenu } from "./header-guides-menu";
+import type { GuidesMenuPayload } from "./header-guides-menu";
 
-const Header = () => {
+type HeaderProps = {
+  guidesData: GuidesMenuPayload;
+};
+
+const Header = ({ guidesData }: HeaderProps) => {
   // Only rely on resolvedTheme; next-themes injects an inline script that
   // applies the correct html.class BEFORE React hydration, so we can lean
   // on Tailwind's dark: variants for initial paint without hiding both icons.
@@ -13,9 +19,14 @@ const Header = () => {
   const [mounted, setMounted] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
+  const [guidesOpen, setGuidesOpen] = React.useState(false);
+  const guidesTriggerRef = React.useRef<HTMLDivElement>(null);
   const closeTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const closeGuidesTimeoutRef = React.useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   React.useEffect(() => setMounted(true), []);
   // Detect current route to conditionally show a Home button when not on the homepage
   const pathname = usePathname();
@@ -44,20 +55,45 @@ const Header = () => {
     }, 200);
   };
 
+  const openGuidesMenu = () => {
+    if (closeGuidesTimeoutRef.current) {
+      clearTimeout(closeGuidesTimeoutRef.current);
+      closeGuidesTimeoutRef.current = null;
+    }
+    setGuidesOpen(true);
+  };
+
+  const closeGuidesMenu = () => {
+    if (closeGuidesTimeoutRef.current) {
+      clearTimeout(closeGuidesTimeoutRef.current);
+    }
+    closeGuidesTimeoutRef.current = setTimeout(() => {
+      setGuidesOpen(false);
+    }, 200);
+  };
+
   const handleBlur = (event: React.FocusEvent<HTMLDivElement>) => {
     if (!event.currentTarget.contains(event.relatedTarget)) {
       closeMenu();
     }
   };
 
+  const handleGuidesBlur = (event: React.FocusEvent<HTMLDivElement>) => {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      closeGuidesMenu();
+    }
+  };
+
   React.useEffect(() => {
     return () => {
       if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+      if (closeGuidesTimeoutRef.current)
+        clearTimeout(closeGuidesTimeoutRef.current);
     };
   }, []);
 
   return (
-    <header className="fixed left-1/2 top-8 z-50 transform -translate-x-1/2 flex items-center px-4 py-2 bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl rounded-full w-[360px] max-w-full gap-3 backdrop-blur-md">
+    <header className="fixed left-1/2 top-8 z-99 -translate-x-1/2 inline-flex items-center px-4 py-2 bg-white/80 dark:bg-black/40 border border-gray-200/60 dark:border-white/10 shadow-xl rounded-full w-fit max-w-[calc(100vw-1.5rem)] gap-3 backdrop-blur-md flex-wrap">
       {showHomeButton && (
         <Link
           href="/"
@@ -121,6 +157,43 @@ const Header = () => {
       >
         Invitations
       </Link> */}
+      {/* Guides with custom hover panel, mirroring Cold Cases */}
+
+      <div
+        ref={guidesTriggerRef}
+        className="relative group"
+        onMouseEnter={openGuidesMenu}
+        onMouseLeave={closeGuidesMenu}
+        onFocusCapture={openGuidesMenu}
+        onBlurCapture={handleGuidesBlur}
+      >
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 font-mono text-sm px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 font-semibold shadow border border-gray-300/60 dark:border-white/10 transition"
+        >
+          <span>Guides</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180"
+            aria-hidden="true"
+          >
+            <path
+              fillRule="evenodd"
+              d="M5.23 7.21a.75.75 0 011.06.02L10 10.162l3.71-2.93a.75.75 0 01.92 1.18l-4.2 3.32a.75.75 0 01-.92 0l-4.2-3.32a.75.75 0 01.02-1.17z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </Link>
+      </div>
+      <HeaderGuidesMenu
+        open={guidesOpen}
+        anchorRef={guidesTriggerRef}
+        onMouseEnter={openGuidesMenu}
+        onMouseLeave={closeGuidesMenu}
+        data={guidesData}
+      />
       <Link
         href="/#faq"
         className="font-mono text-sm px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 font-semibold shadow border border-gray-300/60 dark:border-white/10 transition"

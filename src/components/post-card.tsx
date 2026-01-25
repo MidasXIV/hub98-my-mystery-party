@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { PostMeta } from "@/lib/blog";
+import type { PostMeta } from "@/lib/blog-types";
 
 export default function PostCard({ post }: { post: PostMeta }) {
 	const hasImage = Boolean(post.heroImage);

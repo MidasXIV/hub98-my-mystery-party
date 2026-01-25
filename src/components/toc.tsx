@@ -1,5 +1,5 @@
 import React from "react";
-import type { HeadingItem } from "@/lib/blog";
+import type { HeadingItem } from "@/lib/blog-types";
 
 export default function Toc({ headings }: { headings: HeadingItem[] }) {
   if (!headings?.length) return null;

@@ -9,6 +9,11 @@ import {
 } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import RootClient from "../components/root-client";
+import HeaderClientSlot from "../components/header-client-slot";
+import Header from "../components/header";
+import type { GuidesMenuPayload } from "../components/header-guides-menu";
+import { getAllPosts, getCategories } from "../lib/blog";
+import { ThemeProvider } from "../components/theme-provider";
 
 // Server-side font declarations
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -97,6 +102,19 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const guidesData: GuidesMenuPayload = {
+    categories: getCategories(),
+    featured: getAllPosts()
+      .slice(0, 3)
+      .map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        description: p.description,
+        category: p.category,
+        heroImage: p.heroImage,
+      })),
+  };
+
   return (
     <html lang="en">
       <head>
@@ -108,7 +126,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
       >
-        <RootClient>{children}</RootClient>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <HeaderClientSlot>
+            <Header guidesData={guidesData} />
+          </HeaderClientSlot>
+          <RootClient>{children}</RootClient>
+        </ThemeProvider>
       </body>
     </html>
   );

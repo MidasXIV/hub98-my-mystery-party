@@ -3,9 +3,7 @@ import React from "react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/dist/ScrollSmoother";
 import { ScrollTrigger } from "gsap/dist/ScrollTrigger";
-import Header from "./header";
 import { usePathname } from "next/navigation";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
 import Link from "next/link";
 import { Banner } from "@/components/ui/banner";
@@ -20,12 +18,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const hideGlobalHeader = pathname.startsWith("/play/") || pathname.startsWith("/print/");
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <>
       {/* Beta banner (skip /play and /print where we want max space) */}
       {!hideGlobalHeader && (
         <div className="sticky top-0 z-50 w-full">
@@ -50,11 +43,9 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
         </div>
       )}
 
-      {/* Roadmap preview ribbon (shows even when header hidden? Keep consistent with header visibility) */}
-      {/* {!hideGlobalHeader && <RoadmapPreview />} */}
-      {!hideGlobalHeader && <Header />}
+      {/* Header is rendered server-side in app/layout.tsx */}
       <div id="smooth-content">{children}</div>
       <Analytics />
-    </ThemeProvider>
+    </>
   );
 }

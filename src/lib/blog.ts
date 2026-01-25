@@ -4,22 +4,8 @@ import matter from "gray-matter";
 import { marked } from "marked";
 import type { Tokens } from "marked";
 
-export type PostMeta = {
-  slug: string;
-  title: string;
-  description?: string;
-  date: string; // ISO string
-  author?: string;
-  category: string;
-  tags?: string[];
-  heroImage?: string;
-  readingTimeMinutes?: number;
-};
-
-export type Post = PostMeta & {
-  content: string; // raw markdown content
-  html?: string; // rendered HTML
-};
+import type { HeadingItem, Post, PostMeta } from "./blog-types";
+export type { HeadingItem, Post, PostMeta } from "./blog-types";
 
 const CONTENT_ROOT = path.join(process.cwd(), "content", "blog");
 
@@ -146,8 +132,6 @@ export function getBaseUrl(): string {
     "https://hub98-my-mystery-party.vercel.app";
   return site.replace(/\/$/, "");
 }
-
-export type HeadingItem = { id: string; text: string; depth: number };
 
 export function getMarkdownHeadings(markdown: string): HeadingItem[] {
   // Use marked lexer to read heading tokens and generate matching ids
