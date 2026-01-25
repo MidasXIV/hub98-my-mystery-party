@@ -1,6 +1,53 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI, Type } from '@google/genai';
 import { getCaseBySlug } from '@/data/coldCases';
+
+type MaybeBoardData = {
+  items?: unknown[];
+  connections?: unknown[];
+  [k: string]: unknown;
+};
+
+function filterLockedEvidence(boardData: unknown) {
+  if (!boardData || typeof boardData !== 'object') return boardData;
+  const bd = boardData as MaybeBoardData;
+
+  const items = Array.isArray(bd.items) ? bd.items : [];
+  const unlockedItems = items.filter((it) => {
+    if (!it || typeof it !== 'object') return true;
+    const obj = it as Record<string, unknown>;
+    return obj.unlockOnObjectiveId == null;
+  });
+
+  const unlockedIds = new Set(
+    unlockedItems
+      .map((it) => {
+        if (!it || typeof it !== 'object') return null;
+        const obj = it as Record<string, unknown>;
+        return typeof obj.id === 'string' ? obj.id : null;
+      })
+      .filter((v): v is string => typeof v === 'string'),
+  );
+
+  const connections = Array.isArray(bd.connections) ? bd.connections : [];
+  const unlockedConnections = connections.filter((c) => {
+    if (!c || typeof c !== 'object') return false;
+    const obj = c as Record<string, unknown>;
+    const from = obj.from;
+    const to = obj.to;
+    return (
+      typeof from === 'string' &&
+      typeof to === 'string' &&
+      unlockedIds.has(from) &&
+      unlockedIds.has(to)
+    );
+  });
+
+  return {
+    ...bd,
+    items: unlockedItems,
+    connections: unlockedConnections,
+  };
+}
 
   const images = { Dr_Verma_image:
     "https://github.com/user-attachments/assets/83616c10-f1b9-4d45-924b-f7e2d06fea61",
@@ -239,6 +286,9 @@ const mockData = {
   ]
 };
 
+// NOTE: This long-form prompt data is currently unused because LLM board generation is commented out.
+// Keeping it here for future iteration; it's commented to avoid unused-variable lint errors.
+/*
 const caseData = `
 ### **Case File: 734-Alpha ("The Ghost of Station Zero")**
 
@@ -306,8 +356,11 @@ Here is a series of data logs and evidence that you, the investigator, will piec
 
 The player, as the investigator, must connect the dots: the comms frequency manipulation, the origin of the system failures in the cockpit, and the rivalry between Elara and Zane, to see past the supernatural smokescreen and expose the cold, calculated murder that lies beneath.
 `;
+*/
 
 // Shared schema definitions (can be extracted later)
+// Currently unused because LLM board generation is commented out.
+/*
 const boardItemSchema = {
   type: Type.OBJECT,
   properties: {
@@ -341,7 +394,10 @@ const boardItemSchema = {
   },
   required: ['id', 'type', 'content', 'position', 'size', 'rotation'],
 };
+*/
 
+// Schema for LLM board generation (currently unused; kept for future work)
+/*
 const boardSchema = {
   type: Type.OBJECT,
   properties: {
@@ -365,6 +421,7 @@ const boardSchema = {
   },
   required: ['items', 'connections', 'objectives'],
 };
+*/
 
 /**
  * POST /api/board/generate
@@ -383,7 +440,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  // LLM generation currently disabled; avoid unused-variable lint errors.
+  // const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 //     const response = await ai.models.generateContent({
 //       model: 'gemini-2.5-flash',
 //       contents: `Generate a JSON for an evidence board about the following case data:
@@ -440,7 +498,7 @@ export async function POST(req: Request) {
       if (!stationBoard) {
         return NextResponse.json({ error: 'Board data not available for station-zero.' }, { status: 404 });
       }
-      return NextResponse.json(stationBoard);
+      return NextResponse.json(filterLockedEvidence(stationBoard));
     }
 
     if(caseSlug === 'her-shadows-name') {
@@ -449,7 +507,7 @@ export async function POST(req: Request) {
       if (!boardData) {
         return NextResponse.json({ error: 'Board data not available for her_shadows_name.' }, { status: 404 });
       }
-      return NextResponse.json(boardData);
+      return NextResponse.json(filterLockedEvidence(boardData));
     }
     if( caseSlug === 'palazzo-of-bones') {
       const board = getCaseBySlug('palazzo-of-bones');
@@ -457,7 +515,7 @@ export async function POST(req: Request) {
       if (!boardData) {
         return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
       }
-      return NextResponse.json(boardData);
+      return NextResponse.json(filterLockedEvidence(boardData));
     }
     if( caseSlug === 'zero-sum') {
       const board = getCaseBySlug('zero-sum');
@@ -465,7 +523,15 @@ export async function POST(req: Request) {
       if (!boardData) {
         return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
       }
-      return NextResponse.json(boardData);
+      return NextResponse.json(filterLockedEvidence(boardData));
+    }
+    if( caseSlug === 'the-final-rehearsal') {
+      const board = getCaseBySlug('the-final-rehearsal');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for the-final-rehearsal.' }, { status: 404 });
+      }
+      return NextResponse.json(filterLockedEvidence(boardData));
     }
 
     // Legacy homicide board for operation-shadowfall / john-doe scenario.

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
+import { getCaseBySlug } from "@/data/coldCases";
 
 type BoardObjective = { id: string; description: string; solution?: string };
 type BoardData = {
@@ -8,11 +9,51 @@ type BoardData = {
   objectives?: BoardObjective[];
 };
 
+type BoardConnection = { from: string; to: string };
+type BoardItem = {
+  id: string;
+  unlockOnObjectiveId?: string;
+  [k: string]: unknown;
+};
+
+function isBoardItem(val: unknown): val is BoardItem {
+  if (!val || typeof val !== "object") return false;
+  const obj = val as Record<string, unknown>;
+  return typeof obj.id === "string";
+}
+
+function isBoardConnection(val: unknown): val is BoardConnection {
+  return (
+    Boolean(val) &&
+    typeof val === "object" &&
+    typeof (val as Record<string, unknown>).from === "string" &&
+    typeof (val as Record<string, unknown>).to === "string"
+  );
+}
+
 interface ObjectiveRequestBody {
+  caseSlug?: string;
   boardData: BoardData;
   objectiveId?: string;
   objectiveDescription?: string;
   solutionText: string;
+}
+
+type CaseEvidence = {
+  items?: unknown[];
+  connections?: unknown[];
+  objectives?: BoardObjective[];
+};
+
+function getEvidenceSource(caseSlug: string | undefined, fallback: BoardData): CaseEvidence {
+  if (!caseSlug) return fallback;
+  const cf = getCaseBySlug(caseSlug);
+  const ev = cf?.evidence as unknown;
+  if (!ev || typeof ev !== "object") return fallback;
+  const obj = ev as Record<string, unknown>;
+  // Basic shape check
+  if (!Array.isArray(obj.items) || !Array.isArray(obj.objectives)) return fallback;
+  return ev as CaseEvidence;
 }
 
 const moderationSchema = {
@@ -333,8 +374,10 @@ Answer: ${solutionText}`,
   }
 
   // 2) Find the objective's canonical solution in the provided boardData
-  const objectives = Array.isArray(boardData.objectives)
-    ? boardData.objectives
+  const evidenceSource = getEvidenceSource(body.caseSlug, boardData);
+
+  const objectives = Array.isArray(evidenceSource.objectives)
+    ? evidenceSource.objectives
     : [];
   let target: BoardObjective | undefined;
   if (objectiveId) {
@@ -348,18 +391,24 @@ Answer: ${solutionText}`,
   if (!target) {
     return NextResponse.json({
       allowed: true,
+      category: "HONEST_ATTEMPT" as const,
       correct: false,
       score: 0,
       reason: "Objective not found in board data",
+      items: [],
+      connections: [],
     });
   }
 
   if (!target.solution || normalizeText(target.solution).length === 0) {
     return NextResponse.json({
       allowed: true,
+      category: "HONEST_ATTEMPT" as const,
       correct: false,
       score: 0,
       reason: "No canonical solution available for this objective",
+      items: [],
+      connections: [],
     });
   }
 
@@ -396,11 +445,30 @@ Canonical solution:\n${target.solution}\n\nPlayer answer:\n${solutionText}`,
     correct = score >= 0.6; // heuristic threshold; can tune later
   }
 
+  const objectiveKeyForUnlock = objectiveId ?? target.id;
+
+  const allItems: BoardItem[] = Array.isArray(evidenceSource.items)
+    ? (evidenceSource.items.filter(isBoardItem) as BoardItem[])
+    : [];
+  const unlockedItems: BoardItem[] = correct
+    ? allItems.filter((it) => it.unlockOnObjectiveId === objectiveKeyForUnlock)
+    : [];
+
+  const unlockedIds = new Set(unlockedItems.map((i) => i.id));
+  const allConnections: BoardConnection[] = Array.isArray(evidenceSource.connections)
+    ? (evidenceSource.connections.filter(isBoardConnection) as BoardConnection[])
+    : [];
+  const unlockedConnections: BoardConnection[] = correct
+    ? allConnections.filter((c) => unlockedIds.has(c.from) || unlockedIds.has(c.to))
+    : [];
+
   const payload = {
     allowed: true,
-    category: "HONEST_ATTEMPT",
+    category: "HONEST_ATTEMPT" as const,
     correct,
     score,
+    items: unlockedItems,
+    connections: unlockedConnections,
   };
   cache.set(cacheKey, { expires: now() + CACHE_TTL_MS, payload });
   return NextResponse.json(payload);
