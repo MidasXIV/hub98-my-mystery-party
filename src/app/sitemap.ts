@@ -1,8 +1,9 @@
 import { getAllPosts, getCategories, getBaseUrl } from "@/lib/blog";
+import { invitationDesigns } from "@/data/invitations";
 
 export default function sitemap() {
   const base = getBaseUrl();
-  const routes = ["", "/blog"].map((route) => ({
+  const routes = ["", "/blog", "/invitations", "/invitations/dashboard"].map((route) => ({
     url: `${base}${route}`,
     lastModified: new Date().toISOString(),
   }));
@@ -17,5 +18,15 @@ export default function sitemap() {
     lastModified: p.date,
   }));
 
-  return [...routes, ...cats, ...posts];
+  const invitationRoutes = invitationDesigns.map((d) => ({
+    url: `${base}/invitations/${d.slug}`,
+    lastModified: new Date().toISOString(),
+  })).concat(
+    invitationDesigns.map((d) => ({
+      url: `${base}/invitations/customize/${d.slug}`,
+      lastModified: new Date().toISOString(),
+    }))
+  );
+
+  return [...routes, ...cats, ...posts, ...invitationRoutes];
 }

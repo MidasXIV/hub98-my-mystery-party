@@ -702,7 +702,7 @@ Do not let the drama distract you from the facts.`,
   objectives: [
     {
       id: "obj_01",
-      description: "Identify which suspect lied about their location.",
+      description: "Identify which suspect(s) lied about their location.",
       solution:
         "Ray Dee-O said he was in the booth, but his fob was used at the Vault. Also, Justin claimed he never left his dressing room, but the logs show him entering the Star Dressing Room at 19:45. Both of these names should be mentioned",
     },
