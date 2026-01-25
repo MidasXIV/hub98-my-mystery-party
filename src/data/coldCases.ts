@@ -2,6 +2,7 @@ import HER_SHADOWS_NAME_DATA from "./her-shadows-name-data";
 import PALAZZO_OF_BONES_DATA from "./palazzo-of-bones-data";
 import STATION_ZERO_DATA from "./station-zero-data";
 import ZERO_SUM_DATA from "./zero-sum-data";
+import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
 
 export interface Evidence {
   title: string;
@@ -43,7 +44,7 @@ export interface ColdCase {
 }
 
 export const coldCases: ColdCase[] = [
-    {
+  {
     id: 6,
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
@@ -108,13 +109,16 @@ export const coldCases: ColdCase[] = [
           "https://kioubj9rw7g55npk.public.blob.vercel-storage.com/station_zero/Whisk_iwyhrjzjlzykhjz50iymntytizywqtl0mjmk1co.mp4",
       },
       {
-        "name": "Connecting Clues",
-        "profile": "/cold_cases/previews/station_zero/preview-connecting-clues.png",
-        "thumbnail": "/cold_cases/previews/station_zero/preview-connecting-clues.png",
-        "title": "Connect the Dots. Expose the Truth.",
-        "typeOfPreview": "image",
-        "content": "A torn note... a suspicious system log... a transcript from a forgotten past. The clues are all there, but they're disconnected. It's your job to draw the lines, uncover the motive, and reveal the killer's web of lies.",
-        "hideProfile": true
+        name: "Connecting Clues",
+        profile:
+          "/cold_cases/previews/station_zero/preview-connecting-clues.png",
+        thumbnail:
+          "/cold_cases/previews/station_zero/preview-connecting-clues.png",
+        title: "Connect the Dots. Expose the Truth.",
+        typeOfPreview: "image",
+        content:
+          "A torn note... a suspicious system log... a transcript from a forgotten past. The clues are all there, but they're disconnected. It's your job to draw the lines, uncover the motive, and reveal the killer's web of lies.",
+        hideProfile: true,
       },
       {
         name: "Dig for Clues",
@@ -216,6 +220,29 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     duration: "2-3 hours",
     price: 24.99,
     evidence: ZERO_SUM_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+  },
+  {
+    id: 4,
+    slug: "the-final-rehearsal",
+    title: "The Final Rehearsal",
+    imageUrl: "/cold_cases/thumbnails/final_rehearsal.png",
+    tags: [
+      "School Mystery",
+      "Who Dun It",
+      "Detective Game",
+      "For Teens",
+      "1-2 Players",
+      "Easy",
+    ],
+    description:
+      "The curtain falls on the final rehearsal, but the real drama is just beginning! When the star actress is found mysteriously locked in the prop vault right before opening night, it’s up to you to solve this hilarious high school who dun it. Dig through evidence like secret notes, suspicious security logs, and dramatic witness interviews to uncover a plot that’s bigger than just backstage jealousy. Was it a rival actor, a framed techie, or a faculty member with a shocking secret agenda? Crack the case before the show is ruined for good!",
+    difficulty: "Easy/Medium",
+    players: "1-2",
+    duration: "1.5-2 hours",
+    price: 0,
+    evidence: FINAL_REHEARSAL_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
   },
