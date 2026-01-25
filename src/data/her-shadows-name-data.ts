@@ -14,7 +14,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "ellie_portrait",
       type: "photo",
-      content: "Ellie portrait",
+      content: JSON.stringify({ title: "Ellie", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_Ellie_portrait,
       position: { x: 10, y: -10 },
       size: { width: 210, height: 360 },
@@ -23,7 +23,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "grandma_photo",
       type: "photo",
-      content: "Grandma photo",
+      content: JSON.stringify({ title: "Grandma", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_Grandma_photo,
       position: { x: 30, y: -10 },
       size: { width: 210, height: 360 },
@@ -32,7 +32,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "uncle_photo",
       type: "photo",
-      content: "Uncle photo",
+      content: JSON.stringify({ title: "Uncle", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_Uncle_photo,
       position: { x: 10, y: 45 },
       size: { width: 210, height: 360 },
@@ -41,7 +41,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "meave_photo",
       type: "photo",
-      content: "Meave photo",
+      content: JSON.stringify({ title: "Meave", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_Meave_photo,
       position: { x: 30, y: 45 },
       size: { width: 210, height: 360 },
@@ -50,7 +50,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "sherrif_photo",
       type: "photo",
-      content: "Sheriff photo",
+      content: JSON.stringify({ title: "Sheriff", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_sherrif_photo,
       position: { x: 50, y: 45 },
       size: { width: 210, height: 360 },
@@ -59,7 +59,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "guy_photo",
       type: "photo",
-      content: "Guy photo",
+      content: JSON.stringify({ title: "Guy", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_guy_photo,
       position: { x: 70, y: 45 },
       size: { width: 210, height: 360 },
@@ -68,7 +68,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "shopkeeper_photo",
       type: "photo",
-      content: "Shopkeeper photo",
+      content: JSON.stringify({ title: "Shopkeeper", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.HSN_shopkeeper_photo,
       position: { x: 90, y: 45 },
       size: { width: 210, height: 360 },
@@ -77,7 +77,7 @@ const HER_SHADOWS_NAME_DATA = {
     {
       id: "maine_map_photo",
       type: "photo",
-      content: "Maine map photo",
+      content: JSON.stringify({ title: "Maine map", variant: "overlay" }),
       imageUrl: PREDEFINED_IMAGES.HSN_maine_map_photo,
       position: { x: 10, y: 100 },
       size: { width: 1200, height: 600 },

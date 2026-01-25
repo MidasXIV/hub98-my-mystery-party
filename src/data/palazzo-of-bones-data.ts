@@ -36,7 +36,7 @@ const PALAZZO_OF_BONES_DATA = {
     {
       id: "portrait_alessandra_bellini",
       type: "photo",
-      content: "Alessandra Bellini portrait",
+      content: JSON.stringify({ title: "Alessandra Bellini", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.portrait_Alessandra_Bellini,
       position: { x: 10, y: 10 },
       size: { width: 210, height: 360 },
@@ -45,7 +45,7 @@ const PALAZZO_OF_BONES_DATA = {
     {
       id: "portrait_marco_rossi",
       type: "photo",
-      content: "Marco Rossi portrait",
+      content: JSON.stringify({ title: "Marco Rossi", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.portrait_Marco_Rossi,
       position: { x: 30, y: 10 },
       size: { width: 210, height: 360 },
@@ -54,7 +54,7 @@ const PALAZZO_OF_BONES_DATA = {
     {
       id: "portrait_sofia_lombardi",
       type: "photo",
-      content: "Sofia Lombardi portrait",
+      content: JSON.stringify({ title: "Sofia Lombardi", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.portrait_Sofia_Lombardi,
       position: { x: 50, y: 10 },
       size: { width: 210, height: 360 },
@@ -63,7 +63,7 @@ const PALAZZO_OF_BONES_DATA = {
     {
       id: "portrait_francesca_martini",
       type: "photo",
-      content: "Francesca Martini portrait",
+      content: JSON.stringify({ title: "Francesca Martini", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.portrait_Francesca_Martini,
       position: { x: 70, y: 10 },
       size: { width: 210, height: 360 },
@@ -72,7 +72,7 @@ const PALAZZO_OF_BONES_DATA = {
     {
       id: "portrait_giovanni_bellini",
       type: "photo",
-      content: "Giovanni Bellini portrait",
+      content: JSON.stringify({ title: "Giovanni Bellini", variant: "polaroid" }),
       imageUrl: PREDEFINED_IMAGES.portrait_Giovanni_Bellini,
       position: { x: 90, y: 10 },
       size: { width: 210, height: 360 },
