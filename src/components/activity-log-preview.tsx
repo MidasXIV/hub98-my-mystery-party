@@ -42,6 +42,29 @@ const PreviewStyles = () => (
 
 export default function ActivityLogPreview({ content }: { content: string }) {
   const data = useMemo(() => parseActivityLog(content), [content]);
+  const headers = data.headers;
+
+  const columns = useMemo(() => {
+    const legacyDefaultOrder = ["time", "notes", "number"];
+    if (Array.isArray(data.columnOrder) && data.columnOrder.length > 0) {
+      return data.columnOrder;
+    }
+
+    const headerKeys = headers ? Object.keys(headers) : [];
+    if (headerKeys.length > 0) {
+      return headerKeys;
+    }
+
+    const firstRow = data.entries?.[0];
+    const rowKeys = firstRow && typeof firstRow === "object" ? Object.keys(firstRow) : [];
+    const merged = [...legacyDefaultOrder, ...rowKeys];
+    return Array.from(new Set(merged)).filter(Boolean);
+  }, [data.columnOrder, data.entries, headers]);
+
+  const timeKey = columns.includes("time") ? "time" : columns[0] || "time";
+  const messageKey =
+    columns.find((k) => k !== timeKey) ||
+    (columns.length > 1 ? columns[1] : "notes");
 
   // Take first 3 entries for preview
   const previewEntries = data.entries.slice(0, 3);
@@ -65,7 +88,7 @@ export default function ActivityLogPreview({ content }: { content: string }) {
            {/* Header */}
            <div className="flex justify-between items-end border-b-2 border-black/80 mb-1 pb-1">
               <span className="font-['Oswald'] text-[9px] uppercase tracking-wide text-gray-700">
-                Switchboard
+                {data.previewLabel ?? data.title ?? "Switchboard"}
               </span>
               <span className="font-mono text-[8px] text-red-800 font-bold">
                 {data.date}
@@ -76,8 +99,12 @@ export default function ActivityLogPreview({ content }: { content: string }) {
            <div className="flex flex-col gap-[7px] mt-1">
               {previewEntries.map((entry, i) => (
                 <div key={i} className="flex items-baseline text-[10px] leading-none">
-                   <span className="font-mono font-bold w-10 text-gray-600">{entry.time}</span>
-                   <span className="font-cursive flex-1 truncate ml-1">{entry.notes || entry.number}</span>
+                   <span className="font-mono font-bold w-10 text-gray-600">
+                     {String((entry as Record<string, unknown>)?.[timeKey] ?? "")}
+                   </span>
+                   <span className="font-cursive flex-1 truncate ml-1">
+                     {String((entry as Record<string, unknown>)?.[messageKey] ?? "")}
+                   </span>
                 </div>
               ))}
               {/* Ellipsis if more */}

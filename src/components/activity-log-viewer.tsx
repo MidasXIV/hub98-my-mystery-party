@@ -41,6 +41,51 @@ const ViewerStyles = () => (
 
 export default function ActivityLogViewer({ content }: { content: string }) {
   const data = useMemo(() => parseActivityLog(content), [content]);
+  const headers = data.headers;
+
+  const columns = useMemo(() => {
+    const legacyDefaultOrder = ["time", "direction", "number", "duration", "notes"];
+
+    // 1) explicit order wins
+    if (Array.isArray(data.columnOrder) && data.columnOrder.length > 0) {
+      return data.columnOrder;
+    }
+
+    // 2) If headers are provided, they define the UI columns (ONLY).
+    const headerKeys = headers ? Object.keys(headers) : [];
+    if (headerKeys.length > 0) {
+      return headerKeys;
+    }
+
+    // 3) Otherwise, infer from legacy defaults + first row keys.
+    const firstRow = data.entries?.[0];
+    const rowKeys = firstRow && typeof firstRow === "object" ? Object.keys(firstRow) : [];
+
+    const merged = [...legacyDefaultOrder, ...rowKeys];
+    return Array.from(new Set(merged)).filter(Boolean);
+  }, [data.columnOrder, data.entries, headers]);
+
+  const colClass = (key: string) => {
+    const fromData = data.columnLayout?.[key];
+    if (typeof fromData === "string" && fromData.trim().length > 0) {
+      return fromData;
+    }
+
+    switch (key) {
+      case "time":
+        return "w-24";
+      case "direction":
+        return "w-16 text-center";
+      case "number":
+        return "w-32";
+      case "duration":
+        return "w-20";
+      case "notes":
+        return "flex-1";
+      default:
+        return "flex-1";
+    }
+  };
 
   return (
     <div className="w-full flex justify-center py-10 bg-gray-900 min-h-screen overflow-y-auto">
@@ -54,7 +99,7 @@ export default function ActivityLogViewer({ content }: { content: string }) {
            <div className="flex justify-between items-end">
               <div>
                  <h1 className="font-header text-4xl uppercase tracking-tighter">
-                   Telephone Log
+                   {data.title ?? "Telephone Log"}
                  </h1>
                  <p className="font-type text-xs uppercase tracking-widest opacity-70">
                    {data.location}
@@ -71,14 +116,17 @@ export default function ActivityLogViewer({ content }: { content: string }) {
            </div>
         </div>
 
-        {/* --- Table Header --- */}
-        <div className="flex border-b-2 border-black bg-gray-100 text-[10px] font-bold uppercase tracking-widest font-sans">
-           <div className="w-24 p-2 border-r border-black/20">Time</div>
-           <div className="w-16 p-2 border-r border-black/20 text-center">Dir</div>
-           <div className="w-32 p-2 border-r border-black/20">Number / Ext</div>
-           <div className="w-20 p-2 border-r border-black/20">Duration</div>
-           <div className="flex-1 p-2">Message / Notes</div>
-        </div>
+      {/* --- Table Header --- */}
+      <div className="flex border-b-2 border-black bg-gray-100 text-[10px] font-bold uppercase tracking-widest font-sans">
+        {columns.map((key) => (
+          <div
+            key={key}
+            className={`${colClass(key)} p-2 border-r border-black/20 last:border-r-0`}
+          >
+            {headers?.[key] ?? key}
+          </div>
+        ))}
+      </div>
 
         {/* --- Table Body (The Grid) --- */}
         <div className="flex flex-col relative">
@@ -94,33 +142,52 @@ export default function ActivityLogViewer({ content }: { content: string }) {
              
              return (
                <div key={i} className="flex ledger-grid-row items-center hover:bg-black/5 transition-colors">
-                  
-                  {/* Time (Typed or Handwritten - let's do typed for machine logging) */}
-                  <div className="w-24 p-2 ledger-col-line font-type text-sm font-bold">
-                    {entry.time}
-                  </div>
-                  
-                  {/* Direction */}
-                  <div className="w-16 p-2 ledger-col-line text-center">
-                    <span className={`text-[9px] px-1 rounded border ${entry.direction === 'IN' ? 'border-green-700 text-green-800' : 'border-red-700 text-red-800'} font-mono font-bold`}>
-                      {entry.direction}
-                    </span>
-                  </div>
 
-                  {/* Number (Handwritten) */}
-                  <div className={`w-32 p-2 ledger-col-line font-hand ${inkClass} text-lg`}>
-                    {entry.number}
-                  </div>
+                  {columns.map((key) => {
+                    const value = (entry as Record<string, unknown>)?.[key];
 
-                  {/* Duration (Handwritten) */}
-                  <div className={`w-20 p-2 ledger-col-line font-hand ${inkClass}`}>
-                    {entry.duration}
-                  </div>
+                    if (key === "direction") {
+                      const direction = String(value ?? "");
+                      const isIn = direction === "IN";
+                      const isOut = direction === "OUT";
+                      return (
+                        <div
+                          key={key}
+                          className={`${colClass(key)} p-2 ledger-col-line`}
+                        >
+                          <span
+                            className={`text-[9px] px-1 rounded border ${
+                              isIn
+                                ? "border-green-700 text-green-800"
+                                : isOut
+                                  ? "border-red-700 text-red-800"
+                                  : "border-black/40 text-black/70"
+                            } font-mono font-bold`}
+                          >
+                            {direction || "-"}
+                          </span>
+                        </div>
+                      );
+                    }
 
-                  {/* Notes (Handwritten) */}
-                  <div className={`flex-1 p-2 font-hand ${inkClass} leading-tight`}>
-                    {entry.notes}
-                  </div>
+                    // Time is typically typed; everything else looks handwritten.
+                    const isTime = key === "time";
+                    const baseFont = isTime
+                      ? "font-type text-sm font-bold"
+                      : "font-hand";
+                    const extra = !isTime ? `${inkClass} leading-tight` : "";
+                    const display = value == null ? "" : String(value);
+
+                    return (
+                      <div
+                        key={key}
+                        className={`${colClass(key)} p-2 ledger-col-line ${baseFont} ${extra}`}
+                        title={display}
+                      >
+                        {display}
+                      </div>
+                    );
+                  })}
 
                </div>
              );
@@ -129,11 +196,12 @@ export default function ActivityLogViewer({ content }: { content: string }) {
            {/* Empty Rows Filler */}
            {[...Array(5)].map((_, i) => (
               <div key={`empty-${i}`} className="flex ledger-grid-row h-10">
-                 <div className="w-24 ledger-col-line"></div>
-                 <div className="w-16 ledger-col-line"></div>
-                 <div className="w-32 ledger-col-line"></div>
-                 <div className="w-20 ledger-col-line"></div>
-                 <div className="flex-1"></div>
+                {columns.map((key) => (
+                  <div
+                    key={`${key}-empty-${i}`}
+                    className={`${colClass(key)} ledger-col-line last:border-r-0`}
+                  ></div>
+                ))}
               </div>
            ))}
 
