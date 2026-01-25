@@ -39,6 +39,12 @@ export interface BoardItem {
   imageUrl?: string;
   /** Packaging destinations for this evidence item (index builder). */
   packIn: PackagingSlot[];
+
+  /**
+   * Optional: keep this item in the case data, but don't spawn it initially.
+   * When `unlockOnObjectiveId` is solved, the server can return this item as newly revealed evidence.
+   */
+  unlockOnObjectiveId?: string;
 }
 
 export interface Connection {

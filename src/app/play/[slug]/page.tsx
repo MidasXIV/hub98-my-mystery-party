@@ -8,7 +8,6 @@ import InterrogationTranscriptPreview from "@/components/interrogation-transcrip
 import FormalAlibiViewer from "@/components/formal-alibi-viewer";
 import FormalAlibiPreview from "@/components/formal-alibi-preview";
 import { getCaseBySlug } from "@/data/coldCases";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import PlayHeader from "@/components/play-header";
 import EvidencePanel from "@/components/evidence-panel";
@@ -95,6 +94,9 @@ import CaseBriefingPreview from "@/components/case-briefing-preview";
 import CaseBriefingViewer from "@/components/case-briefing-viewer";
 import TransmissionLogPreview from "@/components/transmission-log-preview";
 import TransmissionLogViewer from "@/components/transmission-log-viewer";
+import { parsePhotoContent } from "@/lib/photo-utils";
+import PhotoViewer from "@/components/photo-viewer";
+import PhotoPreview from "@/components/photo-preview";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -187,19 +189,18 @@ function Modal({
   const renderContent = () => {
     switch (item.type) {
       case "photo":
-        if (imageUrl) {
-          return (
-            <Image
-              src={imageUrl}
-              alt={item.content}
-              width={900}
-              height={900}
-              className="max-w-full max-h-[70vh] object-contain mx-auto"
-            />
-          );
-        }
+        const parsedPhoto = parsePhotoContent(item.content);
+        const photoTitle =
+          (item.title && item.title.trim().length > 0
+            ? item.title
+            : parsedPhoto.title) ?? undefined;
+        const photoVariant = parsedPhoto.variant ?? "overlay";
         return (
-          <div className="text-gray-300 p-8">[ ACQUIRING VISUALS... ]</div>
+          <PhotoViewer
+            imageUrl={imageUrl}
+            title={photoTitle}
+            variant={photoVariant}
+          />
         );
       case "document":
         return (
@@ -312,7 +313,7 @@ type TimelineItem = {
 function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
   const timelineItems: TimelineItem[] = useMemo(() => {
     const raw = items.filter(
-      (i) => i.type === "newspaper" || i.type === "interrogation-transcript"
+      (i) => i.type === "newspaper" || i.type === "interrogation-transcript",
     );
     const parsed: TimelineItem[] = [];
     for (const item of raw) {
@@ -587,7 +588,7 @@ export default function PlayBoardPage({
   >([]);
   const [error, setError] = useState<string | null>(null);
   const [loadingMessage, setLoadingMessage] = useState<string | null>(
-    "CLASSIFIED: Generating Mission Briefing..."
+    "CLASSIFIED: Generating Mission Briefing...",
   );
   // Direct image resolution is handled per item now (see getItemImageUrl); no separate state map needed.
 
@@ -603,7 +604,7 @@ export default function PlayBoardPage({
   // Pan-only mode: disable item interactions (click, drag, context menu)
   const [panOnly, setPanOnly] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Set<BoardItemType>>(
-    new Set(ITEM_TYPES)
+    new Set(ITEM_TYPES),
   );
   const [contextMenu, setContextMenu] = useState<{
     visible: boolean;
@@ -623,10 +624,10 @@ export default function PlayBoardPage({
   const [isAnimating, setIsAnimating] = useState(false);
   const [isTimelineVisible, setIsTimelineVisible] = useState(false);
   const [completedObjectives, setCompletedObjectives] = useState(
-    new Set<string>()
+    new Set<string>(),
   );
   const [solvingObjective, setSolvingObjective] = useState<Objective | null>(
-    null
+    null,
   );
   const [isSubmittingObjective, setIsSubmittingObjective] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -659,7 +660,7 @@ export default function PlayBoardPage({
       } catch (err) {
         console.error("Failed to generate board data:", err);
         setError(
-          "Failed to retrieve mission intel. The connection might be compromised."
+          "Failed to retrieve mission intel. The connection might be compromised.",
         );
         setLoadingMessage(null);
       }
@@ -680,11 +681,11 @@ export default function PlayBoardPage({
 
   const visibleItems = useMemo(
     () => boardData?.items.filter((item) => activeFilters.has(item.type)) || [],
-    [boardData, activeFilters]
+    [boardData, activeFilters],
   );
   const visibleItemIds = useMemo(
     () => new Set(visibleItems.map((item) => item.id)),
-    [visibleItems]
+    [visibleItems],
   );
 
   useLayoutEffect(() => {
@@ -693,7 +694,7 @@ export default function PlayBoardPage({
     const board = viewportRef.current as HTMLElement;
     // FIX: Explicitly type the Map to ensure that items retrieved from it (`fromItem`, `toItem`) are correctly typed as `BoardItem`. This resolves TypeScript errors where properties like `position` and `size` could not be found on an inferred `unknown` type.
     const itemsById: Map<string, BoardItem> = new Map(
-      boardData.items.map((item) => [item.id, item])
+      boardData.items.map((item) => [item.id, item]),
     );
 
     const calculateAndSetLines = () => {
@@ -710,7 +711,8 @@ export default function PlayBoardPage({
 
       const newCoords = boardData.connections
         .filter(
-          (conn) => visibleItemIds.has(conn.from) && visibleItemIds.has(conn.to)
+          (conn) =>
+            visibleItemIds.has(conn.from) && visibleItemIds.has(conn.to),
         )
         .map((conn) => {
           const fromItem = itemsById.get(conn.from);
@@ -775,7 +777,7 @@ export default function PlayBoardPage({
         setScale((currentScale) => {
           const newScale = Math.max(
             0.5,
-            Math.min(3, currentScale + delta * zoomSpeed * currentScale)
+            Math.min(3, currentScale + delta * zoomSpeed * currentScale),
           );
           // Removed unused contentX/contentY variables (calculation refactored)
           // newPosX/newPosY no longer needed after refactor; position recalculated below.
@@ -785,7 +787,7 @@ export default function PlayBoardPage({
         // We calculate the new position based on the scale *before* the setScale has re-rendered.
         const newScale = Math.max(
           0.5,
-          Math.min(3, scale + delta * zoomSpeed * scale)
+          Math.min(3, scale + delta * zoomSpeed * scale),
         );
         const mouseX = e.clientX - rect.left;
         const mouseY = e.clientY - rect.top;
@@ -804,7 +806,7 @@ export default function PlayBoardPage({
 
   const handleItemMouseDown = (
     e: { stopPropagation: () => void; clientX: number; clientY: number },
-    itemId: string
+    itemId: string,
   ) => {
     if (panOnly) return; // disable drag start in pan-only mode
     e.stopPropagation();
@@ -820,7 +822,7 @@ export default function PlayBoardPage({
 
   const handleItemTouchStart = (
     e: { stopPropagation: () => void; touches: string | any[] },
-    itemId: string
+    itemId: string,
   ) => {
     if (panOnly) return; // disable touch drag start in pan-only mode
     e.stopPropagation();
@@ -838,7 +840,7 @@ export default function PlayBoardPage({
           clientY: touch.clientY,
           preventDefault: () => {},
         },
-        itemId
+        itemId,
       );
       longPressTimer.current = null;
     }, 500);
@@ -852,7 +854,7 @@ export default function PlayBoardPage({
   };
 
   const handleBoardInteractionStart = (
-    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>
+    e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>,
   ) => {
     if (connectingState.from) {
       setConnectingState({ from: null });
@@ -873,7 +875,7 @@ export default function PlayBoardPage({
         e.preventDefault();
         const dist = Math.hypot(
           e.touches[0].pageX - e.touches[1].pageX,
-          e.touches[0].pageY - e.touches[1].pageY
+          e.touches[0].pageY - e.touches[1].pageY,
         );
         pinchDistRef.current = dist;
         pinchStartScaleRef.current = scale; // capture scale at gesture start
@@ -901,7 +903,7 @@ export default function PlayBoardPage({
       const touch = e.touches[0];
       const dist = Math.hypot(
         touch.clientX - touchStartPos.current.x,
-        touch.clientY - touchStartPos.current.y
+        touch.clientY - touchStartPos.current.y,
       );
       if (dist > 10) {
         // If finger moved more than 10px, cancel long press
@@ -918,7 +920,7 @@ export default function PlayBoardPage({
     if (isTouchEvent && e.touches.length === 2 && isPanning) {
       const newDist = Math.hypot(
         e.touches[0].pageX - e.touches[1].pageX,
-        e.touches[0].pageY - e.touches[1].pageY
+        e.touches[0].pageY - e.touches[1].pageY,
       );
 
       const rect = viewportRef.current?.getBoundingClientRect();
@@ -949,7 +951,7 @@ export default function PlayBoardPage({
     if (draggingItem && !didDrag.current) {
       const dist = Math.hypot(
         point.clientX - dragStartPoint.current.x,
-        point.clientY - dragStartPoint.current.y
+        point.clientY - dragStartPoint.current.y,
       );
       if (dist > 5) {
         // 5px threshold
@@ -976,7 +978,7 @@ export default function PlayBoardPage({
           items: prevData.items.map((item) =>
             item.id === draggingItem.id
               ? { ...item, position: { x: newXPercent, y: newYPercent } }
-              : item
+              : item,
           ),
           // Ensure required arrays remain defined to match BoardData type.
           connections: prevData.connections,
@@ -1023,7 +1025,7 @@ export default function PlayBoardPage({
 
   const handleItemContextMenu = (
     e: { clientX: any; clientY: any; preventDefault: any },
-    itemId: string
+    itemId: string,
   ) => {
     if (panOnly) return; // disable context menu in pan-only mode
     e.preventDefault();
@@ -1042,7 +1044,7 @@ export default function PlayBoardPage({
         ...prev,
         items: prev.items.filter((i) => i.id !== itemId),
         connections: prev.connections.filter(
-          (c) => c.from !== itemId && c.to !== itemId
+          (c) => c.from !== itemId && c.to !== itemId,
         ),
       };
     });
@@ -1060,7 +1062,7 @@ export default function PlayBoardPage({
         return {
           ...prev,
           items: prev.items.map((i) =>
-            i.id === itemId ? { ...i, content: newContent } : i
+            i.id === itemId ? { ...i, content: newContent } : i,
           ),
           connections: prev.connections ?? [],
           objectives: prev.objectives ?? [],
@@ -1077,7 +1079,7 @@ export default function PlayBoardPage({
 
   const handleItemClick = (
     e: { stopPropagation: () => void },
-    itemId: string
+    itemId: string,
   ) => {
     if (panOnly) return; // disable opening modal or connections in pan-only mode
     if (didDrag.current) return;
@@ -1089,7 +1091,7 @@ export default function PlayBoardPage({
         const connectionExists = boardData?.connections.some(
           (c) =>
             (c.from === fromId && c.to === itemId) ||
-            (c.from === itemId && c.to === fromId)
+            (c.from === itemId && c.to === fromId),
         );
         if (!connectionExists) {
           setBoardData((prev) => {
@@ -1228,7 +1230,7 @@ export default function PlayBoardPage({
       { position: { x: number; y: number }; rotation: number }
     >();
     boardData.items.forEach((i) =>
-      posMap.set(i.id, { position: { ...i.position }, rotation: i.rotation })
+      posMap.set(i.id, { position: { ...i.position }, rotation: i.rotation }),
     );
     previousPositionsRef.current = posMap;
 
@@ -1237,7 +1239,7 @@ export default function PlayBoardPage({
     const placed = computeDeclutterLayout(
       boardData.items,
       viewportWidth,
-      viewportHeight
+      viewportHeight,
     );
     setAnimateLayout(true);
     setBoardData((prev) => (prev ? { ...prev, items: placed } : prev));
@@ -1295,9 +1297,9 @@ export default function PlayBoardPage({
   const handleRequestClue = () => {
     if (!viewportRef.current) return;
 
-    const availableClueIndices = PREDEFINED_CLUES.map((_, i) => i).filter(
-      (i) => !usedClueIndices.has(i)
-    );
+    const availableClueIndices = PREDEFINED_CLUES.map(
+      (_: string, i: number) => i,
+    ).filter((i: number) => !usedClueIndices.has(i));
 
     if (availableClueIndices.length === 0) {
       alert("No more clues available.");
@@ -1408,7 +1410,7 @@ export default function PlayBoardPage({
 
   const handleAttemptSolve = (objectiveId: string) => {
     const objectiveToSolve = boardData?.objectives.find(
-      (obj) => obj.id === objectiveId
+      (obj) => obj.id === objectiveId,
     );
     if (objectiveToSolve) {
       setSolvingObjective(objectiveToSolve);
@@ -1417,11 +1419,11 @@ export default function PlayBoardPage({
 
   const handleObjectiveSubmit = async (
     objectiveId: string,
-    solutionText: string
+    solutionText: string,
   ) => {
     setIsSubmittingObjective(true);
     const solvedObjective = boardData?.objectives.find(
-      (obj) => obj.id === objectiveId
+      (obj) => obj.id === objectiveId,
     );
 
     try {
@@ -1429,6 +1431,7 @@ export default function PlayBoardPage({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          caseSlug: slug,
           boardData,
           objectiveId,
           objectiveDescription: solvedObjective?.description,
@@ -1436,23 +1439,35 @@ export default function PlayBoardPage({
         }),
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const result = await res.json();
-      if (!result.allowed) {
-        alert(
-          result.reason ||
-            "Your submission was blocked. Please provide a respectful, honest attempt."
-        );
-        return;
-      }
-      if (result.correct) {
-        setCompletedObjectives((prev) => {
-          const newSet = new Set(prev);
-          newSet.add(objectiveId);
-          return newSet;
-        });
-      } else {
-        alert("Not quite right yet. Keep investigating and try again!");
-      }
+      const newEvidence = await res.json();
+      // Normalize sizes of new items before merging so they aren't minuscule.
+      // Be defensive: API may return only scoring fields (or items may be missing).
+      const itemsToAdd = Array.isArray(newEvidence?.items)
+        ? newEvidence.items.map(normalizeItemSize)
+        : [];
+      const connectionsToAdd = Array.isArray(newEvidence?.connections)
+        ? newEvidence.connections
+        : [];
+
+      setBoardData((prev) => {
+        if (!prev) return prev;
+        const updatedItems = [...prev.items, ...itemsToAdd];
+        const updatedConnections = [
+          ...prev.connections,
+          ...connectionsToAdd,
+        ];
+        return {
+          ...prev,
+          items: updatedItems,
+          connections: updatedConnections,
+        };
+      });
+
+      setCompletedObjectives((prev) => {
+        const newSet = new Set(prev);
+        newSet.add(objectiveId);
+        return newSet;
+      });
     } catch (err) {
       console.error("Failed to generate new evidence:", err);
       alert("Failed to process findings. Intel connection may be unstable.");
@@ -1516,8 +1531,8 @@ export default function PlayBoardPage({
             typeof it.imageUrl === "string" && it.imageUrl.trim() !== ""
               ? it.imageUrl.trim()
               : typeof it.image === "string" && it.image.trim() !== ""
-              ? it.image.trim()
-              : undefined;
+                ? it.image.trim()
+                : undefined;
           const title = typeof it.title === "string" ? it.title : undefined;
           const packIn = Array.isArray(it.packIn) ? it.packIn : [];
           return normalizeItemSize({
@@ -1607,8 +1622,8 @@ export default function PlayBoardPage({
       cursor: connectingState.from
         ? "crosshair"
         : isDragging
-        ? "grabbing"
-        : "grab",
+          ? "grabbing"
+          : "grab",
       zIndex: isDragging || isConnectingFrom ? 100 : 10,
       userSelect: "none",
       // In pan-only mode we disable pointer events so the board receives the drag to pan.
@@ -1624,10 +1639,16 @@ export default function PlayBoardPage({
     };
 
     switch (item.type) {
-      case "photo":
+      case "photo": {
         const imageUrl = getItemImageUrl(item);
+        const parsedPhoto = parsePhotoContent(item.content);
+        const photoTitle =
+          (item.title && item.title.trim().length > 0
+            ? item.title
+            : parsedPhoto.title) ?? undefined;
+        const photoVariant = parsedPhoto.variant ?? "overlay";
+
         return (
-          // FIX: Ref callback should not return a value and should handle unmounting.
           <div
             {...interactionHandlers}
             ref={(el) => {
@@ -1636,50 +1657,20 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} p-2 bg-gray-700 border border-gray-500 overflow-hidden`}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={item.content}
-                // Use the dynamic item dimensions instead of a hardcoded 300x300 so sizing follows data.
-                width={item.size.width}
-                height={item.size.height}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div
-                key={`${item.id}-image-placeholder`}
-                className="w-full h-full flex flex-col items-center justify-center text-center text-gray-300 text-xs p-1 bg-gray-800"
-              >
-                <svg
-                  className="animate-spin h-5 w-5 text-gray-400 mb-2"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                <span className="font-bold uppercase tracking-wider text-sm text-gray-400">
-                  [ ACQUIRING VISUALS... ]
-                </span>
-              </div>
-            )}
+            <PhotoPreview
+              imageUrl={imageUrl}
+              title={photoTitle}
+              variant={photoVariant}
+              width={item.size.width}
+              height={item.size.height}
+            />
+
             <Tape key={`tape-${item.id}`} rotation={-15} />
           </div>
         );
+      }
       case "document":
         return (
           // FIX: Ref callback should not return a value and should handle unmounting.
@@ -2193,8 +2184,8 @@ export default function PlayBoardPage({
           cursor: isPanning
             ? "grabbing"
             : connectingState.from
-            ? "crosshair"
-            : "grab",
+              ? "crosshair"
+              : "grab",
         }}
       >
         <div
