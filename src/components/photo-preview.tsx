@@ -9,14 +9,10 @@ export default function PhotoPreview({
   imageUrl,
   title,
   variant = "overlay",
-  width,
-  height,
 }: {
   imageUrl?: string;
   title?: string;
   variant?: PhotoVariant;
-  width: number;
-  height: number;
 }) {
   const displayName = (title ?? "").trim();
 
@@ -29,8 +25,7 @@ export default function PhotoPreview({
               <Image
                 src={imageUrl}
                 alt={displayName || "Photo"}
-                width={width}
-                height={height}
+                fill
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -63,8 +58,6 @@ export default function PhotoPreview({
           <Image
             src={imageUrl}
             alt={displayName || "Photo"}
-            width={width}
-            height={height}
             className="w-full h-full object-cover"
           />
         ) : (

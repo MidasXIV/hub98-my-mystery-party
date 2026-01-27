@@ -29,19 +29,6 @@ import ObjectiveSolver from "@/components/objective-solver";
 
 // Removed unused PlayPageProps interface
 
-// Helper to build absolute URL if you ever need full origin (e.g. for sharing outside Next.js)
-// Set NEXT_PUBLIC_SITE_URL on Vercel if required; otherwise we just return a root-relative path.
-const withBase = (path: string) => {
-  const base = process.env.NEXT_PUBLIC_SITE_URL;
-  if (base) {
-    try {
-      return new URL(path, base).toString();
-    } catch {
-      return path; // fallback
-    }
-  }
-  return path; // root-relative works both locally and on Vercel
-};
 
 const PREDEFINED_CLUES = [
   "A faint scent of almond in the air...",
@@ -53,10 +40,6 @@ const PREDEFINED_CLUES = [
   "A dog that didn't bark in the night.",
   "A hastily scribbled note: 'Meet me at the pier. Urgent.'",
 ];
-
-// Removed unused boardItemSchema (server-side generation only now)
-
-// Schemas moved server-side; removed unused client definitions.
 
 import {
   ITEM_TYPES,
@@ -173,11 +156,9 @@ function normalizeItemSize(item: BoardItem): BoardItem {
 function Modal({
   item,
   onClose,
-  imageUrl,
 }: {
   item: BoardItem;
   onClose: () => void;
-  imageUrl?: string;
 }) {
   useEffect(() => {
     const handleEsc = (e: { key: string }) => {
@@ -198,7 +179,7 @@ function Modal({
         const photoVariant = parsedPhoto.variant ?? "overlay";
         return (
           <PhotoViewer
-            imageUrl={imageUrl}
+            imageUrl={item.imageUrl}
             title={photoTitle}
             variant={photoVariant}
           />
@@ -484,7 +465,6 @@ export default function PlayBoardPage({
   const [loadingMessage, setLoadingMessage] = useState<string | null>(
     "CLASSIFIED: Generating Mission Briefing...",
   );
-  // Direct image resolution is handled per item now (see getItemImageUrl); no separate state map needed.
 
   // Interaction states
   const [draggingItem, setDraggingItem] = useState<{
@@ -561,16 +541,6 @@ export default function PlayBoardPage({
     generateBoard();
   }, []);
 
-  // Helper: derive the usable image URL for a photo item.
-  const getItemImageUrl = (item: BoardItem): string | undefined => {
-    if (item.type !== "photo") return undefined;
-    if (item.imageUrl && item.imageUrl.trim().length > 0)
-      return withBase(item.imageUrl.trim());
-    // Fallback: treat content as path/URL if it matches pattern
-    if (/^(https?:\/\/|\/)/.test(item.content))
-      return withBase(item.content.trim());
-    return undefined;
-  };
 
   const visibleItems = useMemo(
     () => boardData?.items.filter((item) => activeFilters.has(item.type)) || [],
@@ -1473,7 +1443,6 @@ export default function PlayBoardPage({
 
     switch (item.type) {
       case "photo": {
-        const imageUrl = getItemImageUrl(item);
         const parsedPhoto = parsePhotoContent(item.content);
         const photoTitle =
           (item.title && item.title.trim().length > 0
@@ -1493,11 +1462,10 @@ export default function PlayBoardPage({
             className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
             <PhotoPreview
-              imageUrl={imageUrl}
+              key={`photo-${item.id}`}
+              imageUrl={item.imageUrl}
               title={photoTitle}
               variant={photoVariant}
-              width={item.size.width}
-              height={item.size.height}
             />
 
             <Tape key={`tape-${item.id}`} rotation={-15} />
@@ -1934,7 +1902,6 @@ export default function PlayBoardPage({
         <Modal
           item={modalItem}
           onClose={() => setModalItem(null)}
-          imageUrl={getItemImageUrl(modalItem)}
         />
       )}
       {/* Evidence panel: list evidence items grouped by type; clicking focuses item on board */}

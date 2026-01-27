@@ -1,34 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { CSSProperties, useMemo } from "react";
 import {
-  ITEM_TYPES,
   BoardItem,
-  BoardData,
-  BoardItemType,
-  Objective,
 } from "@/lib/boardTypes";
-
-const getItemImageUrl = (item: BoardItem): string | undefined => {
-  if (item.type !== "photo") return undefined;
-  if (item.imageUrl && item.imageUrl.trim().length > 0)
-    return withBase(item.imageUrl.trim());
-  // Fallback: treat content as path/URL if it matches pattern
-  if (/^(https?:\/\/|\/)/.test(item.content))
-    return withBase(item.content.trim());
-  return undefined;
-};
-
-const withBase = (path: string) => {
-  const base = process.env.NEXT_PUBLIC_SITE_URL;
-  if (base) {
-    try {
-      return new URL(path, base).toString();
-    } catch {
-      return path; // fallback
-    }
-  }
-  return path; // root-relative works both locally and on Vercel
-};
 
 function Tape({ rotation }: { rotation?: number }) {
   return (
@@ -65,7 +39,7 @@ interface ContentRendererProps {
 
 export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> = {
   photo: ({ item }) => {
-    const imageUrl = getItemImageUrl(item);
+    const imageUrl = item.imageUrl;
     return (
       <div className="w-full h-full p-2 bg-gray-700 border border-gray-500 overflow-hidden flex flex-col">
         {imageUrl ? (
