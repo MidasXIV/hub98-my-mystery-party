@@ -552,6 +552,33 @@ export default function PlayBoardPage({
     () => boardData?.items.filter((item) => activeFilters.has(item.type)) || [],
     [boardData, activeFilters],
   );
+
+  // Only show evidence type filters that exist on this board.
+  // Preserve ITEM_TYPES ordering so the UI stays consistent across cases.
+  const availableTypes = useMemo(() => {
+    if (!boardData) return [...ITEM_TYPES];
+    const present = new Set(boardData.items.map((i) => i.type));
+    return ITEM_TYPES.filter((t) => present.has(t));
+  }, [boardData]);
+
+  // Keep activeFilters aligned with availableTypes so we don't hold onto filters
+  // for types that don't exist for the current case.
+  useEffect(() => {
+    setActiveFilters((prev) => {
+      const next = new Set<BoardItemType>();
+      for (const t of availableTypes) {
+        if (prev.has(t)) next.add(t);
+      }
+      // If the previous filter set becomes empty (e.g., initial load or case swap),
+      // default to showing everything that exists.
+      if (next.size === 0) {
+        return new Set(availableTypes as BoardItemType[]);
+      }
+      // If nothing changed, return the previous instance to avoid extra renders.
+      if (next.size === prev.size) return prev;
+      return next;
+    });
+  }, [availableTypes]);
   const visibleItemIds = useMemo(
     () => new Set(visibleItems.map((item) => item.id)),
     [visibleItems],
@@ -1946,7 +1973,7 @@ export default function PlayBoardPage({
         titleOverride={caseFile.title}
         boardControlsProps={{
           activeFilters,
-          allTypes: [...ITEM_TYPES] as string[],
+          allTypes: [...availableTypes] as string[],
           toggleFilter: (t: string) => toggleFilter(t as BoardItemType),
           setActiveFilters: (filters: Set<string>) =>
             setActiveFilters(filters as Set<BoardItemType>),

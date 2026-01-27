@@ -216,7 +216,7 @@ const BoardControls: React.FC<BoardControlsProps> = ({
     <div
       role="group"
       aria-label="Board actions"
-      className="hidden md:flex flex-wrap items-center gap-2"
+      className="hidden md:flex flex-wrap items-center justify-center gap-2 w-full"
     >
       {/* Zoom group */}
       {onZoomOut && onZoomIn && (
