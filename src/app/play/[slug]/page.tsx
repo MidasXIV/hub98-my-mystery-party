@@ -25,6 +25,7 @@ import {
 import ObjectivesPanel from "@/components/objectives-panel";
 import ZoomController from "@/components/zoom-controller";
 import { FloatingButton } from "@/components/ui/floating-button";
+import ObjectiveSolver from "@/components/objective-solver";
 
 // Removed unused PlayPageProps interface
 
@@ -461,114 +462,7 @@ function TimelineView({ items, onClose, onFocusItem }: TimelineViewProps) {
   );
 }
 
-function ObjectiveSolverModal({
-  objective,
-  onClose,
-  onSubmit,
-  isSubmitting,
-}: {
-  objective: Objective;
-  onClose: () => void;
-  onSubmit: (objectiveId: string, solution: string) => void;
-  isSubmitting: boolean;
-}) {
-  const [solution, setSolution] = useState("");
-
-  useEffect(() => {
-    const handleEsc = (e: { key: string }) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, [onClose]);
-
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    onSubmit(objective.id, solution);
-  };
-
-  if (!objective) return null;
-
-  return (
-    <div
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[350] flex items-center justify-center animate-fade-in"
-      onClick={onClose}
-      aria-modal="true"
-      role="dialog"
-    >
-      <div
-        className="relative bg-gray-900 border border-yellow-500/50 rounded-md shadow-lg p-6 m-4 max-w-lg w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 className="text-xl font-staatliches tracking-wider text-yellow-400 mb-2">
-          SOLVE OBJECTIVE
-        </h2>
-        <p className="font-special-elite text-gray-300 mb-4 border-t border-b border-gray-700 py-3">
-          {objective.description}
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <label
-            htmlFor="solution-text"
-            className="font-special-elite text-sm text-gray-400"
-          >
-            Enter your findings or theory:
-          </label>
-          <textarea
-            id="solution-text"
-            value={solution}
-            onChange={(e) => setSolution(e.target.value)}
-            className="w-full h-32 p-2 mt-1 bg-gray-800 border border-gray-600 rounded-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 font-mono"
-            placeholder="Detail your conclusions here..."
-            required
-          />
-          <div className="flex justify-end items-center mt-4 space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="font-staatliches tracking-wider px-4 py-2 bg-gray-700 text-gray-300 hover:bg-gray-600 rounded-sm transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="font-staatliches tracking-wider px-4 py-2 bg-yellow-500 text-black hover:bg-yellow-400 rounded-sm transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center"
-            >
-              {isSubmitting ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Analyzing...
-                </>
-              ) : (
-                "Submit Findings"
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+// Objective solve UI + logic moved to `src/components/objective-solver.tsx`.
 
 // FilterMenu moved to dedicated component and integrated inside PlayHeader.
 
@@ -629,7 +523,6 @@ export default function PlayBoardPage({
   const [solvingObjective, setSolvingObjective] = useState<Objective | null>(
     null,
   );
-  const [isSubmittingObjective, setIsSubmittingObjective] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [usedClueIndices, setUsedClueIndices] = useState(new Set<number>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
@@ -1417,66 +1310,6 @@ export default function PlayBoardPage({
     }
   };
 
-  const handleObjectiveSubmit = async (
-    objectiveId: string,
-    solutionText: string,
-  ) => {
-    setIsSubmittingObjective(true);
-    const solvedObjective = boardData?.objectives.find(
-      (obj) => obj.id === objectiveId,
-    );
-
-    try {
-      const res = await fetch("/api/board/objective", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          caseSlug: slug,
-          boardData,
-          objectiveId,
-          objectiveDescription: solvedObjective?.description,
-          solutionText,
-        }),
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const newEvidence = await res.json();
-      // Normalize sizes of new items before merging so they aren't minuscule.
-      // Be defensive: API may return only scoring fields (or items may be missing).
-      const itemsToAdd = Array.isArray(newEvidence?.items)
-        ? newEvidence.items.map(normalizeItemSize)
-        : [];
-      const connectionsToAdd = Array.isArray(newEvidence?.connections)
-        ? newEvidence.connections
-        : [];
-
-      setBoardData((prev) => {
-        if (!prev) return prev;
-        const updatedItems = [...prev.items, ...itemsToAdd];
-        const updatedConnections = [
-          ...prev.connections,
-          ...connectionsToAdd,
-        ];
-        return {
-          ...prev,
-          items: updatedItems,
-          connections: updatedConnections,
-        };
-      });
-
-      setCompletedObjectives((prev) => {
-        const newSet = new Set(prev);
-        newSet.add(objectiveId);
-        return newSet;
-      });
-    } catch (err) {
-      console.error("Failed to generate new evidence:", err);
-      alert("Failed to process findings. Intel connection may be unstable.");
-    } finally {
-      setIsSubmittingObjective(false);
-      setSolvingObjective(null);
-    }
-  };
-
   if (!caseFile) return notFound();
 
   // Basic normalization logic; ensures required shape & sizes.
@@ -2041,11 +1874,44 @@ export default function PlayBoardPage({
       onTouchCancel={handleInteractionEnd}
     >
       {solvingObjective && (
-        <ObjectiveSolverModal
+        <ObjectiveSolver
+          caseSlug={slug}
+          boardData={boardData as BoardData}
           objective={solvingObjective}
+          isOpen={Boolean(solvingObjective)}
           onClose={() => setSolvingObjective(null)}
-          onSubmit={handleObjectiveSubmit}
-          isSubmitting={isSubmittingObjective}
+          normalizeItemSize={normalizeItemSize}
+          onSolved={({ objectiveId, correct, score, unlockedItems, unlockedConnections }) => {
+            // 1) Merge unlocked evidence into board state
+            setBoardData((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                items: [...prev.items, ...unlockedItems],
+                connections: [...prev.connections, ...unlockedConnections],
+              };
+            });
+
+            // 2) Only mark objective complete if it's actually correct
+            if (correct) {
+              setCompletedObjectives((prev) => {
+                const next = new Set(prev);
+                next.add(objectiveId);
+                return next;
+              });
+            }
+
+            // 3) Notify user when new evidence is added
+            if (correct && unlockedItems.length > 0) {
+              alert(
+                `${unlockedItems.length} new evidence ${unlockedItems.length === 1 ? "item" : "items"} added to the board!`,
+              );
+            } else if (!correct) {
+              alert(
+                `Not quite. Your analysis scored ${Math.round(score * 100)}%. Try linking more specific evidence to your theory.`,
+              );
+            }
+          }}
         />
       )}
       {isTimelineVisible && boardData && (
