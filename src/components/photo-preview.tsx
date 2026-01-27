@@ -58,6 +58,7 @@ export default function PhotoPreview({
           <Image
             src={imageUrl}
             alt={displayName || "Photo"}
+            fill
             className="w-full h-full object-cover"
           />
         ) : (
