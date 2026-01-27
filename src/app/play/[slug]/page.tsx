@@ -252,7 +252,7 @@ function Modal({
         return <p className="p-4">{item.content}</p>;
     }
   };
-
+  
   return (
     <div
       className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[250] flex items-center justify-center animate-fade-in"
@@ -264,13 +264,19 @@ function Modal({
         className="relative bg-gray-900/80 border border-gray-600 rounded-md shadow-lg p-4 m-4 max-w-[90vw] max-h-[90vh] overflow-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <button
-          onClick={onClose}
-          aria-label="Close detail view"
-          className="absolute top-2 right-2 text-gray-400 hover:text-white text-3xl z-10 font-mono leading-none"
-        >
-          &times;
-        </button>
+        <div className="sticky top-0 z-20 -mt-4 -mr-4 mb-2 flex items-start justify-between">
+          <div className="w-10 h-10 m-2" aria-hidden="true" />
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close detail view"
+            className="m-2 inline-flex h-10 w-10 items-center justify-center rounded-md bg-black/60 text-white border border-white/20 shadow-lg shadow-black/40 backdrop-blur-sm hover:bg-black/80 hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 text-[34px] leading-[1] cursor-pointer"
+          >
+            <span aria-hidden="true" className="-translate-y-[2px]">
+              &times;
+            </span>
+          </button>
+        </div>
         {renderContent()}
       </div>
     </div>
