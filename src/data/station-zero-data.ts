@@ -28,7 +28,7 @@ const STATION_ZERO_DATA: {
       content: JSON.stringify({
         department: "AETHERNET INTERSTELLAR AUTHORITY",
         bureau: "Cold Case Division",
-        date: "December 17, 2047",
+        date: "December 17, 2025",
         to: "Special Investigator",
         from: "Director Anaya Sharma",
         subject:
@@ -36,7 +36,8 @@ const STATION_ZERO_DATA: {
         classification: "CLASSIFIED // EYES ONLY",
         body: `Investigator,
 
-You are hereby assigned to re-open Case File 734-Alpha, codenamed 'The Ghost of Station Zero.' Five years ago, on October 31st, 2042, all contact was lost with the deep space research platform, Station Zero. The six-person crew was presumed lost.
+You are hereby assigned to re-open Case File 734-Alpha, codenamed 'The Ghost of Station Zero.' Five years ago, on October 31st, 2020, all contact was lost with the deep space research platform, Station Zero. The six-person crew was presumed lost.
+
 
 The crew were specialists, but they were also outcasts—brilliant minds given a second chance. Their classified mission was to cultivate and study 'Myco-Veridia,' a xenobotanical fungus with unprecedented potential. Officially, it was a simple research assignment. Unofficially, it was a high-risk, high-reward gamble.
 
@@ -345,6 +346,7 @@ Good luck.`,
             duration: "1m 15s",
             notes:
               "SAR: Station is dark. Escape pod clamps fused. No signs of external breach..." +
+              "\nSAR: Preliminary telemetry shows non-standard power routing during the storm window; the clamp actuators took sustained load consistent with an overload event." +
               "\nCORP: Cause of death?\n" +
               "SAR: Atmospheric failure. But… the comms array was still warm when we boarded." +
               "\n// CORP: Log equipment behavior only.",
@@ -1820,14 +1822,14 @@ Good luck.`,
       description:
         "Uncover the scientific explanation for the crew's shared hallucinations and the 'ghostly' phenomena.",
       solution:
-        "tHE HALLUCINATIONS WERE CAUSED BY THE MYCO-VERIDIA FUNGUS RELEASED SPORES AFFECTING THE CREW'S PERCEPTIONS. The solar storm amplified THE EFFECTS. Elara Voss witnessed the manifestations of these hallucinations in the cockpit.",
+        "The hallucinations were caused by Myco-Veridia fungal spores affecting the crew’s perceptions. The solar storm and station interference amplified the effects, making the ‘ghost in the machine’ seem real.",
     },
     {
       id: "obj_02",
       description:
         "Prove that the life support and system failures were a result of deliberate sabotage, not the solar storm.",
       solution:
-        "Analyze system logs and crew interactions leading up to the failures.",
+        "Jax Autopsy report states the system failures involed a forced manual override.",
     },
     {
       id: "obj_03",

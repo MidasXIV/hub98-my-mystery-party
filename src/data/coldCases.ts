@@ -51,7 +51,7 @@ export const coldCases: ColdCase[] = [
     imageUrl: "/cold_cases/thumbnails/station_zero.png",
     tags: ["Puzzle Heavy", "High Difficulty"],
     description:
-      "A marine research station sends one last garbled transmission. Dive into sonar maps, lab notes, and encrypted logs to find what lurks beneath.",
+      "Five years ago, Station Zero—a deep-space research platform—went silent in the middle of a brutal solar storm. The last thing anyone heard was a terrified voice, whispers tangled in static, and one phrase that never should’ve made it into an official report: a ‘ghost in the machine.’\n\nNow the Cold Case Division has something new: a recovered ‘data ghost’—fragmented crew diaries, corrupted system logs, and classified research notes from a mission involving the xenobotanical fungus Myco‑Veridia. Your job is to piece those final days back together, separate paranoia from proof, and figure out what really happened behind those sealed bulkheads. It’s tense, puzzle-heavy, and absolutely does not hold your hand.",
     difficulty: "Hard",
     players: "1-4",
     duration: "3-5 hours",
