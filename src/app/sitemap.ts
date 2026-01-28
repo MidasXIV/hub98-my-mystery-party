@@ -1,9 +1,10 @@
 import { getAllPosts, getCategories, getBaseUrl } from "@/lib/blog";
 import { invitationDesigns } from "@/data/invitations";
+import { coldCases } from "@/data/coldCases";
 
 export default function sitemap() {
   const base = getBaseUrl();
-  const routes = ["", "/blog", "/invitations", "/invitations/dashboard"].map((route) => ({
+  const routes = ["", "/blog", "/invitations", "/invitations/dashboard", "/cases"].map((route) => ({
     url: `${base}${route}`,
     lastModified: new Date().toISOString(),
   }));
@@ -28,5 +29,10 @@ export default function sitemap() {
     }))
   );
 
-  return [...routes, ...cats, ...posts, ...invitationRoutes];
+  const caseRoutes = coldCases.map((c) => ({
+    url: `${base}/cases/${c.slug}`,
+    lastModified: new Date().toISOString(),
+  }));
+
+  return [...routes, ...cats, ...posts, ...invitationRoutes, ...caseRoutes];
 }
