@@ -76,6 +76,7 @@ function Footer() {
   const links: { label: string; href: string; external?: boolean }[] = [
     { label: "FAQ", href: "/#faq" },
     { label: "Newsletter", href: "#newsletter" },
+    { label: "System Status", href: "/status" },
     { label: "Terms of Service", href: "/terms-of-service" },
     { label: "Privacy Policy", href: "/privacy-policy" },
     { label: "Disclaimer", href: "/disclaimer" },
