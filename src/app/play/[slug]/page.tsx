@@ -462,6 +462,10 @@ export default function PlayBoardPage({
   const { slug } = React.use(params);
   const caseFile = getCaseBySlug(slug);
 
+  if (!caseFile) {
+    notFound();
+  }
+
   // FIX: Strongly type the boardData state to resolve property access errors on 'unknown' type for items.
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [lineCoords, setLineCoords] = useState<
@@ -513,6 +517,8 @@ export default function PlayBoardPage({
   const [usedClueIndices, setUsedClueIndices] = useState(new Set<number>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
   // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
+
+  const isPlayable = caseFile.isPlayable ?? false;
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -1874,6 +1880,28 @@ export default function PlayBoardPage({
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
+      {!isPlayable ? (
+        <section className="w-full max-w-2xl border border-amber-200/20 bg-black/40 backdrop-blur rounded-xl p-6 md:p-10 shadow-xl">
+          <p className="text-xs tracking-[0.35em] uppercase text-amber-200/70">
+            Case file secured
+          </p>
+          <h1 className="mt-3 text-3xl md:text-4xl font-staatliches tracking-wider text-amber-50">
+            {caseFile.title}
+          </h1>
+          <p className="mt-4 text-amber-100/80 font-special-elite leading-relaxed">
+            This investigation isn’t playable just yet. We’re still packaging the
+            full board—evidence, objectives, and twists—so when you step in, it’s
+            airtight.
+          </p>
+          <div className="mt-6 border-t border-amber-200/10 pt-5">
+            <p className="text-sm text-amber-100/70 font-special-elite">
+              Check back soon. When the case opens, you’ll see the full interactive
+              evidence board here.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <>
       {solvingObjective && (
         <ObjectiveSolver
           caseSlug={slug}
@@ -2096,6 +2124,8 @@ export default function PlayBoardPage({
           </svg>
         </div>
       </div>
+        </>
+      )}
     </main>
   );
 }

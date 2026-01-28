@@ -30,6 +30,8 @@ export interface ColdCase {
   isPurchasable?: boolean;
   /** Whether a sample download is available */
   hasDownloadSample?: boolean;
+  /** Whether the interactive board/play experience is available */
+  isPlayable?: boolean;
 
   preview?: Array<{
     name: string;
@@ -62,6 +64,8 @@ export const coldCases: ColdCase[] = [
     // Intentionally mark this one as not yet purchasable / downloadable
     isPurchasable: false,
     hasDownloadSample: false,
+    // Board/play exists
+    isPlayable: true,
     preview: [
       {
         name: "The Investigation Board",
@@ -158,6 +162,8 @@ export const coldCases: ColdCase[] = [
     evidence: FINAL_REHEARSAL_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
+    // Board/play exists
+    isPlayable: true,
     preview: [
       {
         name: "The Game Board",
@@ -249,6 +255,7 @@ export const coldCases: ColdCase[] = [
     evidence: PALAZZO_OF_BONES_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
+    isPlayable: false,
   },
 
   {
@@ -266,6 +273,7 @@ export const coldCases: ColdCase[] = [
     evidence: ZERO_SUM_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
+    isPlayable: false,
   },
 
   {
@@ -294,6 +302,7 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     evidence: HER_SHADOWS_NAME_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
+    isPlayable: false,
   },
 ];
 

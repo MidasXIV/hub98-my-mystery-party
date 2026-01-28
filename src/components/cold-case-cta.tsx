@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getCaseBySlug } from "@/data/coldCases";
 
 /**
  * ColdCaseCTA
@@ -9,6 +10,9 @@ import { Button } from "@/components/ui/button";
  * and invites users to start playing. Includes a video teaser and primary CTA.
  */
 export default function ColdCaseCTA() {
+  const stationZero = getCaseBySlug("station-zero");
+  const isPlayable = stationZero?.isPlayable ?? false;
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLElement | null>(null);
 
@@ -73,9 +77,15 @@ export default function ColdCaseCTA() {
             A high-stakes cold case. Realistic evidence. Your call on every lead.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <Button size="lg" asChild className="shadow-xl">
-              <Link href="/play/station-zero">Start Playing</Link>
-            </Button>
+            {isPlayable ? (
+              <Button size="lg" asChild className="shadow-xl">
+                <Link href="/play/station-zero">Start Playing</Link>
+              </Button>
+            ) : (
+              <Button size="lg" className="shadow-xl" disabled>
+                Coming Soon
+              </Button>
+            )}
             <Button variant="ghost" asChild>
               <Link href="/cases">Browse Other Cases</Link>
             </Button>

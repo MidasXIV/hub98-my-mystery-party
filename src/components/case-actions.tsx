@@ -72,6 +72,7 @@ export const CaseActions: React.FC<CaseActionsProps> = ({ slug }) => {
   const coldCase = getCaseBySlug(slug);
   const isPurchasable = coldCase?.isPurchasable ?? true;
   const hasDownloadSample = coldCase?.hasDownloadSample ?? true;
+  const isPlayable = coldCase?.isPlayable ?? false;
 
   return (
     <>
@@ -136,9 +137,11 @@ export const CaseActions: React.FC<CaseActionsProps> = ({ slug }) => {
                   className="bg-blue-600 hover:bg-blue-500 text-white pointer-events-auto cursor-pointer"
                   onClick={handlePlay}
                   aria-label="Play case (Beta feature)"
+                  disabled={!isPlayable}
+                  aria-disabled={!isPlayable}
                 >
                   <Play size={16} className="mr-2" />
-                  Play
+                  {isPlayable ? "Play" : "Coming Soon"}
                   <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-medium bg-white/20 rounded px-1.5 py-0.5 uppercase">
                     Beta
                     <HelpCircle size={14} />
@@ -147,7 +150,9 @@ export const CaseActions: React.FC<CaseActionsProps> = ({ slug }) => {
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-xs">
                 <p>
-                  Try the interactive in-browser version of this case. Explore evidence, read dossiers & track clues digitally. Features are experimental.
+                  {isPlayable
+                    ? "Try the interactive in-browser version of this case. Explore evidence, read dossiers & track clues digitally. Features are experimental."
+                    : "This case’s interactive board isn’t ready yet. It’s coming soon—join the waitlist and we’ll notify you when it’s playable."}
                 </p>
               </TooltipContent>
             </Tooltip>
