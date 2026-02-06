@@ -121,7 +121,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
       id: "doc_interview_abhishek_khanna",
       type: "interrogation-transcript",
       title: "Interview: Abhishek Khanna (Son of Surgeon)",
-      content: {
+      content: JSON.stringify({
         department: "Kolkata Police, Homicide Division",
         title: "Incident Interview: Abhishek Khanna",
         caseNumber: "STL-SURG-2026-001",
@@ -230,7 +230,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
           "(Khanna looks up.)",
           "Inspector Dutta: In my experience, people who talk about fate usually already made a choice.",
         ],
-      },
+      }),
       position: { x: 10, y: 0 },
       size: { width: 220, height: 300 },
       rotation: 0,
@@ -240,7 +240,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
       id: "doc_interview_nandini_khanna",
       type: "interrogation-transcript",
       title: "Interview: Mrs. Nandini Khanna (Wife of Surgeon)",
-      content: {
+      content: JSON.stringify({
         department: "Kolkata Police, Homicide Division",
         title: "Incident Interview: Nandini Khanna",
         caseNumber: "STL-SURG-2026-001",
@@ -274,7 +274,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
           "Khanna: I am a wife! It is my duty to stand by my husband!",
           "Dutta: Even if it means standing by while he destroys himself and others? Sometimes, Mrs. Khanna, letting a fire burn is the same as lighting it. We will talk again soon.",
         ],
-      },
+      }),
       position: { x: 30, y: 0 },
       size: { width: 220, height: 300 },
       rotation: 0,
@@ -284,7 +284,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
       id: "doc_interview_dr_vikram_rao",
       type: "interrogation-transcript",
       title: "Interview: Dr. Vikram Rao (Head of Surgical Dept.)",
-      content: {
+      content: JSON.stringify({
         department: "Kolkata Police, Homicide Division",
         title: "Incident Interview: Dr. Vikram Rao",
         caseNumber: "STL-SURG-2026-001",
@@ -320,7 +320,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
           "Rao: (Relieved that the slip was seemingly ignored, he regains his footing.) My signature was a formality based on his physical assessment. I noted my concerns in a private memo. I did my duty.",
           "Dutta: I see. It seems everyone did their duty, and yet a man is dead. We will speak again, Doctor. I find that the smallest details, the ones we try to brush away, often tell the truest stories.",
         ],
-      },
+      }),
       position: { x: 90, y: 0 },
       size: { width: 220, height: 300 },
       rotation: 0,
@@ -330,7 +330,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
       id: "doc_interview_agnes_rosario",
       type: "interrogation-transcript",
       title: "Interview: Agnes Rosario (Head Surgical Nurse)",
-      content: {
+      content: JSON.stringify({
         department: "Kolkata Police, Homicide Division",
         title: "Incident Interview: Agnes Rosario",
         caseNumber: "STL-SURG-2026-001",
@@ -369,7 +369,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
           "Dutta: One last question. After the patient died, Dr. Khanna made one phone call before he collapsed. Do you know who it was to?",
           "Rosario: I do, Sir. I was there. He didn't call his wife, or his son. He called Dr. Vikram. And the only thing I heard him say was, 'It happened. It's done.' That's when I knew this was more than a mistake.",
         ],
-      },
+      }),
       position: { x: 70, y: 0 },
       size: { width: 220, height: 300 },
       rotation: 0,
@@ -379,7 +379,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
       id: "doc_interview_dr_alok_khanna",
       type: "interrogation-transcript",
       title: "Interview: Dr. Alok Khanna (Chief Surgeon)",
-      content: {
+      content: JSON.stringify({
         department: "Kolkata Police, Homicide Division",
         title: "Incident Interview: Dr. Alok Khanna",
         caseNumber: "STL-SURG-2026-001",
@@ -520,7 +520,7 @@ In my experience, in a place like Saint Lazarus, more secrets are buried than bo
 
           "Dutta: Not like this.",
         ],
-      },
+      }),
       position: { x: -10, y: 0 },
       size: { width: 220, height: 300 },
       rotation: 0,
