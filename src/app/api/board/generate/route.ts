@@ -533,6 +533,14 @@ export async function POST(req: Request) {
       }
       return NextResponse.json(filterLockedEvidence(boardData));
     }
+    if( caseSlug === 'sins-of-saint-lazarus') {
+      const board = getCaseBySlug('sins-of-saint-lazarus');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for sins-of-saint-lazarus.' }, { status: 404 });
+      }
+      return NextResponse.json(filterLockedEvidence(boardData));
+    }
 
     // Legacy homicide board for operation-shadowfall / john-doe scenario.
     if (caseSlug === 'operation-shadowfall' || caseSlug === 'john-doe') {

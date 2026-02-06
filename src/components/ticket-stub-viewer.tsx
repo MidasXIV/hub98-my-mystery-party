@@ -10,23 +10,43 @@ const ViewerStyles = () => (
     .ticket-full-paper {
       /* Cardstock texture */
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.12'/%3E%3C/svg%3E");
-      box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+      border: 1px solid rgba(0,0,0,0.28);
     }
 
-    /* Side notches using masks */
-    .notched-sides {
-      -webkit-mask-image: radial-gradient(circle at 0 20px, transparent 10px, black 11px),
-                          radial-gradient(circle at 100% 20px, transparent 10px, black 11px);
-      -webkit-mask-position: 0 0, 0 0;
-      -webkit-mask-size: 100% 100%;
-      -webkit-mask-composite: destination-in; /* Combine masks */
-      mask-composite: intersect;
-    }
+    /*
+      Avoid mask/transparent cutouts: they can look like the ticket is partially
+      transparent against varying board backgrounds. We'll do solid "hole" circles.
+    */
     
     /* Perforated Line (Tear off) */
     .perf-line {
-      border-right: 2px dashed rgba(0,0,0,0.3);
+      border-right: 2px dashed rgba(0,0,0,0.35);
       position: relative;
+    }
+
+    .ticket-edge {
+      position: absolute;
+      inset: 0;
+      border-radius: 0.125rem;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,0.25),
+        inset 0 -14px 18px rgba(0,0,0,0.08);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .ticket-hole {
+      background: #111827;
+      box-shadow: inset 1px 1px 4px rgba(0,0,0,0.65);
+    }
+
+    .ticket-inner-dash {
+      position: absolute;
+      inset: 10px;
+      border: 2px dashed rgba(0,0,0,0.22);
+      pointer-events: none;
+      z-index: 2;
     }
 
     .ink-stamp {
@@ -61,12 +81,15 @@ export default function TicketStubViewer({ content }: { content: string }) {
           className="relative w-[600px] h-[240px] ticket-full-paper flex rounded-sm overflow-hidden"
           style={{ backgroundColor: theme.bg, color: theme.text }}
         >
+          <div className="ticket-edge" />
+          <div className="ticket-inner-dash" style={{ borderColor: theme.accent }} />
+
           {/* Side Notches Visual Hack (Background colored circles) */}
-          <div className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-900 z-10" />
-          <div className="absolute right-[-12px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-gray-900 z-10" />
+          <div className="absolute left-[-12px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full ticket-hole z-10" />
+          <div className="absolute right-[-12px] top-1/2 -translate-y-1/2 w-6 h-6 rounded-full ticket-hole z-10" />
 
           {/* --- Left Section (Main Ticket) --- */}
-          <div className="flex-1 p-8 flex flex-col border-r-2 border-dashed border-black/20 relative">
+          <div className="flex-1 p-8 flex flex-col border-r-2 border-dashed border-black/25 relative z-10">
              
              {/* Header */}
              <div className="flex justify-between items-start border-b-2 border-current pb-2 mb-4" style={{ borderColor: theme.accent }}>
@@ -104,6 +127,13 @@ export default function TicketStubViewer({ content }: { content: string }) {
                      </div>
                    )}
                 </div>
+
+           {data.serial && (
+            <div className="mt-4 font-['Share_Tech_Mono'] text-sm tracking-widest opacity-80">
+              <span className="text-[10px] uppercase block opacity-60">Ref</span>
+              {data.serial}
+            </div>
+           )}
              </div>
 
              {/* Footer */}
@@ -113,12 +143,12 @@ export default function TicketStubViewer({ content }: { content: string }) {
              
              {/* Punched Hole */}
              {data.isPunched && (
-               <div className="absolute top-4 left-4 w-6 h-6 rounded-full bg-gray-900 shadow-[inset_1px_1px_4px_rgba(0,0,0,0.8)] z-20" />
+               <div className="absolute top-4 left-4 w-6 h-6 rounded-full ticket-hole z-20" />
              )}
           </div>
 
           {/* --- Right Section (Stub) --- */}
-          <div className="w-[140px] p-4 flex flex-col items-center justify-center text-center relative bg-black/5">
+          <div className="w-[140px] p-4 flex flex-col items-center justify-center text-center relative bg-black/3 z-10">
              <div className="font-['Oswald'] text-xs uppercase tracking-widest opacity-70 mb-2">
                Stub
              </div>

@@ -42,6 +42,8 @@ const ViewerStyles = () => (
 export default function ActivityLogViewer({ content }: { content: string }) {
   const data = useMemo(() => parseActivityLog(content), [content]);
   const headers = data.headers;
+  // Support for variant: 'handwritten' (default) or 'digital'
+  const variant = data.variant === 'digital' ? 'digital' : 'handwritten';
 
   const columns = useMemo(() => {
     const legacyDefaultOrder = ["time", "direction", "number", "duration", "notes"];
@@ -170,12 +172,15 @@ export default function ActivityLogViewer({ content }: { content: string }) {
                       );
                     }
 
-                    // Time is typically typed; everything else looks handwritten.
+                    // Time is typically typed; everything else looks handwritten or digital.
                     const isTime = key === "time";
-                    const baseFont = isTime
-                      ? "font-type text-sm font-bold"
-                      : "font-hand";
-                    const extra = !isTime ? `${inkClass} leading-tight` : "";
+                    let baseFont = isTime ? "font-type text-sm font-bold" : "";
+                    if (!isTime) {
+                      baseFont = variant === 'digital'
+                        ? "font-type text-[13px] text-gray-900 tracking-wider"
+                        : "font-hand";
+                    }
+                    const extra = !isTime && variant !== 'digital' ? `${inkClass} leading-tight` : "";
                     const display = value == null ? "" : String(value);
 
                     return (

@@ -23,6 +23,7 @@ import MapPreview from "./map-preview";
 import MissingPersonReportPreview from "./missing-person-report-preview";
 import NewspaperPreview from "./newspaper-preview";
 import PersonOfInterestPreview from "./person-of-interest-preview";
+import BankStatementPreview from "./bank-statement-preview";
 import ReceiptPreview from "./receipt-preview";
 import SearchAndRescueReportPreview from "./search-and-rescue-report-preview";
 import TelephoneLogPreview from "./telephone-log-preview";
@@ -226,6 +227,13 @@ export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> =
     </div>
   ),
 
+  "bank-statement": ({ item }) => (
+    <div className="w-full h-full overflow-hidden">
+        <BankStatementPreview content={item.content} />
+      <Tape rotation={-6} />
+    </div>
+  ),
+
   receipt: ({ item }) => (
     <div className="w-full h-full overflow-hidden">
       <ReceiptPreview content={item.content} />
@@ -371,17 +379,24 @@ const renderBoardItemComponent = React.memo(
         }
       }
 
-      if (isConnectingFrom)
+      const allowInteractionRing = item.type !== "bank-statement";
+
+      if (allowInteractionRing && isConnectingFrom)
         stateClasses += " animate-pulse ring-2 ring-red-500";
-      if (connectingState.from && !isConnectingFrom)
+      if (allowInteractionRing && connectingState.from && !isConnectingFrom)
         stateClasses += " hover:ring-2 hover:ring-red-400";
 
-      return `absolute shadow-lg shadow-black/60 transform-gpu ${transitions} ${stateClasses}`;
+      // Bank statements look best as flat paper; avoid global drop shadow “glow”.
+      const baseShadow =
+        item.type === "bank-statement" ? "" : "shadow-lg shadow-black/60 ";
+
+      return `absolute ${baseShadow}transform-gpu ${transitions} ${stateClasses}`;
     }, [
       isDragging,
       isConnectingFrom,
       isAnyItemDragging,
       animateLayout,
+      item.type,
       connectingState.from,
     ]);
 

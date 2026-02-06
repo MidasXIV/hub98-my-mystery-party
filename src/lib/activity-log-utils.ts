@@ -24,6 +24,7 @@ export interface ActivityLogData {
    * arbitrary keys to support dynamic columns.
    */
   entries: ActivityLogEntry[];
+  variant?: "digital" | "handwritten"; // Affects font choice in the viewer.
   caseRef?: string;
   /** Optional column headers. If provided, the UI should render using these labels. */
   headers?: Record<string, string>;
@@ -62,6 +63,7 @@ export function parseActivityLog(content: string): ActivityLogData {
     date: json.date || "Unknown Date",
     operator: json.operator || "Operator #4",
     caseRef: json.caseRef || `LOG-${Math.floor(Math.random() * 999)}`,
+    variant: json.variant || "handwritten",
     headers,
     columnOrder,
     columnLayout,

@@ -78,6 +78,8 @@ import CaseBriefingPreview from "@/components/case-briefing-preview";
 import CaseBriefingViewer from "@/components/case-briefing-viewer";
 import TransmissionLogPreview from "@/components/transmission-log-preview";
 import TransmissionLogViewer from "@/components/transmission-log-viewer";
+import BankStatementPreview from "@/components/bank-statement-preview";
+import BankStatementViewer from "@/components/bank-statement-viewer";
 import { parsePhotoContent } from "@/lib/photo-utils";
 import PhotoViewer from "@/components/photo-viewer";
 import PhotoPreview from "@/components/photo-preview";
@@ -108,6 +110,7 @@ const DEFAULT_ITEM_SIZES: Record<
   newspaper: { width: 300, height: 200 },
   diary: { width: 220, height: 160 }, // compact representation; modal handles full paged view
   "person-of-interest-report": { width: 260, height: 160 },
+  "bank-statement": { width: 300, height: 190 },
   receipt: { width: 220, height: 360 },
   ticket: { width: 260, height: 120 },
   phoneLog: { width: 260, height: 160 },
@@ -240,6 +243,8 @@ function Modal({
         return <CaseBriefingViewer content={item.content} />;
       case "transmission-log":
         return <TransmissionLogViewer content={item.content} />;
+      case "bank-statement":
+        return <BankStatementViewer content={item.content} />;
       case "folder-tab":
         return (
           <div className="bg-yellow-600 text-white text-2xl p-4 uppercase font-staatliches tracking-wider">
@@ -1857,6 +1862,21 @@ export default function PlayBoardPage({
             className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
             <TelephoneLogPreview content={item.content} />
+          </div>
+        );
+      case "bank-statement":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <BankStatementPreview content={item.content} />
           </div>
         );
       default:

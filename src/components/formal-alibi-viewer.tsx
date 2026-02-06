@@ -9,6 +9,7 @@ import React, { useMemo } from "react";
 export interface WitnessStatementData {
   incidentNumber?: string;
   date?: string;
+  department?: string;
   witnessName?: string;
   witnessAddress?: string;
   witnessDOB?: string;
@@ -65,6 +66,14 @@ function parseWitnessData(content: string): WitnessStatementData {
     return {
       incidentNumber: json.incidentNumber || `A0${Math.floor(Math.random()*9)}-${Math.floor(Math.random()*1000000)}`,
       date: json.date || json.time || "Unknown",
+      // Optional: allow UI header to be set per-case (hospital HR, corporate, etc.)
+      department:
+        json.department ||
+        json.policeDepartment ||
+        json.station ||
+        json.agency ||
+        json.organization ||
+        "Riverdale Police Department",
       // Prefer explicit keys from provided schema; fall back to older aliases
       witnessName: json.witnessName || json.name || json.subject || json.witness || "Unknown",
       witnessAddress: json.address || json.location || "N/A",
@@ -95,6 +104,7 @@ function parseWitnessData(content: string): WitnessStatementData {
     return {
       incidentNumber: "A03-05081998", // Hardcoded to match style or random
       date: dateMatch ? dateMatch[1].trim() : "Unknown",
+      department: "Riverdale Police Department",
       witnessName: nameMatch ? nameMatch[1].trim() : "Unknown Witness",
       witnessAddress: addressMatch ? addressMatch[1].trim() : "",
       witnessDOB: "", // Not present in current raw text
@@ -125,7 +135,7 @@ export default function FormalAlibiViewer({ content }: { content: string }) {
           
           {/* Department Title */}
           <div className="text-sm font-bold uppercase tracking-[0.2em] mb-2 font-sans opacity-90">
-            Riverdale Police Department
+            {data.department || "Riverdale Police Department"}
           </div>
 
           {/* Badge & Main Title Bar */}

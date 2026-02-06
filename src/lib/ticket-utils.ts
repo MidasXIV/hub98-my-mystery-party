@@ -32,14 +32,59 @@ export function parseTicketData(content: string): TicketData {
     json = { venue: venueMatch ? venueMatch[1] : "TICKET" };
   }
 
+  // Aliases for the case-data rail style tickets
+  const normalizedType = ((): TicketType => {
+    const t = String(json.type ?? json.ticketType ?? "generic").toLowerCase();
+    if (t.includes("train") || t.includes("rail")) return "train";
+    if (t.includes("movie") || t.includes("cinema") || t.includes("film")) return "movie";
+    if (t.includes("park")) return "parking";
+    return "generic";
+  })();
+
+  const venue =
+    json.venue ||
+    json.provider ||
+    json.operator ||
+    json.company ||
+    json.agency ||
+    "ADMIT ONE";
+
+  const date = json.date || json.journeyDate || json.travelDate || "---";
+  const time = json.time || json.departureTime || json.boardingTime || undefined;
+
+  const derivedTitle = (() => {
+    // Prefer explicit title if present
+    if (json.title) return String(json.title);
+
+    // Rail-style: show route + passenger details compactly
+    const from = json.from ? String(json.from) : "";
+    const to = json.to ? String(json.to) : "";
+  const route = from && to ? `${from} - ${to}` : from || to;
+
+    const passengerName = json.passengerName ? String(json.passengerName) : "";
+    const coach = json.coach ? String(json.coach) : "";
+    const seat = json.seat ? String(json.seat) : "";
+    const coachSeat = coach && seat ? `${coach}-${seat}` : coach || seat;
+
+    const bits = [route, passengerName, coachSeat].filter(Boolean);
+  return bits.length ? bits.join(" • ") : undefined;
+  })();
+
+  const serial =
+    json.serial ||
+    json.pnr ||
+    json.bookingRef ||
+    json.ticketNumber ||
+    `No. ${Math.floor(Math.random() * 99999)}`;
+
   return {
-    type: json.type || "generic",
-    venue: json.venue || "ADMIT ONE",
-    title: json.title || undefined,
-    date: json.date || "---",
-    time: json.time || undefined,
-    price: json.price || undefined,
-    serial: json.serial || `No. ${Math.floor(Math.random() * 99999)}`,
-    isPunched: json.isPunched ?? true,
+    type: normalizedType,
+    venue,
+    title: derivedTitle,
+    date,
+    time,
+    price: json.price || json.fare || json.amount || undefined,
+    serial,
+    isPunched: json.isPunched ?? false,
   };
 }

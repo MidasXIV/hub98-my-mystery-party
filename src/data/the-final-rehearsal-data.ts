@@ -306,6 +306,7 @@ Do not let the drama distract you from the facts.`,
         date: "OCT 14, 2025",
         operator: "System Admin (Auto-Log)",
         caseRef: "CASE-OAK-2025",
+        variant: "handwritten",
         columnOrder: ["entryTime", "name", "exitTime", "room"],
         columnLayout: {
           entryTime: "w-24",

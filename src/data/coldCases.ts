@@ -3,6 +3,7 @@ import PALAZZO_OF_BONES_DATA from "./palazzo-of-bones-data";
 import STATION_ZERO_DATA from "./station-zero-data";
 import ZERO_SUM_DATA from "./zero-sum-data";
 import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
+import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data"
 
 export interface Evidence {
   title: string;
@@ -240,6 +241,23 @@ export const coldCases: ColdCase[] = [
   //   isPurchasable: false,
   //   hasDownloadSample: false,
   // },
+  {
+    id: 1,
+    slug: "sins-of-saint-lazarus",
+    title: "The Sins of Saint Lazarus",
+    imageUrl: "/cold_cases/thumbnails/sins_of_saint_lazarus.png",
+    tags: ["Date Night", "1-2 Players", "High Difficulty"],
+    description:
+      "After a mysterious six-month hiatus, the brilliant Dr. Khanna has returned to the operating theater at St. Lazarus. But his first surgery back isn't a triumph, it’s a massacre.When a routine procedure ends in an 'insane' act of negligence, the police are pulled into a labyrinth of illicit affairs, family betrayals, and professional sabotage. Everyone is a suspect, everyone has a motive, and the man at the center of it all is a doctor who seems like a total stranger to those who love him most.",
+    difficulty: "Hard",
+    players: "1-2",
+    duration: "2-3 hours",
+    price: 19.99,
+    evidence: SINS_OF_SAINT_LAZARUS_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+    isPlayable: true,
+  },
   {
     id: 2,
     slug: "palazzo-of-bones",

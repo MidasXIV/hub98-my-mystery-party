@@ -31,6 +31,7 @@ const TYPE_ORDER = [
   "diary", // newly supported journal/log items
   "clue",
   "person-of-interest-report",
+  "bank-statement",
   "receipt",
   "ticket",
   "phoneLog",

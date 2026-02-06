@@ -1,28 +1,62 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { parseTicketData, TicketData } from "@/lib/ticket-utils"; // Assume utils file or inline
+import { parseTicketData } from "@/lib/ticket-utils"; // Assume utils file or inline
 
 // --- CSS ---
 const PreviewStyles = () => (
   <style jsx global>{`
     @import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Oswald:wght@500&family=Share+Tech+Mono&display=swap');
 
-    /* 1. Die-Cut Ticket Shape (The "Notches") */
+    /* 1. Die-Cut Ticket Shape (Notches) */
+    /*
+      NOTE: We avoid using 'transparent' in the notch gradients because the
+      board canvas can show through, making the ticket look unintentionally
+      see-through. Instead we "punch" with a background-color variable.
+    */
     .ticket-stub-shape {
       position: relative;
-      /* This gradient trick creates the transparent semicircles on left/right */
-      background: radial-gradient(circle at 0 50%, transparent 6px, var(--ticket-bg) 6.5px),
-                  radial-gradient(circle at 100% 50%, transparent 6px, var(--ticket-bg) 6.5px);
+      background:
+        radial-gradient(circle at 0 50%, var(--ticket-hole) 0 6px, var(--ticket-bg) 6.5px),
+        radial-gradient(circle at 100% 50%, var(--ticket-hole) 0 6px, var(--ticket-bg) 6.5px);
       background-size: 51% 100%;
       background-position: left, right;
       background-repeat: no-repeat;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
     }
 
-    /* 2. Texture Overlay */
+    .ticket-paper {
+      background-color: var(--ticket-bg);
+      border: 1px solid rgba(0,0,0,0.25);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    /* Perforation hint */
+    .ticket-perf {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 70%;
+      width: 0;
+      border-left: 2px dashed rgba(0,0,0,0.25);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    /* 2. Texture Overlay (overlay layer so it can't "wash out" text) */
     .ticket-texture {
+      position: relative;
+    }
+    .ticket-texture::after {
+      content: "";
+      position: absolute;
+      inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+      opacity: 0.22;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 0;
     }
 
     /* 3. Typography */
@@ -34,6 +68,10 @@ const PreviewStyles = () => (
     .hole-punch-mark {
       background-color: #333; /* The background behind the ticket */
       box-shadow: inset 1px 1px 2px rgba(0,0,0,0.6);
+    }
+
+    .ticket-text {
+      text-shadow: 0 1px 0 rgba(255,255,255,0.25);
     }
   `}</style>
 );
@@ -57,9 +95,11 @@ export default function TicketStubPreview({ content }: { content: string }) {
       <PreviewStyles />
       
       <div 
-        className="w-full h-24 ticket-stub-shape ticket-texture flex flex-col items-center justify-center relative transition-transform group-hover:rotate-1"
-        style={{ '--ticket-bg': theme.bg } as React.CSSProperties}
+        className="w-full h-24 ticket-stub-shape ticket-paper ticket-texture flex flex-col items-center justify-center relative transition-transform group-hover:rotate-1"
+        style={{ '--ticket-bg': theme.bg, '--ticket-hole': '#0b1220' } as React.CSSProperties}
       >
+        <div className="ticket-perf" />
+
         {/* Border Inset */}
         <div 
           className="absolute inset-2 border-2 border-dashed opacity-50 rounded-sm pointer-events-none"
@@ -67,13 +107,18 @@ export default function TicketStubPreview({ content }: { content: string }) {
         />
 
         {/* Content */}
-        <div className="z-10 text-center" style={{ color: theme.text }}>
-          <div className="font-retro text-lg leading-none tracking-wide uppercase opacity-90 truncate px-4">
+        <div className="ticket-text z-10 text-center" style={{ color: theme.text }}>
+          <div className="font-retro text-lg leading-none tracking-wide uppercase opacity-95 truncate px-4">
             {data.venue}
           </div>
-          <div className="font-block text-[10px] uppercase tracking-widest opacity-80 mt-1">
+          <div className="font-block text-[10px] uppercase tracking-widest opacity-90 mt-1">
             {data.date}
           </div>
+          {data.title && (
+            <div className="font-block text-[10px] uppercase tracking-wider opacity-85 mt-0.5 truncate px-6">
+              {data.title}
+            </div>
+          )}
         </div>
 
         {/* Serial Number Side Text */}

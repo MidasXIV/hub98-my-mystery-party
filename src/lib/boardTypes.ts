@@ -11,6 +11,7 @@ export const ITEM_TYPES = [
   "newspaper",
   "diary",
   "person-of-interest-report",
+  "bank-statement",
   "receipt",
   "ticket", // train , movie, parking, office card
   "phoneLog",

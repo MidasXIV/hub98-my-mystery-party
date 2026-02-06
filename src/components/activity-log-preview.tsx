@@ -97,16 +97,26 @@ export default function ActivityLogPreview({ content }: { content: string }) {
 
            {/* Grid Lines / Text */}
            <div className="flex flex-col gap-[7px] mt-1">
-              {previewEntries.map((entry, i) => (
-                <div key={i} className="flex items-baseline text-[10px] leading-none">
-                   <span className="font-mono font-bold w-10 text-gray-600">
-                     {String((entry as Record<string, unknown>)?.[timeKey] ?? "")}
-                   </span>
-                   <span className="font-cursive flex-1 truncate ml-1">
-                     {String((entry as Record<string, unknown>)?.[messageKey] ?? "")}
-                   </span>
-                </div>
-              ))}
+              {/* Support for handwritten/digital variant */}
+              {previewEntries.map((entry, i) => {
+                const variant = data.variant === 'digital' ? 'digital' : 'handwritten';
+                return (
+                  <div key={i} className="flex items-baseline text-[10px] leading-none">
+                    <span className="font-mono font-bold w-10 text-gray-600">
+                      {String((entry as Record<string, unknown>)?.[timeKey] ?? "")}
+                    </span>
+                    <span
+                      className={
+                        variant === 'digital'
+                          ? 'font-mono flex-1 truncate ml-1 text-gray-900 tracking-wider'
+                          : 'font-cursive flex-1 truncate ml-1'
+                      }
+                    >
+                      {String((entry as Record<string, unknown>)?.[messageKey] ?? "")}
+                    </span>
+                  </div>
+                );
+              })}
               {/* Ellipsis if more */}
               {data.entries.length > 3 && (
                 <div className="text-[8px] font-mono opacity-50 pl-10">...more records...</div>
