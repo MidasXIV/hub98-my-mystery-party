@@ -15,7 +15,7 @@ Our digital cold case is a guided, story-rich investigation you can play right i
 
 ## Quick Start
 
-1. Go to the Play page: [/play](/play)
+1. Browse cases here: [/cases](/cases)
 2. Choose a case and press "Begin Investigation".
 3. Read the case briefing, then open the Objectives panel.
 4. Start chatting in plain English—ask the system to help you locate clues or summarize evidence.
@@ -80,4 +80,4 @@ Your session tracks opened artifacts and completed objectives. You can pick up r
 
 ## Ready to investigate?
 
-Jump in at [/play](/play), pick a case, and start solving. If you get stuck, ask the assistant to summarize the situation or point you to the most relevant evidence.
+Jump in at [/cases](/cases), pick a case, and start solving. If you get stuck, ask the assistant to summarize the situation or point you to the most relevant evidence.
