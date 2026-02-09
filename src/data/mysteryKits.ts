@@ -39,28 +39,29 @@ export interface MysteryKit {
 
 export const mysteryKits: MysteryKit[] = [
   {
-    id: "shadow-portfolio",
-    slug: "shadow-portfolio-starter-kit",
-    title: "Shadow Portfolio: Starter Kit",
+    id: "valentines-mixer-swipe-for-murder",
+    slug: "valentines-mixer-swipe-for-murder",
+    title: "Valentines Mixer: Swipe for Murder!",
     description:
-      "A starter mystery party kit for new hosts. Includes a compact storyline, character dossiers, and a curated set of printable clues to run a 60-90 minute whodunit at home.",
+      "A flirty Valentine’s mixer turns fatal when the event’s star matchmaker is found dead mid-game. Guests must piece together timelines, jealous motives, and digital breadcrumbs to unmask a killer hiding behind a perfect profile.",
     imageUrl: "/mystery_kits/swipe_right_or_die_trying/hero.jpeg",
-    tags: ["Starter", "Printable", "1-6 Players"],
-    difficulty: "Easy",
-    players: "3-6",
-    duration: "60-90 minutes",
+    tags: ["Valentine’s", "Mixer", "Printable", "8-16 Players"],
+    difficulty: "Medium",
+    players: "8-16",
+    duration: "90-120 minutes",
     price: 0,
     isPurchasable: false,
-    hasDownloadSample: true,
+    hasDownloadSample: false,
     isPlayable: true,
     openingBrief:
-      "A storm shuts down the lights at the Hawthorne Gallery. When the curator is found unconscious and the signature portfolio is missing, every guest becomes a suspect. Your job: decode motives, track timelines, and reveal who stole the art.",
+      "Welcome to the Cupid’s Clipboard Mixer—an interactive night of mini-dates, secret prompts, and ‘swipe’ votes. The host, Arden Vale, promised the perfect matches… until the music cut out and Arden collapsed beside the ballot box. Now the venue is locked down, the guest list is a suspect list, and every ‘harmless’ flirtation has teeth. Your mission: interview, trade clues, and reconstruct the final hour to reveal who turned matchmaking into murder.",
     includes: [
       "Host guide (PDF)",
-      "6 character cards",
-      "Clue envelope set",
-      "Quick-start timeline",
-      "Solution reveal script",
+      "Player instructions + rules (PDF)",
+      "16 character cards (printable)",
+      "Clue set: messages, receipts, notes, and props",
+      "Round prompts for speed-dates + voting",
+      "Solution reveal + optional epilogue",
     ],
     characters: [
       {
@@ -328,43 +329,58 @@ export const mysteryKits: MysteryKit[] = [
     ],
     evidence: [
       {
-        id: "evidence-guest-list",
-        title: "Guest List with Annotations",
+        id: "evidence-swipe-ballots",
+        title: "Swipe Ballots (Round 3)",
         summary:
-          "A seating chart marked with last-minute changes and a note about a VIP arrival.",
+          "Cards showing last-round votes. Several are smudged, one appears to have been swapped after collection.",
         type: "document",
       },
       {
-        id: "evidence-broken-lock",
-        title: "Broken Display Lock",
+        id: "evidence-red-envelope",
+        title: "Red Envelope: Private Prompt",
         summary:
-          "The lock from the portfolio case shows signs of a precise tool, not brute force.",
+          "A sealed prompt meant for a secret mini-date. It’s opened—and the note inside is missing.",
         type: "artifact",
       },
       {
-        id: "evidence-text-message",
-        title: "Encrypted Text Message",
+        id: "evidence-phone-lockscreen",
+        title: "Lockscreen Notification Screenshot",
         summary:
-          "A message on the curator's phone reads: 'Midnight swap. No mistakes.'",
+          "A captured notification: ‘Stop playing matchmaker. Last warning.’ sent minutes before Arden fell.",
         type: "digital",
+      },
+      {
+        id: "evidence-tab-receipt",
+        title: "Bar Tab Receipt",
+        summary:
+          "Two drinks ordered under Arden’s name at times Arden was publicly hosting. Someone borrowed their wristband.",
+        type: "document",
       },
     ],
     locations: [
       {
-        id: "gallery-main-hall",
-        name: "Main Exhibit Hall",
+        id: "mixer-main-floor",
+        name: "Main Mixer Floor",
         detail:
-          "The lights failed here first, plunging the crowd into darkness.",
+          "Where the speed-dates happen and the vote box sits under string lights.",
       },
       {
-        id: "gallery-vault",
-        name: "Secure Vault",
-        detail: "Access requires a keypad code and a biometric scan.",
+        id: "mixer-dj-booth",
+        name: "DJ Booth",
+        detail:
+          "Controls music and lighting cues. From here you can see the crowd—but not the corners.",
       },
       {
-        id: "gallery-control-room",
-        name: "Security Control Room",
-        detail: "The only place where camera feeds and alarm logs are stored.",
+        id: "mixer-coat-check",
+        name: "Coat Check + Gift Bags",
+        detail:
+          "A cluttered table of tote bags, name tags, and props. Easy place to stash something fast.",
+      },
+      {
+        id: "mixer-back-hall",
+        name: "Back Hallway",
+        detail:
+          "Service corridor with the breaker panel and storage closet. Footsteps echo here.",
       },
     ],
   },
