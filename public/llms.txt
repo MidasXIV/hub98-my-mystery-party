@@ -1,0 +1,70 @@
+# My Mystery Party (mymystery.party)
+
+> My Mystery Party offers interactive murder mystery party kits, digital cold case files, and extensive party planning resources.
+
+## Core Site Sections
+
+- **Home**: https://mymystery.party/
+- **Mystery Party Kits (Group Games)**: https://mymystery.party/kits
+- **Cold Case Files (Solo/Small Group Puzzles)**: https://mymystery.party/cases
+- **Invitation Creator**: https://mymystery.party/invitations
+- **Party Planning Blog**: https://mymystery.party/blog
+
+## Mystery Party Kits
+Current available full party kits. Use these links for game details, hosting guides, and character assignments.
+
+### Valentine's Mixer: Swipe for Murder
+- **Kit URL**: https://mymystery.party/kits/valentines-mixer-swipe-for-murder
+- **Play Portal**: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play
+- **Cast List & Character Profiles**:
+  - Rocco Steel: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/rocco-steel
+  - Dr. Theo Cure: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/dr-theo-cure
+  - Giovanni Moretti: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/giovanni-moretti
+  - Jayden Hoops: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/jayden-hoops
+  - Alfie Snips: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/alfie-snips
+  - Rex Flex: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/rex-flex
+  - Julian Tango: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/julian-tango
+  - Billy Biro: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/billy-biro
+  - Finley Fish: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/finley-fish
+  - Chad Glute: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/chad-glute
+  - Orla O'Hara: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/orla-ohara
+  - Bella Bambi: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/bella-bambi
+  - Sophia Drama: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/sophia-drama
+  - Lottie Gee: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/lottie-gee
+  - Liv Vicious: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/liv-vicious
+  - Penny Peace: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/penny-peace
+  - Sasha Vibes: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/sasha-vibes
+  - Tia Temptress: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/tia-temptress
+  - Chloe Chaos: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/chloe-chaos
+  - Libbie Liberty: https://mymystery.party/kits/valentines-mixer-swipe-for-murder/play/characters/libbie-liberty
+
+## Cold Case Files
+Digital and printable cold case files where players solve a mystery using evidence documents.
+
+- **Station Zero**: https://mymystery.party/cases/station-zero
+- **The Final Rehearsal**: https://mymystery.party/cases/the-final-rehearsal
+- **Sins of Saint Lazarus**: https://mymystery.party/cases/sins-of-saint-lazarus
+- **Palazzo of Bones**: https://mymystery.party/cases/palazzo-of-bones
+- **Zero Sum**: https://mymystery.party/cases/zero-sum
+- **Her Shadow's Name**: https://mymystery.party/cases/her-shadows-name
+
+## Party Hosting Resources (Blog)
+Guides on how to host, what to wear, and how to select a game.
+
+### Hosting & Mechanics
+- How to Host an Epic Mystery Party: https://mymystery.party/blog/how-to-host-an-epic-mystery-party
+- Natural Language Objectives Guide: https://mymystery.party/blog/natural-language-objectives-guide
+- Understanding Evidence Types: https://mymystery.party/blog/unique-evidence-types
+- How to Play Digital Cold Cases: https://mymystery.party/blog/how-to-play-digital-cold-case
+
+### Themes & Costumes
+- Top 10 Costumes (2026): https://mymystery.party/blog/top-10-mystery-party-costumes-2026
+- Halloween Outfits: https://mymystery.party/blog/halloween-mystery-party-outfits
+- 80s & Y2K Looks: https://mymystery.party/blog/80s-y2k-mystery-party-looks
+
+## Tools
+- **Invitation Dashboard**: https://mymystery.party/invitations/dashboard
+- **Invitation Templates**:
+  - Formal/Classic: https://mymystery.party/invitations/formal-elegance-classic
+  - Halloween: https://mymystery.party/invitations/Halloween-party
+  - Kraft/Handwritten: https://mymystery.party/invitations/handwritten-charm-kraft
