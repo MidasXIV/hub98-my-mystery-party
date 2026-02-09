@@ -17,12 +17,23 @@ if (typeof window !== "undefined") {
 export default function RootClient({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const hideGlobalHeader = pathname.startsWith("/play/") || pathname.startsWith("/print/");
+
+  const [hideBetaBanner, setHideBetaBanner] = React.useState(false);
+
+  const dismissBetaBanner = () => setHideBetaBanner(true);
+
   return (
     <>
       {/* Beta banner (skip /play and /print where we want max space) */}
-      {!hideGlobalHeader && (
+      {!hideGlobalHeader && !hideBetaBanner && (
         <div className="sticky top-0 z-50 w-full">
-          <Banner variant="border" size="sm" className="bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <Banner
+            variant="border"
+            size="sm"
+            isClosable
+            onClose={dismissBetaBanner}
+            className="bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+          >
             <div className="flex w-full flex-wrap items-center gap-2">
               <span className="inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-foreground">
                 Beta
