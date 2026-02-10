@@ -9,7 +9,7 @@ tags:
   - costumes
   - style
   - party
-heroImage: /opengraph/hero.png
+heroImage:
 ---
 
 Looking sharp matters. Here are ten crowd‑pleasing costumes—each with a quick prop idea—to elevate your next mystery night.

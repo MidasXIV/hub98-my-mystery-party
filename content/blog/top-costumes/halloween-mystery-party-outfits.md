@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: top-costumes
 tags: [costumes, halloween]
-heroImage: https://images.unsplash.com/photo-1478479279152-7ad4f0f1f2fd?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Color Palettes

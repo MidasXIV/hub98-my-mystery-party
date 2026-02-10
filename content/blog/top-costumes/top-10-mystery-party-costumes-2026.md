@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: top-costumes
 tags: [costumes, list, popular]
-heroImage: https://images.unsplash.com/photo-1516574187841-0dfe7b6035c0?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## The Classics

@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: party-planning-tips
 tags: [tips, corporate]
-heroImage: https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Why It Works

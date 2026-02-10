@@ -9,7 +9,7 @@ tags:
   - beginner
   - guides
   - face cases
-heroImage: /opengraph/hero.png
+heroImage:
 ---
 
 ## Your Next Adventure: Best Free Murder Mystery Games for a Killer Night In

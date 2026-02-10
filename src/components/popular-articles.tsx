@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getAllPosts } from "@/lib/blog";
+import { getPostHeroImageOrBanner } from "@/lib/images/blog-banner";
 
 export default function PopularArticles({ excludeSlug }: { excludeSlug?: string }) {
   const all = getAllPosts();
@@ -19,11 +20,13 @@ export default function PopularArticles({ excludeSlug }: { excludeSlug?: string 
           {popular.map((p) => (
             <li key={p.slug} className="flex items-center gap-3">
               <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-md border border-border bg-muted">
-                {p.heroImage ? (
-                  <Image src={p.heroImage} alt="" fill className="object-cover" sizes="40px" />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/15 via-indigo-500/10 to-teal-500/15" />
-                )}
+                <Image
+                  src={getPostHeroImageOrBanner(p)}
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="40px"
+                />
               </div>
               <div className="min-w-0">
                 <Link href={`/blog/${p.slug}`} className="block truncate text-sm font-medium hover:underline">

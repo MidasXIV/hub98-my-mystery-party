@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: party-planning-tips
 tags: [tips, beginner, popular]
-heroImage: https://images.unsplash.com/photo-1519671482749-f83a7cc0b0b4?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Start with a Theme and a Vibe

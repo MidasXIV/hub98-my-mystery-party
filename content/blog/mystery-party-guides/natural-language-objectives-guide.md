@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: mystery-party-guides
 tags: [guide, tips, popular]
-heroImage: https://images.unsplash.com/photo-1518081461905-4c22f5e8d4f4?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Why Natural Language Matters

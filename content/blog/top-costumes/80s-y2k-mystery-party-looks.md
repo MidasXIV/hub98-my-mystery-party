@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: top-costumes
 tags: [costumes, y2k, 80s]
-heroImage: https://images.unsplash.com/photo-1549122728-f519709caa9c?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## 80s Neon Sleuth

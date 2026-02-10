@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: party-planning-tips
 tags: [tips, outdoor]
-heroImage: https://images.unsplash.com/photo-1455387111129-31b3e5e7b4f9?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Prep the Space

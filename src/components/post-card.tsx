@@ -1,12 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { PostMeta } from "@/lib/blog-types";
+import { getPostHeroImageOrBanner } from "@/lib/images/blog-banner";
 
 export default function PostCard({ post }: { post: PostMeta }) {
-	const hasImage = Boolean(post.heroImage);
-	const imageSrc = post.heroImage?.startsWith("http")
-		? post.heroImage
-		: post.heroImage || ""; // if relative, it should be under /public
+	const imageSrc = getPostHeroImageOrBanner(post);
+	const hasImage = Boolean(imageSrc);
 
 	return (
 		<article className="group relative overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm transition hover:shadow-md hover:-translate-y-[1px]">
@@ -23,16 +22,14 @@ export default function PostCard({ post }: { post: PostMeta }) {
 				<div className="relative aspect-[16/9] w-full">
 					{hasImage ? (
 						<Image
-							src={imageSrc!}
+							src={imageSrc}
 							alt={post.title}
 							fill
 							className="object-cover"
 							sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
 							priority={false}
 						/>
-					) : (
-						<div className="absolute inset-0 bg-gradient-to-br from-fuchsia-500/15 via-indigo-500/10 to-teal-500/15" />
-					)}
+					) : null}
 					<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-black/5" />
 				</div>
 

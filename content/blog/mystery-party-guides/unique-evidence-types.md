@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: mystery-party-guides
 tags: [guide, evidence, popular]
-heroImage: https://images.unsplash.com/photo-1518544881400-95bda0aeaa0b?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Why Our Evidence Feels Different

@@ -9,7 +9,7 @@ tags:
   - beginner
   - guides
   - case selection
-heroImage: /opengraph/hero.png
+heroImage:
 ---
 
 Starting strong matters. Use this simple rubric to choose a case that fits your group—and guarantees a great night.

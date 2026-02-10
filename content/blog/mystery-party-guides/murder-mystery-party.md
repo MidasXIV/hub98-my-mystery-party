@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "Guest Contributor"
 category: mystery-party-guides
 tags: [resources]
-heroImage: https://images.unsplash.com/photo-1511632765486-a01980e01ce1?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## 📄 Murder Mystery Party (`mystery/`)

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { getPostHeroImageOrBanner } from "@/lib/images/blog-banner";
 
 export type GuidesMenuPayload = {
   categories: string[];
@@ -134,7 +135,12 @@ export const HeaderGuidesMenu: React.FC<HeaderGuidesMenuProps> = ({
                         <div className="aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-white/5">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src={p.heroImage || "/blog_banners/default.jpg"}
+                            src={getPostHeroImageOrBanner({
+                              title: p.title,
+                              description: p.description,
+                              category: p.category,
+                              heroImage: p.heroImage,
+                            })}
                             alt={p.title}
                             className="h-full w-full object-cover transition-transform duration-500 group-hover/guide:scale-105"
                           />

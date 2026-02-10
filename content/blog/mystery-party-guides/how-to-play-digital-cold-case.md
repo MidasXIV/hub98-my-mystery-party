@@ -6,7 +6,7 @@ date: 2025-12-24
 author: "My Mystery Party Team"
 category: mystery-party-guides
 tags: [guide, beginner, popular]
-heroImage: https://images.unsplash.com/photo-1549880338-65ddcdfd017b?w=1200&q=80&auto=format&fit=crop
+heroImage: 
 ---
 
 ## Overview

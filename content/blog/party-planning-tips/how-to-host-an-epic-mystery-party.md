@@ -9,7 +9,7 @@ tags:
   - planning
   - hosting
   - mystery party
-heroImage: /opengraph/hero.png
+heroImage:
 ---
 
 Planning a mystery party can be simple and wildly fun when you follow a clear blueprint. This guide gives you a practical, SEO‑friendly checklist you can reuse for every event.
