@@ -129,7 +129,7 @@ export function getBaseUrl(): string {
   const site =
     process.env.NEXT_PUBLIC_SITE_URL ||
     vercelHost ||
-    "https://hub98-my-mystery-party.vercel.app";
+    "https://www.mymystery.party";
   return site.replace(/\/$/, "");
 }
 
