@@ -122,6 +122,7 @@ export default function RootLayout({
           name="p:domain_verify"
           content="9a25a6bb9453f23e496ad1750b3fe069"
         />
+        <meta name="msvalidate.01" content="FEC44A25DD8E4802152191B8C1CB3BC9" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
