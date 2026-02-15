@@ -13,6 +13,9 @@ const nextConfig: NextConfig = {
       {
         pathname: "/opengraph/**",
       },
+      {
+        pathname: "/cold_cases/**",
+      },
     ],
   },
   async rewrites() {

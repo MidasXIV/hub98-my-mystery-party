@@ -1900,12 +1900,14 @@ export default function PlayBoardPage({
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
+      <h1 className="sr-only">{caseFile.title}</h1>
       {!isPlayable ? (
         <section className="w-full max-w-2xl border border-amber-200/20 bg-black/40 backdrop-blur rounded-xl p-6 md:p-10 shadow-xl">
           <p className="text-xs tracking-[0.35em] uppercase text-amber-200/70">
             Case file secured
           </p>
           <h1 className="mt-3 text-3xl md:text-4xl font-staatliches tracking-wider text-amber-50">
+
             {caseFile.title}
           </h1>
           <p className="mt-4 text-amber-100/80 font-special-elite leading-relaxed">
