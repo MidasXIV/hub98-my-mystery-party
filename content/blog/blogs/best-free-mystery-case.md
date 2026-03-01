@@ -64,21 +64,3 @@ Ready to start your investigation? Here are a few tips to make your game night e
 *   **Prepare Themed Snacks:** Every detective needs brain food! Think about snacks and drinks that fit the theme of your mystery. For "The Final Rehearsal," you could have popcorn and candy like you’re at a show. For "Station Zero," maybe something with a futuristic or space-themed twist.
 *   **Decide How to Play:** You can solve the mystery together on one screen, sharing control of the investigation. Or, for a different dynamic, play on separate devices and collaborate on your findings.
 *   **Make it a Friendly Competition:** If playing with a group, see who can solve key puzzles first. A little friendly competition can add to the excitement.
-
-### Expanded List of Image Ideas for Your Blog
-
-*   **Header Image:** A striking, high-quality photo of a detective's workspace. Picture a wooden desk with scattered evidence files, a vintage magnifying glass, a steaming mug of coffee, and moody, dramatic lighting.
-*   **Game Banners:** Create bold, side-by-side graphics for "The Final Rehearsal" and "Station Zero." Include the game title, a key tagline ("A Hilarious High School Who Dun It" vs. "A Tense Sci-Fi Puzzle"), and bullet points for player count and playtime.
-*   **Lifestyle Shot:** An authentic photo of a couple or a small group of friends huddled around a laptop or tablet, laughing and pointing at the screen. This showcases the social and fun aspect of the games.
-*   **Evidence Previews:** Create a collage of sneak-peek images from the games. Show a snippet of a security log from one, a fragment of a diary entry from the other, and a campus map. Blur out key details to avoid spoilers.
-*   **"Date Night" Themed Photo:** A cozy and inviting image. Think two people on a comfortable couch, a laptop open to one of the games, with a bowl of popcorn and some drinks on the coffee table.
-
-### Free SEO Tools to Help Your Blog Get Noticed
-
-Creating great content is the first step, but you also need to make sure people can find it. Search Engine Optimization (SEO) is key. While many professional SEO suites are expensive, there are plenty of powerful free tools that can make a huge difference for bloggers.
-
-*   **Google Keyword Planner:** An excellent tool for finding the keywords your audience is searching for. It helps you plan your content around topics that people are actively interested in.
-*   **Google Search Console:** This is a must-have for any website owner. It helps you track your site's performance in Google search, see which queries are bringing users to your site, and identify any technical issues.
-*   **Yoast SEO (for WordPress):** If your blog is on WordPress, the Yoast SEO plugin is an essential tool. It provides real-time feedback on your on-page SEO as you write and helps you optimize things like titles and meta descriptions.
-*   **Ahrefs Backlink Checker:** This tool allows you to see which other websites are linking to your articles. Building a healthy backlink profile is a cornerstone of good SEO.
-*   **MozBar:** A handy browser extension from Moz that lets you see important SEO metrics for any webpage you visit, including your own and your competitors'.
