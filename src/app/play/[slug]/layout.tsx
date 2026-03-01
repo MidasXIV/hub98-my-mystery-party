@@ -10,7 +10,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const caseFile = getCaseBySlug(resolved.slug);
   const titleBase = caseFile ? caseFile.title : "Case Not Found";
   const title = `${titleBase} | My Mystery Party`;
-  const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
+  const description = caseFile
+    ? `Play the interactive case board for ${titleBase}. Investigate clues, connect evidence, and solve the mystery.`
+    : "Play interactive mystery cases on My Mystery Party.";
 
   // Prefer dynamic composite FIRST so crawlers that only take the first image use it.
   // Provide static thumbnail as a fallback second.
