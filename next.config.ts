@@ -16,6 +16,15 @@ const nextConfig: NextConfig = {
       {
         pathname: "/cold_cases/**",
       },
+      {
+        pathname: "/cold_case_data/**",
+      },
+      {
+        pathname: "/features_section/**",
+      },
+      {
+        pathname: "/invitations/**",
+      },
     ],
   },
   async rewrites() {

@@ -116,6 +116,24 @@ Vercel:
 
 Homepage contains an understated `AffiliatePromo` section (`src/components/affiliate-promo.tsx`) describing this as a quiet interest list to avoid hype.
 
+## LLM provider configuration
+
+The objective evaluation API (`src/app/api/board/objective/route.ts`) supports Gemini and Cloudflare Workers AI. Cloudflare is the default.
+
+Set one of the following in your environment:
+
+- `LLM_PROVIDER` (optional): `cloudflare` (default) or `gemini`.
+
+### Cloudflare Workers AI (default)
+
+- `CLOUDFLARE_ACCOUNT_ID`
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_AI_MODEL` (optional, default `@cf/meta/llama-3-8b-instruct`)
+
+### Gemini (optional)
+
+- `API_KEY` (Google Gemini API key)
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

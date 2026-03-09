@@ -16,6 +16,103 @@ type BoardItem = {
   [k: string]: unknown;
 };
 
+type LLMProvider = "cloudflare" | "gemini";
+
+function getLLMProvider(): LLMProvider {
+  const raw = (process.env.LLM_PROVIDER ?? "cloudflare").toLowerCase();
+  return raw === "gemini" ? "gemini" : "cloudflare";
+}
+
+function getCloudflareConfig() {
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+  const token = process.env.CLOUDFLARE_API_TOKEN;
+  const model =
+    process.env.CLOUDFLARE_AI_MODEL ?? "@cf/meta/llama-3-8b-instruct";
+  if (!accountId || !token) {
+    throw new Error(
+      "Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN on server"
+    );
+  }
+  return { accountId, token, model };
+}
+
+async function runCloudflareAI(model: string, input: unknown) {
+  const { accountId, token } = getCloudflareConfig();
+  const response = await fetch(
+    `https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/${model}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(input),
+    }
+  );
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(
+      `Cloudflare AI request failed (${response.status}): ${JSON.stringify(result)}`
+    );
+  }
+  return result as { result?: Record<string, unknown> };
+}
+
+function extractTextFromCloudflare(result: { result?: Record<string, unknown> }) {
+  const data = result?.result ?? {};
+  return (
+    (data.response as string) ||
+    (data.text as string) ||
+    (data.output_text as string) ||
+    (data.message as { content?: string } | undefined)?.content ||
+    ""
+  );
+}
+
+function extractJsonBlob(raw: string) {
+  const start = raw.indexOf("{");
+  const end = raw.lastIndexOf("}");
+  if (start === -1 || end === -1 || end < start) return raw.trim();
+  return raw.slice(start, end + 1).trim();
+}
+
+async function generateJsonFromLLM(options: {
+  provider: LLMProvider;
+  prompt: string;
+  schema: unknown;
+  geminiModel?: string;
+  cloudflareModel?: string;
+}) {
+  if (options.provider === "gemini") {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY ?? "" });
+    const resp = await ai.models.generateContent({
+      model: options.geminiModel ?? "gemini-2.5-flash",
+      contents: options.prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: options.schema,
+      },
+    });
+    const raw = resp.text?.trim() ?? "";
+    return JSON.parse(raw);
+  }
+
+  const { model: defaultModel } = getCloudflareConfig();
+  const cfResp = await runCloudflareAI(options.cloudflareModel ?? defaultModel, {
+    messages: [
+      {
+        role: "system",
+        content:
+          "Return strictly valid JSON only. Do not include markdown or extra text.",
+      },
+      { role: "user", content: options.prompt },
+    ],
+  });
+  const rawText = extractTextFromCloudflare(cfResp);
+  const jsonText = extractJsonBlob(rawText);
+  return JSON.parse(jsonText);
+}
+
 function isBoardItem(val: unknown): val is BoardItem {
   if (!val || typeof val !== "object") return false;
   const obj = val as Record<string, unknown>;
@@ -240,11 +337,24 @@ function djb2(str: string): string {
 }
 
 export async function POST(req: Request) {
-  if (!process.env.API_KEY) {
-    return NextResponse.json(
-      { error: "Missing API_KEY on server" },
-      { status: 500 }
-    );
+  const provider = getLLMProvider();
+  if (provider === "gemini") {
+    if (!process.env.API_KEY) {
+      return NextResponse.json(
+        { error: "Missing API_KEY on server" },
+        { status: 500 }
+      );
+    }
+  } else {
+    if (!process.env.CLOUDFLARE_ACCOUNT_ID || !process.env.CLOUDFLARE_API_TOKEN) {
+      return NextResponse.json(
+        {
+          error:
+            "Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN on server",
+        },
+        { status: 500 }
+      );
+    }
   }
 
   let body: ObjectiveRequestBody;
@@ -328,8 +438,6 @@ export async function POST(req: Request) {
     return NextResponse.json(cached.payload);
   }
 
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
   // 1) Guardrail moderation via cheap model with strict JSON schema
   let moderation: {
     category:
@@ -340,19 +448,15 @@ export async function POST(req: Request) {
     reason: string;
   } | null = null;
   try {
-    const resp = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: `Classify this player submission. Return JSON with {category, reason}.
+    moderation = await generateJsonFromLLM({
+      provider,
+      prompt: `Classify this player submission. Return JSON with {category, reason}.
 Categories: HONEST_ATTEMPT, INAPPROPRIATE_LANGUAGE, CHEATING_OR_PROBING, OTHER.
 Objective: ${objectiveDescription ?? objectiveId ?? "[unknown]"}
 Answer: ${solutionText}`,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: moderationSchema,
-      },
+      schema: moderationSchema,
+      geminiModel: "gemini-2.5-flash",
     });
-    const raw = resp.text?.trim();
-    if (raw) moderation = JSON.parse(raw);
   } catch (err) {
     // If moderation fails, default to OTHER to avoid blocking legitimate attempts
     console.warn("Moderation classification failed", err);
@@ -417,23 +521,17 @@ Answer: ${solutionText}`,
   let score = 0;
   let correct = false;
   try {
-    const evalResp = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: `Evaluate the player's answer against the canonical solution.
+    const parsed = (await generateJsonFromLLM({
+      provider,
+      prompt: `Evaluate the player's answer against the canonical solution.
 Return strict JSON with {score, correct, rationale}. score is 0..1.
 Judge conceptual alignment, names, causality, and key facts.
 Partial matches: 0.2–0.5. Near-exact: 0.8+.
 
 Canonical solution:\n${target.solution}\n\nPlayer answer:\n${solutionText}`,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: scoringSchema,
-      },
-    });
-    const rawEval = evalResp.text?.trim();
-    console.log(rawEval)
-    if (!rawEval) throw new Error("Empty scoring response");
-    const parsed = JSON.parse(rawEval) as { score: number; correct: boolean };
+      schema: scoringSchema,
+      geminiModel: "gemini-2.5-flash",
+    })) as { score: number; correct: boolean };
     score =
       typeof parsed.score === "number"
         ? Math.max(0, Math.min(1, parsed.score))
