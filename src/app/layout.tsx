@@ -1,4 +1,5 @@
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 import {
   Geist,
   Geist_Mono,
@@ -116,29 +117,34 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <head>
-        <meta
-          name="p:domain_verify"
-          content="9a25a6bb9453f23e496ad1750b3fe069"
-        />
-        <meta name="msvalidate.01" content="FEC44A25DD8E4802152191B8C1CB3BC9" />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en">
+        <head>
+          <meta
+            name="p:domain_verify"
+            content="9a25a6bb9453f23e496ad1750b3fe069"
+          />
+          <meta
+            name="msvalidate.01"
+            content="FEC44A25DD8E4802152191B8C1CB3BC9"
+          />
+        </head>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
         >
-          <HeaderClientSlot>
-            <Header guidesData={guidesData} />
-          </HeaderClientSlot>
-          <RootClient>{children}</RootClient>
-        </ThemeProvider>
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <HeaderClientSlot>
+              <Header guidesData={guidesData} />
+            </HeaderClientSlot>
+            <RootClient>{children}</RootClient>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
