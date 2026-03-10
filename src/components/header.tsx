@@ -403,7 +403,6 @@ const Header = ({ guidesData }: HeaderProps) => {
                 {isSignedIn ? (
                   <UserButton
                     showName
-                    afterSignOutUrl="/"
                     appearance={userButtonAppearance}
                   />
                 ) : (
@@ -423,7 +422,6 @@ const Header = ({ guidesData }: HeaderProps) => {
         {isSignedIn ? (
           <UserButton
             showName
-            afterSignOutUrl="/"
             appearance={userButtonAppearance}
           />
         ) : (
