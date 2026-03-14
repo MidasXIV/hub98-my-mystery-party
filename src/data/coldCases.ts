@@ -17,6 +17,12 @@ export interface ColdCase {
   id: number;
   slug: string;
   title: string;
+  seoTitle?: string;
+  pageTitle?: string;
+  shortDescription?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+  betaNotice?: string;
   imageUrl: string;
   tags: string[];
   description: string;
@@ -24,6 +30,10 @@ export interface ColdCase {
   players?: string;
   duration?: string;
   price?: number;
+  seoSections?: Array<{
+    title: string;
+    body: string;
+  }>;
   evidence?: Record<string, unknown> | Evidence[];
   /** Optional packaging columns available for this case's index (e.g. suspect, evidence, bonus) */
   packagingColumns?: Array<"suspect" | "evidence" | "bonus">;
@@ -51,10 +61,26 @@ export const coldCases: ColdCase[] = [
     id: 6,
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
+    seoTitle: "Sci-Fi Cold Case Date Night | Station Zero: Ghost of the Machine",
+    pageTitle: "Sci-Fi Cold Case Date Night: Station Zero",
+    shortDescription:
+      "A sci-fi cold case for date night set aboard a silent deep-space station, where you investigate corrupted logs, crew diaries, and a deadly sabotage plot.",
+    seoDescription:
+      "Play Station Zero, a sci-fi cold case date night mystery set on a deep-space research station. Review crew diaries, corrupted transmissions, and classified research to solve a chilling space horror investigation.",
+    seoKeywords: [
+      "free cold case date night scifi cold case",
+      "sci-fi cold case",
+      "space mystery game",
+      "date night mystery game",
+      "space horror investigation",
+      "interactive cold case game",
+    ],
+    betaNotice:
+      "Station Zero is currently in beta. The core mystery is playable, but some features, polish, and pacing details may still change. If you're planning a date night and want the smoothest experience possible, treat this as an early-access investigation rather than a fully finalized premium case.",
     imageUrl: "/cold_cases/thumbnails/station_zero.png",
-    tags: ["Puzzle Heavy", "High Difficulty"],
+    tags: ["Sci-Fi Mystery", "Space Horror", "Puzzle Heavy", "High Difficulty"],
     description:
-      "Five years ago, Station Zero—a deep-space research platform—went silent in the middle of a brutal solar storm. The last thing anyone heard was a terrified voice, whispers tangled in static, and one phrase that never should’ve made it into an official report: a ‘ghost in the machine.’\n\nNow the Cold Case Division has something new: a recovered ‘data ghost’—fragmented crew diaries, corrupted system logs, and classified research notes from a mission involving the xenobotanical fungus Myco‑Veridia. Your job is to piece those final days back together, separate paranoia from proof, and figure out what really happened behind those sealed bulkheads. It’s tense, puzzle-heavy, and absolutely does not hold your hand.",
+      "Station Zero is a sci-fi cold case set aboard a deep-space research platform that went silent during a brutal solar storm. The last thing anyone heard was a terrified voice, whispers tangled in static, and one phrase that never should’ve made it into an official report: a ‘ghost in the machine.’\n\nNow the Cold Case Division has recovered a fragmented ‘data ghost’—crew diaries, corrupted system logs, classified xenobotany research, and sealed incident records tied to Myco‑Veridia. Your job is to investigate the station’s final days, sort sabotage from hallucination, and uncover what really happened behind those locked bulkheads. If you want a cinematic space mystery game with layered evidence, tense deduction, and a dark sci-fi horror atmosphere, this is your case.",
     difficulty: "Hard",
     players: "1-4",
     duration: "3-5 hours",
@@ -67,6 +93,43 @@ export const coldCases: ColdCase[] = [
     hasDownloadSample: false,
     // Board/play exists
     isPlayable: true,
+    seoSections: [
+      {
+        title: "Why Station Zero works as a sci-fi cold case date night",
+        body:
+          "Station Zero blends the tension of a classic cold case with the atmosphere of a deep-space thriller. Instead of racing through a short set of clues, you and your partner can slowly piece together crew diaries, corrupted system logs, research files, and fractured transmissions. That makes it a strong choice for players who want a more immersive date night mystery: there is enough evidence to discuss, argue over, and revisit as your theories change. The mystery is readable and cinematic, but still layered enough to reward careful attention.",
+      },
+      {
+        title: "What you investigate inside the Station Zero mystery",
+        body:
+          "The case begins after a long-abandoned research platform goes silent during a solar storm. From there, your investigation moves through personal diaries, technical failures, classified xenobotany records, and signs of possible sabotage. Every document adds context to the crew’s final days. Some clues point toward psychological collapse. Others suggest a very human conspiracy hiding behind the station’s haunting final message. The result is a sci-fi cold case that feels more like reconstructing a disaster than following a simple trail of breadcrumbs.",
+      },
+      {
+        title: "Who should play this space mystery game",
+        body:
+          "Station Zero is best for players who enjoy solving dense mysteries, comparing notes, and sitting with uncertainty before the full picture comes into focus. If you want a fast free mystery game, one of the lighter cases on the site may be a better match. But if you want a longer sci-fi investigation for date night, game night, or a solo weekend puzzle session, Station Zero is designed for that deeper experience. The evidence is substantial, the tone is darker, and the case asks you to think like an investigator rather than wait for the story to hand you answers.",
+      },
+      {
+        title: "Is Station Zero a good case for date night?",
+        body:
+          "Yes, if your idea of a great date night is solving a deeper mystery together. Station Zero gives you enough evidence to compare theories, debate motives, and work through the case as a team. It is less of a quick casual game and more of an atmospheric investigative experience.",
+      },
+      {
+        title: "How hard is the Station Zero sci-fi cold case?",
+        body:
+          "Station Zero is one of the more challenging cases on the site. It asks you to read carefully, connect scattered clues, and stay patient while the bigger picture comes together. If you enjoy puzzle-heavy mysteries and slow-burn reveals, it should feel rewarding rather than overwhelming.",
+      },
+      {
+        title: "What kind of evidence is included in Station Zero?",
+        body:
+          "You investigate crew diaries, corrupted transmission logs, classified research files, and other digital evidence recovered from the station. The mix of personal writing and technical records helps the mystery feel grounded while still delivering the eerie sci-fi tone.",
+      },
+      {
+        title: "Can Station Zero be played solo or with a group?",
+        body:
+          "Yes. The case works for solo players who like immersive deduction, but it is also designed for small groups. Two players make a strong pair for date night, while a larger group can split up clue review and compare interpretations as the investigation unfolds.",
+      },
+    ],
     preview: [
       {
         name: "The Investigation Board",

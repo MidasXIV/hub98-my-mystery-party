@@ -46,6 +46,8 @@ This interactive online case is designed for one or two players and is completel
 
 **Best For:** Puzzle lovers, seasoned mystery gamers, and anyone craving a serious sci-fi challenge.
 
+Want the quick answer? This page is our main guide to **free mystery games for date night**. If you specifically want a longer premium **sci-fi cold case** with a darker space-horror tone, jump to [Station Zero](https://www.mymystery.party/cases/station-zero).
+
 Five years ago, all communication from the deep-space research outpost, Station Zero, suddenly stopped during a massive solar storm. The final, garbled message mentioned a "ghost in the machine." Now, the case has been reopened, and you’ve been given access to a "data ghost"—a collection of the crew’s fragmented diaries, corrupted logs, and classified notes. Your mission is to piece together the events of the station’s final days and discover the truth.
 
 This puzzle-focused game is a serious undertaking for 1-4 players. With a 3-5 hour playtime, "Station Zero" offers a deep and rewarding mystery. You won’t be guided by the hand here; it’s up to you to sort paranoia from proof and solve the chilling mystery of what happened in the silence of space.

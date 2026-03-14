@@ -10,9 +10,11 @@ export async function generateMetadata({
   const resolved = params instanceof Promise ? await params : params;
   const slug = resolved.slug;
   const caseFile = getCaseBySlug(slug);
-  const titleBase = caseFile ? caseFile.title : "Case Not Found";
+  const titleBase = caseFile?.seoTitle || caseFile?.title || "Case Not Found";
   const title = `${titleBase} | Cold Case File`;
   const description =
+    caseFile?.seoDescription ||
+    caseFile?.shortDescription ||
     caseFile?.description ||
     "Interactive mystery experience on My Mystery Party.";
 
@@ -45,6 +47,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    keywords: caseFile?.seoKeywords,
     openGraph: {
       title,
       description,

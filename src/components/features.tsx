@@ -46,7 +46,8 @@ const features = [
     description:
       "Feeling stuck? Get a nudge in the right direction with our tiered hint system. No spoilers.",
     icon: "lightbulb",
-    type: "iconCard",
+    imageUrl: "/features_section/hints-on-demand.png",
+    type: "imageCard",
   },
   {
     title: "New Cases Added",
@@ -59,7 +60,9 @@ const features = [
     title: "Join 50K+ Detectives",
     description:
       "Become part of a thriving community of sleuths who have successfully closed cases on our platform.",
-    type: "statCard",
+        imageUrl: "/features_section/other-detectivies.png",
+
+      type: "imageCard",
   },
 ];
 

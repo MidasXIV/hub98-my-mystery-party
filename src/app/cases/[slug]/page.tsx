@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { coldCases, getCaseBySlug } from "@/data/coldCases";
 import { CaseActions } from "@/components/case-actions";
+import CaseSectionsAccordion from "@/components/case-sections-accordion";
 import Footer from "@/components/footer";
 import TestimonialCard, { Testimonial } from "@/components/multi-media-testimonial";
 
@@ -40,7 +41,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
     <div className="min-h-screen bg-background text-text-primary font-sans">
       <div className="mx-auto max-w-6xl px-4 py-16 relative">
         <div aria-hidden className="embossed-backdrop">
-          {caseFile.title}
+          {caseFile.pageTitle || caseFile.title}
         </div>
         
         <div className="grid md:grid-cols-2 gap-12 items-start relative z-10">
@@ -57,7 +58,7 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex-grow">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">
-                {caseFile.title}
+                {caseFile.pageTitle || caseFile.title}
               </h1>
               <div className="flex flex-wrap gap-2 mb-6">
                 {caseFile.tags.map((tag) => (
@@ -70,8 +71,21 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
                 ))}
               </div>
               <p className="text-lg text-text-secondary mb-6 leading-relaxed">
-                {caseFile.description}
+                {caseFile.shortDescription || caseFile.description}
               </p>
+              {caseFile.shortDescription && caseFile.description !== caseFile.shortDescription ? (
+                <div className="text-base text-text-secondary/90 mb-6 leading-relaxed whitespace-pre-line">
+                  {caseFile.description}
+                </div>
+              ) : null}
+                {caseFile.betaNotice ? (
+                <div className="mb-6 rounded-3xl border border-amber-500/35 bg-amber-100 px-4 py-4 text-sm leading-relaxed text-amber-950 shadow-[0_20px_60px_-30px_rgba(251,191,36,0.35)] dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100">
+                  <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-amber-900 dark:text-amber-300/90">
+                    Beta Notice
+                  </span>
+                  {caseFile.betaNotice}
+                </div>
+              ) : null}
               <ul className="mb-8 space-y-1 text-sm text-text-secondary">
                 {caseFile.difficulty && (
                   <li>
@@ -101,6 +115,10 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
         </div>
         
         <div className="mt-24 border-t border-subtle-stroke pt-12 relative z-10">
+          {Array.isArray(caseFile.seoSections) && caseFile.seoSections.length > 0 ? (
+            <CaseSectionsAccordion items={caseFile.seoSections} />
+          ) : null}
+
           <h2 className="text-2xl font-semibold mb-4">What You&apos;ll Receive</h2>
           <p className="text-text-secondary max-w-3xl leading-relaxed">
             Each Cold Case File contains high-quality printable evidence, immersive
