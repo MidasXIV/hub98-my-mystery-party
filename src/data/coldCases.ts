@@ -62,7 +62,7 @@ export const coldCases: ColdCase[] = [
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
     seoTitle: "Sci-Fi Cold Case Date Night | Station Zero: Ghost of the Machine",
-    pageTitle: "Sci-Fi Cold Case Date Night: Station Zero",
+    pageTitle: "Station Zero: Ghost of the Machine",
     shortDescription:
       "A sci-fi cold case for date night set aboard a silent deep-space station, where you investigate corrupted logs, crew diaries, and a deadly sabotage plot.",
     seoDescription:
@@ -208,8 +208,27 @@ export const coldCases: ColdCase[] = [
     id: 4,
     slug: "the-final-rehearsal",
     title: "The Final Rehearsal",
+    seoTitle: "Free Cold Case Date Night | The Final Rehearsal High School Mystery",
+    pageTitle: "The Final Rehearsal",
+    shortDescription:
+      "A free cold case date night mystery with a high school setting, where you sort through notes, security logs, and witness interviews to uncover who locked the lead actress away before opening night.",
+    seoDescription:
+      "Play The Final Rehearsal, a free cold case date night mystery with a high school setting. Review backstage clues, suspicious security logs, and messy witness statements to solve a funny interactive whodunit.",
+    seoKeywords: [
+      "free cold case date night high school cold case",
+      "free cold case date night",
+      "high school cold case",
+      "free mystery game for date night",
+      "high school mystery game",
+      "interactive whodunit game",
+    ],
+    betaNotice:
+      "The Final Rehearsal is currently in beta. The full mystery is playable, but details, pacing, and UI polish may still shift as we keep improving the experience.",
     imageUrl: "/cold_cases/thumbnails/final_rehearsal.png",
     tags: [
+      "Free Cold Case",
+      "Free Mystery",
+      "Date Night",
       "School Mystery",
       "Who Dun It",
       "Detective Game",
@@ -228,6 +247,28 @@ export const coldCases: ColdCase[] = [
     hasDownloadSample: false,
     // Board/play exists
     isPlayable: true,
+    seoSections: [
+      {
+        title: "Why The Final Rehearsal works for a free cold case date night",
+        body:
+          "The Final Rehearsal is an easy pick for date night because it is free, funny, and built for one or two players. You are not walking into a grim or overly dense mystery. Instead, you get a lighter high school cold case full of backstage gossip, dramatic suspects, and clues that are simple to follow without feeling boring. That makes it a good option for couples who want to solve something together without committing to a long or emotionally heavy investigation.",
+      },
+      {
+        title: "What happens in this high school cold case",
+        body:
+          "Right before opening night, the lead actress is discovered locked inside the prop vault. That turns the school’s final rehearsal into a full-blown investigation. You will dig through secret notes, interview transcripts, suspicious security logs, and other messy backstage clues to figure out who planned the sabotage. The case keeps the stakes fun and dramatic, but there is still a real mystery to solve beneath the jokes and teen chaos.",
+      },
+      {
+        title: "Is The Final Rehearsal actually free to play?",
+        body:
+          "Yes. The Final Rehearsal is one of the free cold case games on the site, which is part of why it ranks well as a date night option. If you want a no-risk mystery to try together before moving on to a bigger or darker case, this is a strong place to start. You get a complete investigation experience without needing to buy a premium case first.",
+      },
+      {
+        title: "Who should play The Final Rehearsal",
+        body:
+          "This case is best for new detectives, couples looking for a relaxed date night mystery, and anyone who likes high school comedy with a little sabotage mixed in. Because the difficulty sits around easy to medium and the playtime is short, it is also great for players who want a complete mystery in one evening. If you want something heavier, darker, or more puzzle-dense, you can always move up to one of the harder cases after this one.",
+      },
+    ],
     preview: [
       {
         name: "The Game Board",
@@ -308,6 +349,8 @@ export const coldCases: ColdCase[] = [
     id: 1,
     slug: "sins-of-saint-lazarus",
     title: "The Sins of Saint Lazarus",
+    betaNotice:
+      "The Sins of Saint Lazarus is currently in beta. The investigation is available, but some presentation details and quality-of-life touches may still change.",
     imageUrl: "/cold_cases/thumbnails/sins_of_saint_lazarus.png",
     tags: ["Date Night", "1-2 Players", "High Difficulty"],
     description:
@@ -325,6 +368,8 @@ export const coldCases: ColdCase[] = [
     id: 2,
     slug: "palazzo-of-bones",
     title: "The Palazzo of Bones",
+    betaNotice:
+      "The Palazzo of Bones is currently in beta. Expect the mystery to be playable, with some areas still being refined as we continue polishing the case experience.",
     imageUrl: "/cold_cases/thumbnails/palazzo_of_bones.jpeg",
     tags: ["Date Night", "1-2 Players", "High Difficulty"],
     description:
@@ -343,6 +388,8 @@ export const coldCases: ColdCase[] = [
     id: 3,
     slug: "zero-sum",
     title: "Zero Sum",
+    betaNotice:
+      "Zero Sum is currently in beta. Core content is in place, but we are still iterating on polish, flow, and overall presentation.",
     imageUrl: "/cold_cases/thumbnails/zero_sum_2.jpeg",
     tags: ["Date Night", "1-2 Players", "Medium Difficulty"],
     description:
@@ -361,6 +408,8 @@ export const coldCases: ColdCase[] = [
     id: 7,
     slug: "her-shadows-name",
     title: "Her Shadow's Name",
+    betaNotice:
+      "Her Shadow's Name is currently in beta. The mystery experience is being actively refined, so some elements may still evolve as we improve the case.",
     imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
     tags: ["Missing", "1-2 Players", "High Difficulty"],
     description: `
