@@ -349,10 +349,29 @@ export const coldCases: ColdCase[] = [
     id: 1,
     slug: "sins-of-saint-lazarus",
     title: "The Sins of Saint Lazarus",
+    seoTitle: "Medical Mystery Game | The Sins of Saint Lazarus",
+    pageTitle: "The Sins of Saint Lazarus",
+    shortDescription:
+      "A dark medical mystery set inside a troubled hospital, where you follow medical records, personal betrayals, and hidden motives to uncover what really happened in the operating theater.",
+    seoDescription:
+      "Play The Sins of Saint Lazarus, a dark hospital mystery game about medical negligence, secret affairs, and professional sabotage. Work through layered evidence in a tense interactive investigation.",
+    seoKeywords: [
+      "medical mystery game",
+      "hospital murder mystery",
+      "interactive cold case game",
+      "dark hospital mystery",
+      "medical negligence mystery",
+      "sins of saint lazarus mystery",
+    ],
     betaNotice:
       "The Sins of Saint Lazarus is currently in beta. The investigation is available, but some presentation details and quality-of-life touches may still change.",
     imageUrl: "/cold_cases/thumbnails/sins_of_saint_lazarus.png",
-    tags: ["Date Night", "1-2 Players", "High Difficulty"],
+    tags: [
+      "Medical Mystery",
+      "Hospital Thriller",
+      "1-2 Players",
+      "High Difficulty",
+    ],
     description:
       "After a mysterious six-month hiatus, the brilliant Dr. Khanna has returned to the operating theater at St. Lazarus. But his first surgery back isn't a triumph, it’s a massacre.When a routine procedure ends in an 'insane' act of negligence, the police are pulled into a labyrinth of illicit affairs, family betrayals, and professional sabotage. Everyone is a suspect, everyone has a motive, and the man at the center of it all is a doctor who seems like a total stranger to those who love him most.",
     difficulty: "Hard",
@@ -363,6 +382,28 @@ export const coldCases: ColdCase[] = [
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: true,
+    seoSections: [
+      {
+        title: "Why The Sins of Saint Lazarus stands out as a medical mystery",
+        body:
+          "The Sins of Saint Lazarus stands out because it mixes personal betrayal with institutional pressure inside a hospital setting. This is not a light or playful mystery. It is built around negligence, secrecy, family strain, and professional sabotage, which gives the case a heavier and more dramatic tone than the rest of the catalog. If you like mysteries that feel tense, morally messy, and character-driven, Lazarus has the right kind of weight.",
+      },
+      {
+        title: "What makes this hospital mystery different",
+        body:
+          "Instead of focusing on a single obvious suspect, The Sins of Saint Lazarus drops you into a hospital environment full of layered pressure points. Medical records, personal betrayals, family strain, and professional sabotage all collide around one catastrophic surgery. That gives the mystery a very particular energy: every clue feels tied to both personal emotion and institutional failure. The result is a medical mystery game that feels claustrophobic, high-stakes, and deeply human.",
+      },
+      {
+        title: "What evidence you investigate in Saint Lazarus",
+        body:
+          "As you work through the case, you will examine evidence connected to the operating theater, the people around Dr. Khanna, and the wider collapse of trust inside St. Lazarus. The case leans into layered documents and contradictory accounts rather than quick gimmicks. You are asked to weigh negligence against intent, emotional fallout against hard proof, and personal loyalty against self-preservation.",
+      },
+      {
+        title: "Who should play The Sins of Saint Lazarus",
+        body:
+          "This case is best for players who enjoy darker mystery fiction, complicated suspects, and a more mature tone. If you like unraveling affairs, institutional pressure, and morally messy decisions, this case fits well. If you want something lighter or more beginner-friendly, one of the easier cases may be a better first stop before returning to Saint Lazarus.",
+      },
+    ],
   },
   {
     id: 2,
