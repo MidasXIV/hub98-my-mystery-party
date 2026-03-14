@@ -8,10 +8,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   // In server metadata functions we cannot call React.use(); just await if it's a Promise.
   const resolved = params instanceof Promise ? await params : params;
   const caseFile = getCaseBySlug(resolved.slug);
-  const titleBase = caseFile ? caseFile.title : "Case Not Found";
-  const title = `${titleBase} | My Mystery Party`;
+  const titleBase = caseFile?.playTitle || (caseFile ? `Play ${caseFile.title}` : "Case Not Found");
+  const title = `${titleBase} | Interactive Board`;
   const description = caseFile
-    ? `Play the interactive case board for ${titleBase}. Investigate clues, connect evidence, and solve the mystery.`
+    ? caseFile.playDescription || `Play the interactive case board for ${caseFile.title}. Investigate clues, connect evidence, and solve the mystery.`
     : "Play interactive mystery cases on My Mystery Party.";
 
   // Prefer dynamic composite FIRST so crawlers that only take the first image use it.

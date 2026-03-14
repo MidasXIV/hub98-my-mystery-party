@@ -18,9 +18,11 @@ export interface ColdCase {
   slug: string;
   title: string;
   seoTitle?: string;
+  playTitle?: string;
   pageTitle?: string;
   shortDescription?: string;
   seoDescription?: string;
+  playDescription?: string;
   seoKeywords?: string[];
   betaNotice?: string;
   imageUrl: string;
@@ -62,11 +64,14 @@ export const coldCases: ColdCase[] = [
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
     seoTitle: "Sci-Fi Cold Case Date Night | Station Zero: Ghost of the Machine",
+    playTitle: "Play Station Zero: Ghost of the Machine",
     pageTitle: "Station Zero: Ghost of the Machine",
     shortDescription:
       "A sci-fi cold case for date night set aboard a silent deep-space station, where you investigate corrupted logs, crew diaries, and a deadly sabotage plot.",
     seoDescription:
       "Play Station Zero, a sci-fi cold case date night mystery set on a deep-space research station. Review crew diaries, corrupted transmissions, and classified research to solve a chilling space horror investigation.",
+    playDescription:
+      "Enter the interactive Station Zero case board to connect evidence, inspect recovered transmissions, and solve the mystery in a playable investigation interface.",
     seoKeywords: [
       "free cold case date night scifi cold case",
       "sci-fi cold case",
@@ -209,11 +214,14 @@ export const coldCases: ColdCase[] = [
     slug: "the-final-rehearsal",
     title: "The Final Rehearsal",
     seoTitle: "Free Cold Case Date Night | The Final Rehearsal High School Mystery",
+    playTitle: "Play The Final Rehearsal",
     pageTitle: "The Final Rehearsal",
     shortDescription:
       "A free cold case date night mystery with a high school setting, where you sort through notes, security logs, and witness interviews to uncover who locked the lead actress away before opening night.",
     seoDescription:
       "Play The Final Rehearsal, a free cold case date night mystery with a high school setting. Review backstage clues, suspicious security logs, and messy witness statements to solve a funny interactive whodunit.",
+    playDescription:
+      "Open The Final Rehearsal's playable case board to review backstage clues, compare witness statements, and work through the mystery step by step.",
     seoKeywords: [
       "free cold case date night high school cold case",
       "free cold case date night",
@@ -350,11 +358,14 @@ export const coldCases: ColdCase[] = [
     slug: "sins-of-saint-lazarus",
     title: "The Sins of Saint Lazarus",
     seoTitle: "Medical Mystery Game | The Sins of Saint Lazarus",
+    playTitle: "Play The Sins of Saint Lazarus",
     pageTitle: "The Sins of Saint Lazarus",
     shortDescription:
       "A dark medical mystery set inside a troubled hospital, where you follow medical records, personal betrayals, and hidden motives to uncover what really happened in the operating theater.",
     seoDescription:
       "Play The Sins of Saint Lazarus, a dark hospital mystery game about medical negligence, secret affairs, and professional sabotage. Work through layered evidence in a tense interactive investigation.",
+    playDescription:
+      "Use the Saint Lazarus interactive case board to review hospital evidence, track suspect motives, and follow the investigation through a playable mystery interface.",
     seoKeywords: [
       "medical mystery game",
       "hospital murder mystery",
@@ -409,8 +420,11 @@ export const coldCases: ColdCase[] = [
     id: 2,
     slug: "palazzo-of-bones",
     title: "The Palazzo of Bones",
+    playTitle: "Play The Palazzo of Bones",
     betaNotice:
       "The Palazzo of Bones is currently in beta. Expect the mystery to be playable, with some areas still being refined as we continue polishing the case experience.",
+    playDescription:
+      "Explore The Palazzo of Bones through the interactive case board, where you can examine evidence, connect suspects, and investigate the mystery at your own pace.",
     imageUrl: "/cold_cases/thumbnails/palazzo_of_bones.jpeg",
     tags: ["Date Night", "1-2 Players", "High Difficulty"],
     description:
@@ -429,8 +443,11 @@ export const coldCases: ColdCase[] = [
     id: 3,
     slug: "zero-sum",
     title: "Zero Sum",
+    playTitle: "Play Zero Sum",
     betaNotice:
       "Zero Sum is currently in beta. Core content is in place, but we are still iterating on polish, flow, and overall presentation.",
+    playDescription:
+      "Step into the Zero Sum case board to inspect evidence, compare timelines, and solve the mystery inside the interactive play experience.",
     imageUrl: "/cold_cases/thumbnails/zero_sum_2.jpeg",
     tags: ["Date Night", "1-2 Players", "Medium Difficulty"],
     description:
@@ -449,8 +466,11 @@ export const coldCases: ColdCase[] = [
     id: 7,
     slug: "her-shadows-name",
     title: "Her Shadow's Name",
+    playTitle: "Play Her Shadow's Name",
     betaNotice:
       "Her Shadow's Name is currently in beta. The mystery experience is being actively refined, so some elements may still evolve as we improve the case.",
+    playDescription:
+      "Enter the Her Shadow's Name case board to sift through clues, trace connections, and investigate the mystery inside the playable experience.",
     imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
     tags: ["Missing", "1-2 Players", "High Difficulty"],
     description: `
