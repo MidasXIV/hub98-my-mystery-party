@@ -1,11 +1,15 @@
 "use client";
 import React from "react";
-import { ArrowDown, Play } from "lucide-react"; // icons
+import { ArrowDown, Play, X } from "lucide-react"; // icons
 
 // Background video asset located in /public
 const BACKGROUND_VIDEO = "/vanishing-girl.mp4";
+const HERO_TRAILER_VIDEO =
+  "https://kioubj9rw7g55npk.public.blob.vercel-storage.com/station_zero/SZ_demo-1.mp4";
 
 export default function Hero() {
+  const [isTrailerOpen, setIsTrailerOpen] = React.useState(false);
+
   return (
     // This parent container creates the "black outline" or frame effect.
     // It has the dark background and padding.
@@ -57,7 +61,7 @@ export default function Hero() {
             </div>
 
             {/* Center Rating + QR Card */}
-            <div className="absolute left-1/2 top-1/2 hidden w-full max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/60 p-5 shadow-xl backdrop-blur-lg lg:block">
+            {/* <div className="absolute left-1/2 top-1/2 hidden w-full max-w-xs -translate-x-1/2 -translate-y-1/2 rounded-xl bg-black/60 p-5 shadow-xl backdrop-blur-lg lg:block">
               <div className="flex items-center justify-between gap-4">
                 <div className="text-white/90">
                   <p className="text-2xl font-semibold">4.9</p>
@@ -73,10 +77,14 @@ export default function Hero() {
                   <QRCodePlaceholder />
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Right Watch Trailer Button */}
-            <button className="group flex h-32 w-32 items-center justify-center rounded-full bg-black/60 text-white shadow-xl backdrop-blur-lg transition-colors hover:bg-black/50">
+            <button
+              type="button"
+              onClick={() => setIsTrailerOpen(true)}
+              className="group flex h-32 w-32 cursor-pointer items-center justify-center rounded-full bg-black/60 text-white shadow-xl backdrop-blur-lg transition-colors hover:bg-black/50"
+            >
               <span className="flex items-center gap-2 font-medium">
                 <Play size={18} className="fill-white" />
                 Trailer
@@ -84,27 +92,44 @@ export default function Hero() {
             </button>
           </div>
         </div>
+
+        {isTrailerOpen ? (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/80 px-4">
+            <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+              <div className="border-b border-white/10 px-6 py-4 text-white">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-sm uppercase tracking-[0.2em] text-white/60">
+                      Gameplay Preview
+                    </p>
+                    <h2 className="mt-2 text-2xl font-semibold">
+                      Watch the case board in action
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    aria-label="Close trailer"
+                    onClick={() => setIsTrailerOpen(false)}
+                    className="inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-white/12 bg-white/8 text-white/90 shadow-lg transition-all duration-200 ease-out hover:scale-105 hover:bg-white/14 hover:text-white active:scale-95"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+              </div>
+              <div className="bg-black">
+                <video
+                  src={HERO_TRAILER_VIDEO}
+                  controls
+                  autoPlay
+                  playsInline
+                  className="aspect-video w-full"
+                  poster="/hero_wideshot/woman-vanishing.png"
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </section>
     </main>
-  );
-}
-
-// Placeholder for QR code SVG
-function QRCodePlaceholder() {
-  return (
-    <svg viewBox="0 0 64 64" role="img" aria-label="QR code" className="h-full w-full text-white/90">
-      <rect width="64" height="64" rx="4" fill="currentColor" opacity="0.08" />
-      <rect x="6" y="6" width="14" height="14" fill="currentColor" />
-      <rect x="44" y="6" width="14" height="14" fill="currentColor" />
-      <rect x="6" y="44" width="14" height="14" fill="currentColor" />
-      <rect x="24" y="24" width="6" height="6" fill="currentColor" />
-      <rect x="34" y="24" width="6" height="6" fill="currentColor" />
-      <rect x="24" y="34" width="6" height="6" fill="currentColor" />
-      <rect x="34" y="34" width="6" height="6" fill="currentColor" />
-      <rect x="30" y="14" width="4" height="4" fill="currentColor" />
-      <rect x="50" y="30" width="4" height="4" fill="currentColor" />
-      <rect x="14" y="30" width="4" height="4" fill="currentColor" />
-      <rect x="30" y="50" width="4" height="4" fill="currentColor" />
-    </svg>
   );
 }

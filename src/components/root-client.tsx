@@ -18,7 +18,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const hideGlobalHeader = pathname.startsWith("/play/") || pathname.startsWith("/print/");
 
-  const [hideBetaBanner, setHideBetaBanner] = React.useState(false);
+  const [hideBetaBanner, setHideBetaBanner] = React.useState(true);
 
   const dismissBetaBanner = () => setHideBetaBanner(true);
 
