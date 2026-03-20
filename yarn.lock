@@ -88,38 +88,38 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz#010b6938fab7cb7df74aa2bbc06aa503b8fe5fb4"
   integrity sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==
 
-"@clerk/backend@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-3.0.2.tgz#6fd74773273e123db1b76a497078aad69900ad9f"
-  integrity sha512-ScRbTcAGOAaCUbOW91NsUkUVokqGRx1c8unadB4YhXhv151FLMIZSnZBtcDK4deOYgNgE1jEu6+6LFbxl2ThTQ==
+"@clerk/backend@3.2.3-canary.v20260320214053":
+  version "3.2.3-canary.v20260320214053"
+  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-3.2.3-canary.v20260320214053.tgz#1855995999458e60b31bea8474d5ddd5b13c75e1"
+  integrity sha512-Bixv6PCrzUysdsX1sMqDC0K8PYPw8KUY0e+T3yjj1xCtMW4+1+26rtZbZAacVUAyl9nMGgO/noQ5QOPx9eD4/A==
   dependencies:
-    "@clerk/shared" "^4.1.0"
+    "@clerk/shared" "4.3.3-canary.v20260320214053"
     standardwebhooks "^1.0.0"
     tslib "2.8.1"
 
-"@clerk/nextjs@^7.0.2":
-  version "7.0.2"
-  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-7.0.2.tgz#efb0423977956b60144f66e044772700116e36c5"
-  integrity sha512-wi5PTXW/TUTVV1aWV+ye0rUMuKlC1fbG60uZHNMy9HaSWf2tJHjrW7uYTC0MM895g2PhifwtVnb+Yq5GPacVlA==
+"@clerk/nextjs@^7.9.6":
+  version "7.0.7-canary.v20260320214053"
+  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-7.0.7-canary.v20260320214053.tgz#7aa1bf6ab7f03dc673340e53299626e5a67c8b22"
+  integrity sha512-v6CZPawi/YR0s03AHMR0/cXi7a2zMoxTpP/5gof1wsRhCLr9S3lspz6kH434LfurKOX5yHoYaLJbZFx1/VPevg==
   dependencies:
-    "@clerk/backend" "^3.0.2"
-    "@clerk/react" "^6.0.2"
-    "@clerk/shared" "^4.1.0"
+    "@clerk/backend" "3.2.3-canary.v20260320214053"
+    "@clerk/react" "6.1.3-canary.v20260320214053"
+    "@clerk/shared" "4.3.3-canary.v20260320214053"
     server-only "0.0.1"
     tslib "2.8.1"
 
-"@clerk/react@^6.0.2":
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/@clerk/react/-/react-6.0.2.tgz#4253c02c595329679321a305e2cfbc38314664a2"
-  integrity sha512-EWEqvR3tuDc/tRhKmImMnRSOEz4xFLgwfRhV7rUJ0WhcMe7Lcxbacadl01MDj1lKSokvGyxgxXQXbx1sHLaHPw==
+"@clerk/react@6.1.3-canary.v20260320214053":
+  version "6.1.3-canary.v20260320214053"
+  resolved "https://registry.yarnpkg.com/@clerk/react/-/react-6.1.3-canary.v20260320214053.tgz#5269fb5644e8556812315867a590ad83453828ee"
+  integrity sha512-HpieJ/hh0Ch5iKayLbazBhd0iOqnY/ZOVJSHo53J5Lot+REIdTe8bCcet656OOH7BeDoVtSo/1RaMzXyDUNVSA==
   dependencies:
-    "@clerk/shared" "^4.1.0"
+    "@clerk/shared" "4.3.3-canary.v20260320214053"
     tslib "2.8.1"
 
-"@clerk/shared@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-4.1.0.tgz#26f24942ce4bc4da218143941bf000718d62d05c"
-  integrity sha512-Yll2rwp6Buj2208xOQ38UOezWpZObT+Bmo4mgXhFMtv/h/wrI5TBYKhFyTIX0ftGXR1xYvuzg9S/lfn5XQDdGQ==
+"@clerk/shared@4.3.3-canary.v20260320214053":
+  version "4.3.3-canary.v20260320214053"
+  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-4.3.3-canary.v20260320214053.tgz#a71213d2f7163ca8dada3c61f6e5d95091526be4"
+  integrity sha512-rsWqZVLaEFYzlW0OsQ3WSfRYivDL5f6mUDShTQ/sio9craAeMrGGpfBC/UQmmjsy0DxFWs4AH7egB7XSvB3Rxw==
   dependencies:
     "@tanstack/query-core" "5.90.16"
     dequal "2.0.3"
