@@ -16,6 +16,33 @@ type BoardItem = {
   [k: string]: unknown;
 };
 
+type ModerationCategory =
+  | "HONEST_ATTEMPT"
+  | "INAPPROPRIATE_LANGUAGE"
+  | "CHEATING_OR_PROBING"
+  | "OTHER";
+
+type ModerationResult = {
+  category: ModerationCategory;
+  reason: string;
+};
+
+type ScoreResult = {
+  score: number;
+  correct: boolean;
+  rationale?: string;
+};
+
+type ObjectiveEvaluationPayload = {
+  allowed: boolean;
+  category: "HONEST_ATTEMPT";
+  correct: boolean;
+  score: number;
+  reason?: string;
+  items: BoardItem[];
+  connections: BoardConnection[];
+};
+
 type LLMProvider = "cloudflare" | "gemini";
 
 function getLLMProvider(): LLMProvider {
@@ -34,6 +61,19 @@ function getCloudflareConfig() {
     );
   }
   return { accountId, token, model };
+}
+
+function assertProviderConfig(provider: LLMProvider) {
+  if (provider === "gemini") {
+    if (!process.env.API_KEY) {
+      throw new Error("Missing API_KEY on server");
+    }
+    return;
+  }
+
+  if (!process.env.CLOUDFLARE_ACCOUNT_ID || !process.env.CLOUDFLARE_API_TOKEN) {
+    throw new Error("Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN on server");
+  }
 }
 
 async function runCloudflareAI(model: string, input: unknown) {
@@ -58,6 +98,72 @@ async function runCloudflareAI(model: string, input: unknown) {
   return result as { result?: Record<string, unknown> };
 }
 
+function buildStructuredJsonInstructions() {
+  return [
+    "Return strictly valid JSON only.",
+    "Do not include markdown, code fences, commentary, or extra explanatory text.",
+    "Follow the requested schema exactly.",
+    "Be generous to concise but materially correct mystery-solving answers when the player identifies the correct core cause, culprit, mechanism, or key entity.",
+  ].join(" ");
+}
+
+function buildModerationPrompt(args: {
+  objectiveId?: string;
+  objectiveDescription?: string;
+  solutionText: string;
+}) {
+  return `Classify this player submission. Return JSON with {category, reason}.
+Categories: HONEST_ATTEMPT, INAPPROPRIATE_LANGUAGE, CHEATING_OR_PROBING, OTHER.
+Objective: ${args.objectiveDescription ?? args.objectiveId ?? "[unknown]"}
+Answer: ${args.solutionText}`;
+}
+
+function buildScoringPrompt(args: {
+  canonicalSolution: string;
+  solutionText: string;
+}) {
+  return `Evaluate the player's answer against the canonical solution.
+Return strict JSON with {score, correct, rationale}. score is 0..1.
+Judge conceptual alignment, names, causality, and key facts.
+If the player correctly identifies the primary cause, culprit, mechanism, or key entity, give substantial credit even if the explanation is brief.
+Do not require every supporting detail to mark an answer correct.
+Examples:
+- A concise answer naming the correct root cause/entity can still be correct.
+- A fuller explanation with mechanism/context should score higher than a short correct answer.
+Partial matches: 0.25–0.55. Concise but core-correct answers: 0.55–0.8. Near-exact: 0.8+.
+
+Canonical solution:\n${args.canonicalSolution}\n\nPlayer answer:\n${args.solutionText}`;
+}
+
+function buildFailurePayload(reason: string, status = 400) {
+  return NextResponse.json({ error: reason }, { status });
+}
+
+function buildBlockedPayload(reason: string, status = 400, hints?: string[]) {
+  return NextResponse.json(
+    {
+      allowed: false,
+      reason,
+      ...(hints ? { hints } : {}),
+    },
+    { status },
+  );
+}
+
+function buildAssessmentPayload(
+  overrides: Partial<ObjectiveEvaluationPayload>,
+): ObjectiveEvaluationPayload {
+  return {
+    allowed: true,
+    category: "HONEST_ATTEMPT",
+    correct: false,
+    score: 0,
+    items: [],
+    connections: [],
+    ...overrides,
+  };
+}
+
 function extractTextFromCloudflare(result: { result?: Record<string, unknown> }) {
   const data = result?.result ?? {};
   return (
@@ -69,32 +175,129 @@ function extractTextFromCloudflare(result: { result?: Record<string, unknown> })
   );
 }
 
-function extractJsonBlob(raw: string) {
-  const start = raw.indexOf("{");
-  const end = raw.lastIndexOf("}");
-  if (start === -1 || end === -1 || end < start) return raw.trim();
-  return raw.slice(start, end + 1).trim();
+function stripMarkdownCodeFences(raw: string) {
+  const trimmed = raw.trim();
+  const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+  return fenced ? fenced[1].trim() : trimmed;
+}
+
+function extractFirstBalancedJsonObject(raw: string) {
+  const text = stripMarkdownCodeFences(raw);
+  const start = text.indexOf("{");
+  if (start === -1) return text.trim();
+
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+      if (char === "\\") {
+        escaped = true;
+        continue;
+      }
+      if (char === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (char === "{") depth++;
+    if (char === "}") {
+      depth--;
+      if (depth === 0) {
+        return text.slice(start, i + 1).trim();
+      }
+    }
+  }
+
+  return text.slice(start).trim();
+}
+
+function repairCommonJsonIssues(raw: string) {
+  let repaired = raw.trim();
+
+  // Remove a trailing comma before a closing object/array brace.
+  repaired = repaired.replace(/,\s*([}\]])/g, "$1");
+
+  // If braces are unbalanced at the end, close them conservatively.
+  const openBraces = (repaired.match(/{/g) || []).length;
+  const closeBraces = (repaired.match(/}/g) || []).length;
+  if (openBraces > closeBraces) {
+    repaired += "}".repeat(openBraces - closeBraces);
+  }
+
+  return repaired;
+}
+
+function safeJsonPreview(raw: string, maxLength = 400) {
+  return raw.length <= maxLength ? raw : `${raw.slice(0, maxLength)}…`;
+}
+
+function parseJsonWithRecovery(raw: string) {
+  const extracted = extractFirstBalancedJsonObject(raw);
+
+  try {
+    return JSON.parse(extracted);
+  } catch (initialError) {
+    const repaired = repairCommonJsonIssues(extracted);
+    try {
+      return JSON.parse(repaired);
+    } catch (repairError) {
+      const initialMessage =
+        initialError instanceof Error ? initialError.message : String(initialError);
+      const repairMessage =
+        repairError instanceof Error ? repairError.message : String(repairError);
+
+      throw new SyntaxError(
+        `Unable to parse LLM JSON response. Initial parse failed: ${initialMessage}. ` +
+          `Recovery parse failed: ${repairMessage}. Raw preview: ${safeJsonPreview(extracted)}`,
+      );
+    }
+  }
 }
 
 async function generateJsonFromLLM(options: {
   provider: LLMProvider;
   prompt: string;
   schema: unknown;
+  systemInstruction?: string;
   geminiModel?: string;
   cloudflareModel?: string;
 }) {
+  const systemInstruction = options.systemInstruction ?? buildStructuredJsonInstructions();
   if (options.provider === "gemini") {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY ?? "" });
     const resp = await ai.models.generateContent({
       model: options.geminiModel ?? "gemini-2.5-flash",
-      contents: options.prompt,
+      contents: [
+        {
+          role: "user",
+          parts: [
+            {
+              text: `${systemInstruction}\n\n${options.prompt}`,
+            },
+          ],
+        },
+      ],
       config: {
         responseMimeType: "application/json",
         responseSchema: options.schema,
       },
     });
     const raw = resp.text?.trim() ?? "";
-    return JSON.parse(raw);
+    return parseJsonWithRecovery(raw);
   }
 
   const { model: defaultModel } = getCloudflareConfig();
@@ -102,15 +305,13 @@ async function generateJsonFromLLM(options: {
     messages: [
       {
         role: "system",
-        content:
-          "Return strictly valid JSON only. Do not include markdown or extra text.",
+        content: systemInstruction,
       },
       { role: "user", content: options.prompt },
     ],
   });
   const rawText = extractTextFromCloudflare(cfResp);
-  const jsonText = extractJsonBlob(rawText);
-  return JSON.parse(jsonText);
+  return parseJsonWithRecovery(rawText);
 }
 
 function isBoardItem(val: unknown): val is BoardItem {
@@ -151,6 +352,52 @@ function getEvidenceSource(caseSlug: string | undefined, fallback: BoardData): C
   // Basic shape check
   if (!Array.isArray(obj.items) || !Array.isArray(obj.objectives)) return fallback;
   return ev as CaseEvidence;
+}
+
+function findObjective(
+  objectives: BoardObjective[],
+  objectiveId?: string,
+  objectiveDescription?: string,
+) {
+  if (objectiveId) {
+    const byId = objectives.find((objective) => objective.id === objectiveId);
+    if (byId) return byId;
+  }
+
+  if (!objectiveDescription) return undefined;
+  const normalizedDescription = normalizeText(objectiveDescription);
+  return objectives.find(
+    (objective) => normalizeText(objective.description) === normalizedDescription,
+  );
+}
+
+function getUnlockedEvidence(
+  evidenceSource: CaseEvidence,
+  objectiveKey: string,
+  correct: boolean,
+) {
+  const items: BoardItem[] = Array.isArray(evidenceSource.items)
+    ? (evidenceSource.items.filter(isBoardItem) as BoardItem[])
+    : [];
+
+  if (!correct) {
+    return { items: [], connections: [] as BoardConnection[] };
+  }
+
+  const unlockedItems = items.filter(
+    (item) => item.unlockOnObjectiveId === objectiveKey,
+  );
+  const unlockedIds = new Set(unlockedItems.map((item) => item.id));
+
+  const connections: BoardConnection[] = Array.isArray(evidenceSource.connections)
+    ? (evidenceSource.connections.filter(isBoardConnection) as BoardConnection[])
+    : [];
+
+  const unlockedConnections = connections.filter(
+    (connection) => unlockedIds.has(connection.from) || unlockedIds.has(connection.to),
+  );
+
+  return { items: unlockedItems, connections: unlockedConnections };
 }
 
 const moderationSchema = {
@@ -252,6 +499,54 @@ function scoreAnswer(user: string, truth: string): number {
   return match / t.length; // 0..1 coverage of truth-keywords present in user answer
 }
 
+function scoreKeyPhrases(user: string, truth: string): number {
+  const normalizedUser = normalizeText(user);
+  const truthKeywords = keywords(truth);
+
+  if (truthKeywords.length === 0) return 0;
+
+  const candidatePhrases = Array.from(
+    new Set(
+      truthKeywords
+        .filter((token) => token.length >= 5)
+        .concat(
+          truth
+            .split(/[.!?]/)
+            .map((segment) => normalizeText(segment))
+            .flatMap((segment) => {
+              const parts = segment.split(" ").filter(Boolean);
+              const phrases: string[] = [];
+              for (let i = 0; i < parts.length - 1; i++) {
+                const phrase = `${parts[i]} ${parts[i + 1]}`.trim();
+                if (phrase.length >= 9) phrases.push(phrase);
+              }
+              return phrases;
+            }),
+        ),
+    ),
+  );
+
+  if (candidatePhrases.length === 0) return 0;
+
+  let hits = 0;
+  for (const phrase of candidatePhrases) {
+    if (normalizedUser.includes(phrase)) hits++;
+  }
+  return hits / candidatePhrases.length;
+}
+
+function evaluateHeuristicAnswer(user: string, truth: string) {
+  const keywordScore = scoreAnswer(user, truth);
+  const phraseScore = scoreKeyPhrases(user, truth);
+  const combinedScore = Math.max(keywordScore, phraseScore * 1.15);
+  const correct = combinedScore >= 0.45 || phraseScore >= 0.2;
+
+  return {
+    score: Math.max(0, Math.min(1, combinedScore)),
+    correct,
+  };
+}
+
 // Lightweight gibberish/quality checks (no AI, no deps)
 const COMMON_ENGLISH_WORDS = new Set([
   'the','be','to','of','and','a','in','that','have','i','it','for','not','on','with','he','as','you','do','at','this','but','his','by','from','they','we','say','her','she','or','an','will','my','one','all','would','there','their','what','so','up','out','if','about','who','get','which','go','me','when','make','can','like','time','no','just','him','know','take','people','into','year','your','good','some','could','them','see','other','than','then','now','look','only','come','its','over','think','also','back','after','use','two','how','our','work','first','well','way','even','new','want','because','any','these','give','day','most','us'
@@ -338,55 +633,36 @@ function djb2(str: string): string {
 
 export async function POST(req: Request) {
   const provider = getLLMProvider();
-  if (provider === "gemini") {
-    if (!process.env.API_KEY) {
-      return NextResponse.json(
-        { error: "Missing API_KEY on server" },
-        { status: 500 }
-      );
-    }
-  } else {
-    if (!process.env.CLOUDFLARE_ACCOUNT_ID || !process.env.CLOUDFLARE_API_TOKEN) {
-      return NextResponse.json(
-        {
-          error:
-            "Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN on server",
-        },
-        { status: 500 }
-      );
-    }
+  try {
+    assertProviderConfig(provider);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Missing server LLM configuration";
+    return buildFailurePayload(message, 500);
   }
 
   let body: ObjectiveRequestBody;
   try {
     body = await req.json();
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return buildFailurePayload("Invalid JSON body");
   }
 
   const { boardData, objectiveId, objectiveDescription, solutionText } = body;
   if (!boardData || !solutionText) {
-    return NextResponse.json(
-      { error: "Missing required fields" },
-      { status: 400 }
-    );
+    return buildFailurePayload("Missing required fields");
   }
 
   // Quick non-AI quality gate to block obvious gibberish/spam
   if (isLikelyGibberish(solutionText)) {
-    return NextResponse.json(
-      {
-        allowed: false,
-        reason:
-          "Please enter a meaningful answer (your current input looks like gibberish).",
-        hints: [
-          "Write in complete sentences—state your theory clearly.",
-          "Reference specific evidence (documents, transcripts, photos) that support your claim.",
-          "Include key names, places, and causal links (who did what, why, and how).",
-          "Avoid random characters; use plain language and relevant case terms.",
-        ],
-      },
-      { status: 400 }
+    return buildBlockedPayload(
+      "Please enter a meaningful answer (your current input looks like gibberish).",
+      400,
+      [
+        "Write in complete sentences—state your theory clearly.",
+        "Reference specific evidence (documents, transcripts, photos) that support your claim.",
+        "Include key names, places, and causal links (who did what, why, and how).",
+        "Avoid random characters; use plain language and relevant case terms.",
+      ],
     );
   }
 
@@ -399,13 +675,7 @@ export async function POST(req: Request) {
     ipWindow
   );
   if (!okIp) {
-    return NextResponse.json(
-      {
-        allowed: false,
-        reason: "Rate limit exceeded. Please wait and try again.",
-      },
-      { status: 429 }
-    );
+    return buildBlockedPayload("Rate limit exceeded. Please wait and try again.", 429);
   }
   const objectiveKeyBase =
     objectiveId ?? normalizeText(objectiveDescription ?? "");
@@ -417,12 +687,9 @@ export async function POST(req: Request) {
     objectiveWindow
   );
   if (!okObjective) {
-    return NextResponse.json(
-      {
-        allowed: false,
-        reason: "Too many attempts for this objective. Please slow down.",
-      },
-      { status: 429 }
+    return buildBlockedPayload(
+      "Too many attempts for this objective. Please slow down.",
+      429,
     );
   }
 
@@ -439,24 +706,18 @@ export async function POST(req: Request) {
   }
 
   // 1) Guardrail moderation via cheap model with strict JSON schema
-  let moderation: {
-    category:
-      | "HONEST_ATTEMPT"
-      | "INAPPROPRIATE_LANGUAGE"
-      | "CHEATING_OR_PROBING"
-      | "OTHER";
-    reason: string;
-  } | null = null;
+  let moderation: ModerationResult | null = null;
   try {
     moderation = await generateJsonFromLLM({
       provider,
-      prompt: `Classify this player submission. Return JSON with {category, reason}.
-Categories: HONEST_ATTEMPT, INAPPROPRIATE_LANGUAGE, CHEATING_OR_PROBING, OTHER.
-Objective: ${objectiveDescription ?? objectiveId ?? "[unknown]"}
-Answer: ${solutionText}`,
+      prompt: buildModerationPrompt({
+        objectiveId,
+        objectiveDescription,
+        solutionText,
+      }),
       schema: moderationSchema,
       geminiModel: "gemini-2.5-flash",
-    });
+    }) as ModerationResult;
   } catch (err) {
     // If moderation fails, default to OTHER to avoid blocking legitimate attempts
     console.warn("Moderation classification failed", err);
@@ -483,37 +744,20 @@ Answer: ${solutionText}`,
   const objectives = Array.isArray(evidenceSource.objectives)
     ? evidenceSource.objectives
     : [];
-  let target: BoardObjective | undefined;
-  if (objectiveId) {
-    target = objectives.find((o) => o.id === objectiveId);
-  }
-  if (!target && objectiveDescription) {
-    const norm = normalizeText(objectiveDescription);
-    target = objectives.find((o) => normalizeText(o.description) === norm);
-  }
+  const target = findObjective(objectives, objectiveId, objectiveDescription);
 
   if (!target) {
-    return NextResponse.json({
-      allowed: true,
-      category: "HONEST_ATTEMPT" as const,
-      correct: false,
-      score: 0,
-      reason: "Objective not found in board data",
-      items: [],
-      connections: [],
-    });
+    return NextResponse.json(
+      buildAssessmentPayload({ reason: "Objective not found in board data" }),
+    );
   }
 
   if (!target.solution || normalizeText(target.solution).length === 0) {
-    return NextResponse.json({
-      allowed: true,
-      category: "HONEST_ATTEMPT" as const,
-      correct: false,
-      score: 0,
-      reason: "No canonical solution available for this objective",
-      items: [],
-      connections: [],
-    });
+    return NextResponse.json(
+      buildAssessmentPayload({
+        reason: "No canonical solution available for this objective",
+      }),
+    );
   }
 
   // 3) Deterministic correctness check (cheap): keyword coverage ratio
@@ -523,15 +767,13 @@ Answer: ${solutionText}`,
   try {
     const parsed = (await generateJsonFromLLM({
       provider,
-      prompt: `Evaluate the player's answer against the canonical solution.
-Return strict JSON with {score, correct, rationale}. score is 0..1.
-Judge conceptual alignment, names, causality, and key facts.
-Partial matches: 0.2–0.5. Near-exact: 0.8+.
-
-Canonical solution:\n${target.solution}\n\nPlayer answer:\n${solutionText}`,
+      prompt: buildScoringPrompt({
+        canonicalSolution: target.solution,
+        solutionText,
+      }),
       schema: scoringSchema,
       geminiModel: "gemini-2.5-flash",
-    })) as { score: number; correct: boolean };
+    })) as ScoreResult;
     score =
       typeof parsed.score === "number"
         ? Math.max(0, Math.min(1, parsed.score))
@@ -539,35 +781,25 @@ Canonical solution:\n${target.solution}\n\nPlayer answer:\n${solutionText}`,
     correct = Boolean(parsed.correct);
   } catch (err) {
     console.warn("LLM scoring failed, using heuristic fallback", err);
-    score = scoreAnswer(solutionText, target.solution);
-    correct = score >= 0.6; // heuristic threshold; can tune later
+    const heuristic = evaluateHeuristicAnswer(solutionText, target.solution);
+    score = heuristic.score;
+    correct = heuristic.correct;
   }
 
   const objectiveKeyForUnlock = objectiveId ?? target.id;
 
-  const allItems: BoardItem[] = Array.isArray(evidenceSource.items)
-    ? (evidenceSource.items.filter(isBoardItem) as BoardItem[])
-    : [];
-  const unlockedItems: BoardItem[] = correct
-    ? allItems.filter((it) => it.unlockOnObjectiveId === objectiveKeyForUnlock)
-    : [];
+  const unlockedEvidence = getUnlockedEvidence(
+    evidenceSource,
+    objectiveKeyForUnlock,
+    correct,
+  );
 
-  const unlockedIds = new Set(unlockedItems.map((i) => i.id));
-  const allConnections: BoardConnection[] = Array.isArray(evidenceSource.connections)
-    ? (evidenceSource.connections.filter(isBoardConnection) as BoardConnection[])
-    : [];
-  const unlockedConnections: BoardConnection[] = correct
-    ? allConnections.filter((c) => unlockedIds.has(c.from) || unlockedIds.has(c.to))
-    : [];
-
-  const payload = {
-    allowed: true,
-    category: "HONEST_ATTEMPT" as const,
+  const payload = buildAssessmentPayload({
     correct,
     score,
-    items: unlockedItems,
-    connections: unlockedConnections,
-  };
+    items: unlockedEvidence.items,
+    connections: unlockedEvidence.connections,
+  });
   cache.set(cacheKey, { expires: now() + CACHE_TTL_MS, payload });
   return NextResponse.json(payload);
 }
