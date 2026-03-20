@@ -83,6 +83,7 @@ import BankStatementViewer from "@/components/bank-statement-viewer";
 import { parsePhotoContent } from "@/lib/photo-utils";
 import PhotoViewer from "@/components/photo-viewer";
 import PhotoPreview from "@/components/photo-preview";
+import PlayerProgressTracker from "@/components/player-progress-tracker";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -524,6 +525,10 @@ export default function PlayBoardPage({
   // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
 
   const isPlayable = caseFile.isPlayable ?? false;
+  const completedObjectiveIds = useMemo(
+    () => Array.from(completedObjectives),
+    [completedObjectives],
+  );
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -1924,6 +1929,10 @@ export default function PlayBoardPage({
         </section>
       ) : (
         <>
+      <PlayerProgressTracker
+        caseSlug={slug}
+        completedObjectiveIds={completedObjectiveIds}
+      />
       {solvingObjective && (
         <ObjectiveSolver
           caseSlug={slug}
