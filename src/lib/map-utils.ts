@@ -4,6 +4,7 @@ export interface MapMarker {
   id: string;
   x: number; // 0-100% position
   y: number; // 0-100% position
+  showLabel?: boolean; // Whether to show the label on the map pin
   label: string;
   description?: string;
   type?: "crime" | "suspect" | "clue" | "location";

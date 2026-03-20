@@ -1,51 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useMemo } from "react";
-
-// --- Types ---
-// Updated to match the granular fields in the reference image
-export interface PersonOfInterestData {
-  // Personal
-  lastName?: string;
-  firstName?: string;
-  middleName?: string;
-  alias?: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  zipCode?: string;
-  phone?: string;
-  dob?: string;
-  age?: string;
-  
-  // Physical Stats
-  sex?: string;
-  race?: string;
-  height?: string;
-  weight?: string;
-  hair?: string;
-  eyes?: string;
-  scars?: string;
-  
-  // Background
-  occupation?: string;
-  employer?: string;
-  arrests?: string;
-  
-  // Vehicles (Array of cars)
-  vehicles?: Array<{ year: string; make: string; model: string; color: string; plate: string }>;
-  
-  // Narrative
-  statement?: string; // Maps to "Reason" or "Statement"
-  conclusion?: string;
-  narrativeDate?: string;
-  narrativeTime?: string;
-  
-  // Meta
-  caseNumber?: string;
-  policeStation?: string;
-}
+import { parsePersonOfInterestData } from "@/lib/person-of-interest-utils";
 
 // --- CSS & Assets ---
 const FormStyles = () => (
@@ -97,71 +53,8 @@ const FormStyles = () => (
   `}</style>
 );
 
-// --- Parsing Logic ---
-function parsePOIData(content: string): PersonOfInterestData {
-  let json: any = {};
-  
-  // 1. Try JSON Parse
-  try {
-    json = JSON.parse(content);
-  } catch {
-    // 2. Fallback: Parse the old Text format into the new JSON structure
-    const subjectMatch = content.match(/\*\*Subject:\*\*\s*(.*?)(\n|$)/i);
-    const occMatch = content.match(/\*\*Occupation:\*\*\s*(.*?)(\n|$)/i);
-    const reasonMatch = content.match(/\*\*Reason for Inclusion.*?\*\*([\s\S]*?)(?=\*\*Conclusion|\Z)/i);
-    const conclusionMatch = content.match(/\*\*Conclusion:\*\*([\s\S]*)/i);
-
-    // Split Name if possible
-    const fullName = subjectMatch ? subjectMatch[1].trim().split(' ') : ["Unknown"];
-    
-    json = {
-      firstName: fullName[0],
-      lastName: fullName.slice(1).join(' '),
-      occupation: occMatch ? occMatch[1].trim() : "",
-      statement: (reasonMatch ? reasonMatch[1].trim() : "") + "\n\n" + (conclusionMatch ? conclusionMatch[1].trim() : ""),
-    };
-  }
-
-  // 3. Normalize Data (Ensure fields exist)
-  return {
-    // Prefer explicit keys from provided schema; fall back to older aliases
-    lastName: json.lastName || json.surname || json.subject?.split(' ').pop() || "",
-    firstName: json.firstName || json.givenName || json.subject?.split(' ')[0] || "",
-    middleName: json.middleName || "",
-    alias: json.alias || "",
-    address: json.address || "N/A",
-    city: json.city || "N/A",
-    state: json.state || "N/A",
-    zipCode: json.zipCode || "N/A",
-    phone: json.phone || "N/A",
-    dob: json.dob || "Unknown",
-    age: json.age || "",
-    sex: json.sex || "M",
-    race: json.race || "W",
-    height: json.height || "",
-    weight: json.weight || "",
-    hair: json.hair || "",
-    eyes: json.eyes || "",
-    scars: json.scars || "None visible",
-    occupation: json.occupation || "Unemployed",
-    employer: json.employer || "",
-    arrests: json.arrests || "None",
-    // Prefer explicit 'statement' field; accept provided 'statement' or 'conclusion' split when present
-    statement: json.statement || json.reason || json.statementBody || "No statement provided.",
-    conclusion: json.conclusion || "",
-    caseNumber: json.caseNumber || "A03-05081998",
-    narrativeDate: json.narrativeDate || "Oct 28, 1998",
-    narrativeTime: json.narrativeTime || "14:00",
-    vehicles: Array.isArray(json.vehicles) ? json.vehicles : [
-        // Dummy data if none provided, just for the visual style
-        { year: "??", make: "----", model: "----", color: "--", plate: "----" }
-    ],
-    policeStation: json.policeStation || "Riverdale Police Department",
-  };
-}
-
 export default function PersonOfInterestViewer({ content }: { content: string }) {
-  const data = useMemo(() => parsePOIData(content), [content]);
+  const data = useMemo(() => parsePersonOfInterestData(content), [content]);
 
   return (
     <div className="w-full flex justify-center py-10 bg-gray-900 min-h-screen overflow-y-auto">

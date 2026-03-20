@@ -4,6 +4,7 @@ import STATION_ZERO_DATA from "./station-zero-data";
 import ZERO_SUM_DATA from "./zero-sum-data";
 import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
 import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data"
+import THE_LAST_CHECK_IN_DATA from "./the-last-check-in";
 
 export interface Evidence {
   title: string;
@@ -417,6 +418,69 @@ export const coldCases: ColdCase[] = [
     ],
   },
   {
+    id: 1,
+    slug: "the-last-check-in",
+    title: "The Last Check-In",
+    seoTitle: "Locked Room Mystery Game | The Last Check-In",
+    playTitle: "Play The Last Check-In",
+    pageTitle: "The Last Check-In",
+    shortDescription:
+      "A claustrophobic locked-room mystery where nine strangers are forced into a month-long quarantine at a cheap roadside motel. When the lockdown lifts, only five walk out alive.",
+    seoDescription:
+      "Play The Last Check-In, a psychological locked-room mystery game. Nine guests quarantined in a motel, but only five survive. Interrogate suspects and find the killer.",
+    playDescription:
+      "Use the interactive case board to review police interrogations, motel security photos, and crime scene evidence to determine which of the five survivors is a cold-blooded killer.",
+    seoKeywords:[
+      "locked room mystery game",
+      "motel murder mystery",
+      "quarantine thriller game",
+      "whodunit cold case",
+      "interactive detective game",
+      "closed circle mystery",
+    ],
+    betaNotice:
+      "The Last Check-In is currently in beta. The investigation is available, but some presentation details and quality-of-life touches may still change.",
+    imageUrl: "/cold_cases/thumbnails/the_last_check_in.png",
+    tags:[
+      "Locked Room Mystery",
+      "Psychological Thriller",
+      "1-2 Players",
+      "Hard Difficulty",
+    ],
+    description:
+      "9 Checked In. 5 Walked Out. When a sudden, strict viral lockdown forces nine strangers to quarantine inside a squalid roadside motel for a month, paranoia quickly sets in. As the days bleed together, guests start showing 'symptoms' and isolating in their rooms, never to be seen again. But when the authorities finally break the seal 30 days later, they discover the isolated guests didn't succumb to a virus—they were brutally murdered. Now, you must cross-examine the five traumatized survivors, sift through their lies, and uncover the wolf hiding in plain sight.",
+    difficulty: "Hard",
+    players: "1-2",
+    duration: "2-3 hours",
+    price: 19.99,
+    evidence: THE_LAST_CHECK_IN_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+    isPlayable: false,
+    seoSections:[
+      {
+        title: "Why The Last Check-In stands out as a locked-room mystery",
+        body:
+          "The Last Check-In takes the classic 'closed-circle' whodunit and adds the agonizing, slow-burn tension of a month-long quarantine. It plays heavily on psychological paranoia. The killer uses the threat of a viral sickness to their advantage, tricking the other guests into leaving the victims completely alone. If you love mysteries built on cabin fever, mounting dread, and brilliant cover-ups, this case provides an incredibly immersive atmosphere.",
+      },
+      {
+        title: "What makes this motel mystery different",
+        body:
+          "Instead of tracking a killer on the run, you already have your suspects trapped in a room together. When the game begins, four people are dead, and the five remaining survivors are all pointing fingers at each other. Every single survivor—from the cynical motel manager to the disgraced surgeon—has a dark secret they were hiding before the lockdown even started. The tension comes from untangling who committed murder for survival, and who is just a very good liar.",
+      },
+      {
+        title: "What evidence you investigate in The Last Check-In",
+        body:
+          "As you work through the case, you will examine gritty check-in photos taken from the manager's desk, rationing logs, fake medical assessments, and highly contradictory police interrogations from the five survivors. You are asked to reconstruct the timeline of a 30-day lockdown, figure out how the bodies were locked inside their rooms from the outside, and track a missing duffel bag of cash that serves as the ultimate motive.",
+      },
+      {
+        title: "Who should play The Last Check-In",
+        body:
+          "This case is perfect for fans of Agatha Christie-style setups, true-crime aesthetics, and psychological thrillers. If you enjoy analyzing character motives, spotting inconsistencies in witness testimonies, and unraveling a web of red herrings, you will thrive here. Because the killer is deeply manipulative and hiding among the victims, players will need a sharp eye for detail and a healthy dose of skepticism.",
+      },
+    ],
+  },
+  {
     id: 2,
     slug: "palazzo-of-bones",
     title: "The Palazzo of Bones",
@@ -493,7 +557,7 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     evidence: HER_SHADOWS_NAME_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: false,
+    isPlayable: true,
   },
 ];
 

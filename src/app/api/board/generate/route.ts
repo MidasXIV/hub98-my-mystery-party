@@ -541,6 +541,13 @@ export async function POST(req: Request) {
       }
       return NextResponse.json(filterLockedEvidence(boardData));
     }
+    if( caseSlug === 'the-last-check-in') {
+      const board = getCaseBySlug('the-last-check-in');
+      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+      if (!boardData) {
+        return NextResponse.json({ error: 'Board data not available for the-last-check-in.' }, { status: 404 });
+      } return NextResponse.json(filterLockedEvidence(boardData));
+    }
 
     // Legacy homicide board for operation-shadowfall / john-doe scenario.
     if (caseSlug === 'operation-shadowfall' || caseSlug === 'john-doe') {

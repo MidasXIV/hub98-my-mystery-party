@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { parsePersonOfInterestData } from "@/lib/person-of-interest-utils";
 
 // --- CSS Assets ---
 const Styles = () => (
@@ -47,33 +48,8 @@ const Styles = () => (
   `}</style>
 );
 
-// --- Parsing Logic ---
-function parsePreviewData(content: string) {
-  try {
-    const json = JSON.parse(content);
-    return {
-      // Prefer explicit keys from provided schema; fall back to older aliases
-      name: (json.firstName && json.lastName)
-        ? `${json.firstName} ${json.lastName}`
-        : json.name || json.subject || "UNK",
-      occupation: json.occupation || "UNK",
-      employer: json.employer || "",
-      ref: json.id || `POI-${Math.floor(Math.random() * 999)}`
-    };
-  } catch {
-    const nameMatch = content.match(/\*\*(Subject|Name):\*\*\s*(.*?)(\n|$)/i);
-    const occMatch = content.match(/\*\*(Occupation):\*\*\s*(.*?)(\n|$)/i);
-    return {
-      name: nameMatch ? nameMatch[2].trim() : "UNKNOWN",
-      occupation: occMatch ? occMatch[2].trim() : "UNKNOWN",
-      employer: "",
-      ref: `POI-${Math.floor(Math.random() * 999)}`
-    };
-  }
-}
-
 export default function PersonOfInterestPreview({ content }: { content: string }) {
-  const data = useMemo(() => parsePreviewData(content), [content]);
+  const data = useMemo(() => parsePersonOfInterestData(content), [content]);
 
   return (
     <div className="w-full h-full relative group cursor-pointer select-none rounded-sm">
@@ -88,7 +64,7 @@ export default function PersonOfInterestPreview({ content }: { content: string }
             Suspect Data
           </span>
           <span className="font-mono text-[9px] text-gray-500">
-            REF: {data.ref}
+            REF: {data.referenceId}
           </span>
         </div>
 
@@ -98,8 +74,8 @@ export default function PersonOfInterestPreview({ content }: { content: string }
           {/* Row 1: Subject Name (Full Width) */}
           <div className="data-cell p-1.5 flex flex-col justify-center h-1/2">
             <span className="label-tiny">Person of Interest</span>
-            <div className="value-type uppercase truncate" title={data.name}>
-              {data.name}
+            <div className="value-type uppercase truncate" title={data.displayName}>
+              {data.displayName}
             </div>
           </div>
 
