@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useTheme } from "next-themes";
 import clsx from "clsx";
 import { motion, useReducedMotion } from "motion/react";
+import { coldCases } from "@/data/coldCases";
 
 type AnimatedContainerProps = React.ComponentProps<typeof motion.div> & {
   children?: React.ReactNode;
@@ -17,7 +19,7 @@ function AnimatedContainer({
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
-    return children;
+    return <div className={props.className}>{children}</div>;
   }
 
   return (
@@ -33,49 +35,64 @@ function AnimatedContainer({
   );
 }
 
-// The component is now very simple. It only needs the ref.
-// All animation is handled by the parent.
-// footerRef is optional so server components can render <Footer /> without creating a ref.
 function Footer() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   const isDark = mounted && resolvedTheme === "dark";
 
-  // Inversion logic: when overall theme is dark, footer uses light styling; vice versa.
-  // Before mounted, rely on Tailwind dark: variants to avoid hydration mismatch flash.
   const containerClasses = clsx(
-    "p-8 md:p-16 relative transition-colors",
-    mounted ? (isDark ? "bg-white text-black" : "bg-black text-white") : "bg-black text-white dark:bg-white dark:text-black"
+    "px-6 pb-3 pt-14 md:px-16 md:pb-8 md:pt-20 relative transition-colors flex flex-col min-h-screen md:min-h-0",
+    mounted
+      ? isDark
+        ? "bg-white text-black"
+        : "bg-black text-white"
+      : "bg-black text-white dark:bg-white dark:text-black",
   );
-  const subtleText = clsx(
-    "mt-2",
-    mounted ? (isDark ? "text-black/60" : "text-white/60") : "text-white/60 dark:text-black/60"
-  );
+
   const tertiaryBadge = clsx(
-    "border rounded-full px-3 py-1 text-xs",
-    mounted ? (isDark ? "border-black/20 text-black/50" : "border-white/20 text-white/50") : "border-white/20 text-white/50 dark:border-black/20 dark:text-black/50"
+    "inline-flex w-fit self-start border rounded-full px-3 py-1 text-xs",
+    mounted
+      ? isDark
+        ? "border-black/20 text-black/50"
+        : "border-white/20 text-white/50"
+      : "border-white/20 text-white/50 dark:border-black/20 dark:text-black/50",
   );
+
   const linkClass = clsx(
-    "transition-colors",
-    mounted ? (isDark ? "hover:text-black/70" : "hover:text-white/70") : "hover:text-white/70 dark:hover:text-black/70"
+    "transition-colors text-sm md:text-base block py-1",
+    mounted
+      ? isDark
+        ? "hover:text-black/60 text-black/80"
+        : "hover:text-white/60 text-white/80"
+      : "hover:text-white/60 text-white/80 dark:hover:text-black/60 dark:text-black/80",
   );
-  const accentButton = clsx(
-    "absolute bottom-8 right-8 w-12 h-12 rounded-full flex items-center justify-center transition-opacity",
-    mounted ? (isDark ? "bg-black text-white hover:bg-black/80" : "bg-white text-black hover:bg-white/80") : "bg-white text-black hover:bg-white/80 dark:bg-black dark:text-white dark:hover:bg-black/80"
+
+  const pillButton = clsx(
+    "inline-block border rounded-full px-5 py-2 text-xs md:text-sm font-medium transition-all",
+    mounted
+      ? isDark
+        ? "border-black hover:bg-black hover:text-white"
+        : "border-white hover:bg-white hover:text-black"
+      : "border-white hover:bg-white hover:text-black dark:border-black dark:hover:bg-black dark:hover:text-white",
   );
+
+  const bottomLinkClass = clsx(
+    "text-[10px] md:text-xs uppercase tracking-tighter transition-colors",
+    mounted
+      ? isDark
+        ? "text-black/60 hover:text-black"
+        : "text-white/60 hover:text-white"
+      : "text-white/60 dark:text-black/60",
+  );
+
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // The footer is now just a standard component. The `bg-surface` will be the dark gray.
-  // The positioning (fixed/sticky behavior) is handled entirely by the GSAP pinning logic.
-  const links: { label: string; href: string; external?: boolean }[] = [
+  const links = [
     { label: "FAQ", href: "/#faq" },
-    { label: "Newsletter", href: "#newsletter" },
+    { label: "Waitlist", href: "/waitlist" },
     { label: "System Status", href: "/status" },
     { label: "Terms of Service", href: "/terms-of-service" },
     { label: "Acceptable Use", href: "/acceptable-use" },
@@ -83,10 +100,30 @@ function Footer() {
     { label: "Security Policy", href: "/security-policy" },
     { label: "Disclaimer", href: "/disclaimer" },
     { label: "Accessibility", href: "/accessibility-statement" },
-    { label: "Pinterest", href: "https://www.pinterest.com/mymysterypartypins/", external: true },
-    // { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
-    // { label: "Facebook", href: "https://facebook.com/mymysteryparty", external: true }
+    {
+      label: "Pinterest",
+      href: "https://www.pinterest.com/mymysterypartypins/",
+      external: true,
+    },
   ];
+
+  const utilityLabels = [
+    "Terms of Service",
+    "Acceptable Use",
+    "Privacy Policy",
+    "Security Policy",
+    "Disclaimer",
+    "Accessibility",
+  ];
+  const mainNavLinks = links.filter((l) =>
+    ["FAQ", "System Status"].includes(l.label),
+  );
+  const socialLink = links.find((l) => l.label === "Pinterest");
+  const bottomUtilityLinks = links.filter((l) =>
+    utilityLabels.includes(l.label),
+  );
+  const footerCases = coldCases.slice(0, 5);
+
   return (
     <>
       <div
@@ -96,95 +133,147 @@ function Footer() {
         <div
           className={clsx(
             "absolute inset-0 rounded-b-xl",
-            isDark ? "bg-black" : "bg-white"
+            isDark ? "bg-black" : "bg-white",
           )}
         ></div>
-        <div className="absolute inset-0 shadow-xl"></div>
       </div>
+
+      {/* FOOTER WRAPPER: Removed hard height, used min-height for reveal effect */}
       <footer
-        className="relative h-[750px] md:h-[400px] w-full"
+        className="relative min-h-screen md:min-h-[680px] w-full"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
-        <div className="fixed bottom-0 h-[750px] md:h-[400px] w-full z-50">
-          <div className="sticky top-[calc(100vh-750px)] md:top-[calc(100vh-400px)] h-full overflow-y-auto">
-            <div className={clsx("size-full border-t", containerClasses)}>
-              {/* Decorative radial gradients retained */}
+        <div className="md:fixed bottom-0 w-full z-50">
+          {/* STICKY CONTAINER: Ensures content flows naturally on mobile if it exceeds viewport */}
+          <div className="relative md:sticky bottom-0 h-full overflow-hidden">
+            <div className={containerClasses}>
               <div
                 aria-hidden
-                className="absolute inset-0 isolate z-0 contain-strict"
+                className="absolute inset-0 isolate z-0 contain-strict overflow-hidden pointer-events-none"
               >
-                <div className="bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,--theme(--color-foreground/.06)_0,hsla(0,0%,55%,.02)_50%,--theme(--color-foreground/.01)_80%)] absolute top-0 left-0 h-320 w-140 -translate-y-87.5 -rotate-45 rounded-full" />
-                <div className="bg-[radial-gradient(50%_50%_at_50%_50%,--theme(--color-foreground/.04)_0,--theme(--color-foreground/.01)_80%,transparent_100%)] absolute top-0 left-0 h-320 w-60 [translate:5%_-50%] -rotate-45 rounded-full" />
-                <div className="bg-[radial-gradient(50%_50%_at_50%_50%,--theme(--color-foreground/.04)_0,--theme(--color-foreground/.01)_80%,transparent_100%)] absolute top-0 left-0 h-320 w-60 -translate-y-87.5 -rotate-45 rounded-full" />
+                <div className="bg-[radial-gradient(68.54%_68.72%_at_55.02%_31.46%,--theme(--color-foreground/.04)_0,transparent_70%)] absolute top-0 left-0 h-320 w-140 -translate-y-87.5 -rotate-45 rounded-full" />
               </div>
-              <div className="relative max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-                <AnimatedContainer className="md:col-span-1 space-y-4">
-                  <h1
-                    className={clsx(
-                      "text-8xl lg:text-9xl font-bold tracking-tighter",
-                      isDark ? "text-black" : "text-white"
+
+              <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col min-h-full pt-6 md:pt-8">
+                {/* 1. TOP CTA SECTION */}
+                <AnimatedContainer className="mb-12 md:mb-16">
+                  <h2 className="text-2xl md:text-5xl font-medium tracking-tight max-w-2xl mb-6 md:mb-8 leading-tight">
+                    Stay connected for early access to our newest tools and
+                    local events
+                  </h2>
+                  <div className="flex flex-wrap items-center gap-4">
+                    {socialLink && (
+                      <a
+                        href={socialLink.href}
+                        className="w-10 h-10 rounded-full border border-current flex items-center justify-center hover:opacity-70 transition-opacity"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <span className="text-[10px] font-bold">P</span>
+                      </a>
                     )}
-                  >
-                    hub98
-                  </h1>
-                  <p className={subtleText}>
-                    Immersive Entertainment Experiences
-                  </p>
-                </AnimatedContainer>
-                <AnimatedContainer className="space-y-4">
-                  <span className={tertiaryBadge}>Contact</span>
-                  <div
-                    className={clsx(isDark ? "text-black/80" : "text-white/80")}
-                  >
-                    <p>My Mystery Party</p>
-                    <p>A Hub98 Entertainment Product</p>
-                    <a
-                      href="mailto:support@mymystery.party"
-                      className={linkClass}
-                    >
-                      support@mymystery.party
-                    </a>
+                    <Link href="/waitlist" className={pillButton}>
+                      Join the waitlist for new cases
+                    </Link>
                   </div>
                 </AnimatedContainer>
-                <AnimatedContainer className="space-y-4">
-                  <span className={tertiaryBadge}>Links</span>
-                  <ul className="space-y-2">
-                    {links.map((link) => (
-                      <li key={link.label}>
+
+                {/* 2. THREE-COLUMN NAVIGATION GRID: Responsive Layout */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12 mb-10 md:mb-8">
+                  <AnimatedContainer delay={0.2}>
+                    <h3 className={tertiaryBadge}>Navigation</h3>
+                    <ul className="space-y-1">
+                      {mainNavLinks.map((link) => (
+                        <li key={link.label}>
+                          <a href={link.href} className={linkClass}>
+                            {link.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </AnimatedContainer>
+
+                  <AnimatedContainer delay={0.3}>
+                    <h3 className={tertiaryBadge}>Contact</h3>
+
+                    <div className="space-y-1">
+                      <p className={linkClass}>My Mystery Party</p>
+                      <p className={linkClass}>A Hub98 Entertainment Product</p>
+                      <a
+                        href="mailto:support@mymystery.party"
+                        className={clsx(
+                          linkClass,
+                          "block mt-4 underline underline-offset-4",
+                        )}
+                      >
+                        support@mymystery.party
+                      </a>
+                    </div>
+                  </AnimatedContainer>
+
+                  <AnimatedContainer delay={0.3}>
+                    <h3 className={tertiaryBadge}>Cold Cases</h3>
+
+                    <ul className="space-y-1">
+                      {footerCases.map((coldCase) => (
+                        <li key={coldCase.slug}>
+                          <Link
+                            href={`/cases/${coldCase.slug}`}
+                            className={linkClass}
+                          >
+                            {coldCase.pageTitle || coldCase.title}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </AnimatedContainer>
+                </div>
+
+                {/* 3. LARGE BRANDING: Responsive size (vw units) */}
+                <AnimatedContainer
+                  delay={0.5}
+                  className="mt-2 md:mt-6 select-none"
+                >
+                  <h1 className="text-[20vw] md:text-[19vw] font-bold tracking-tighter leading-[0.75] -ml-1 md:-ml-2">
+                    hub98
+                  </h1>
+                </AnimatedContainer>
+
+                {/* 4. BOTTOM UTILITY BAR: Stacks on mobile */}
+                <div
+                  className={clsx(
+                    "mt-4 md:mt-6 pt-5 border-t flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pb-2 md:pb-0",
+                    isDark ? "border-black/10" : "border-white/10",
+                  )}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-8 w-full md:w-auto">
+                    <span className="font-bold text-sm tracking-tighter hidden md:block">
+                      hub98
+                    </span>
+                    <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-x-4 md:gap-x-5 gap-y-3">
+                      {bottomUtilityLinks.map((link) => (
                         <a
+                          key={link.label}
                           href={link.href}
-                          className={linkClass}
-                          {...(link.external
-                            ? { target: "_blank", rel: "noopener noreferrer" }
-                            : {})}
+                          className={bottomLinkClass}
                         >
                           {link.label}
                         </a>
-                      </li>
-                    ))}
-                  </ul>
-                </AnimatedContainer>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={scrollToTop}
+                    className={clsx(
+                      bottomLinkClass,
+                      "hover:opacity-60 flex items-center gap-1",
+                    )}
+                  >
+                    Back to top <span>↑</span>
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={scrollToTop}
-                className={accentButton}
-                aria-label="Scroll to top"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              </button>
             </div>
           </div>
         </div>
