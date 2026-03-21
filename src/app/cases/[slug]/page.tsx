@@ -4,6 +4,7 @@ import { coldCases, getCaseBySlug } from "@/data/coldCases";
 import { CaseActions } from "@/components/case-actions";
 import CaseSectionsAccordion from "@/components/case-sections-accordion";
 import Footer from "@/components/footer";
+import RelatedCases from "@/components/related-cases";
 import TestimonialCard, { Testimonial } from "@/components/multi-media-testimonial";
 
 // Next.js 15: params is now async (a Promise) in certain dynamic APIs.
@@ -138,6 +139,13 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
               </div>
             </section>
           ) : null}
+
+          <RelatedCases
+            currentSlug={slug}
+            currentTags={caseFile.tags}
+            cases={coldCases}
+            limit={5}
+          />
         </div>
       </div>
       <Footer />
