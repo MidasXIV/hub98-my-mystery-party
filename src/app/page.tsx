@@ -206,7 +206,7 @@ function ColdCaseFiles() {
         >
           {coldCases.map((caseFile) => (
             // Using CaseCard directly so querySelectorAll('.case-card') only matches one element per card.
-            <CaseCard key={caseFile.id} caseData={caseFile} />
+            <CaseCard key={caseFile.slug} caseData={caseFile} />
           ))}
         </div>
       </div>

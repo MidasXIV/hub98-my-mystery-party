@@ -1,22 +1,39 @@
 import type { NextConfig } from "next";
 
-const localImagePathnames = [
-  "/blog/banner",
-  "/blog_banners/**",
-  "/opengraph/**",
-  "/cold_cases/**",
-  "/cold_case_data/**",
-  "/features_section/**",
-  "/invitations/**",
+const localImagePatterns = [
+  {
+    pathname: "/blog/banner",
+  },
+  {
+    pathname: "/blog_banners/**",
+    search: "",
+  },
+  {
+    pathname: "/opengraph/**",
+    search: "",
+  },
+  {
+    pathname: "/cold_cases/**",
+    search: "",
+  },
+  {
+    pathname: "/cold_case_data/**",
+    search: "",
+  },
+  {
+    pathname: "/features_section/**",
+    search: "",
+  },
+  {
+    pathname: "/invitations/**",
+    search: "",
+  },
 ];
 
 const nextConfig: NextConfig = {
   images: {
     domains: ["images.unsplash.com", "github.com", "kioubj9rw7g55npk.public.blob.vercel-storage.com"],
-    localPatterns: localImagePathnames.map((pathname) => ({
-      pathname,
-      search: "",
-    })),
+    localPatterns: localImagePatterns,
   },
   async rewrites() {
     return [

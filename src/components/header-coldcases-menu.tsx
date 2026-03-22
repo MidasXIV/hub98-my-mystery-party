@@ -199,7 +199,7 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
                         ))
                       : coldCases.slice(0, 3).map((c) => (
                           <Link
-                            key={c.id}
+                            key={c.slug}
                             href={`/cases/${c.slug}`}
                             className="group/cc block rounded-2xl overflow-hidden border border-gray-200/60 dark:border-white/10 bg-white/80 dark:bg-white/5 shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
                           >
@@ -210,6 +210,15 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
                                 alt={c.title}
                                 className="h-full w-full object-cover transition-transform duration-500 group-hover/cc:scale-105"
                               />
+                            </div>
+                            <div className="p-3">
+                              <div className="line-clamp-1 text-sm font-semibold text-gray-900 dark:text-white">
+                                {c.title}
+                              </div>
+                              <div className="mt-1 line-clamp-1 text-xs text-gray-600 dark:text-gray-300">
+                                {c.duration ? `${c.duration} • ` : ""}
+                                {c.players ? c.players : ""}
+                              </div>
                             </div>
                           </Link>
                         ))}

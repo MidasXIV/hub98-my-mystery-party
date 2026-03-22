@@ -25,7 +25,7 @@ export default function CasesIndexPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid gap-10 md:gap-12 xl:gap-16 md:grid-cols-2 xl:grid-cols-3 place-items-center">
             {coldCases.map((c) => (
-              <CaseCard key={c.id} caseData={c} />
+              <CaseCard key={c.slug} caseData={c} />
             ))}
           </div>
         </div>
