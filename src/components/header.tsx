@@ -3,13 +3,9 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import {
-  SignInButton,
-  UserButton,
-  useAuth,
-} from "@clerk/nextjs";
 import { HeaderMegaMenu } from "./header-coldcases-menu";
 import { HeaderGuidesMenu } from "./header-guides-menu";
+import { HeaderAccountControls } from "./header-account-controls";
 import type { GuidesMenuPayload } from "./header-guides-menu";
 
 type HeaderProps = {
@@ -21,7 +17,6 @@ const Header = ({ guidesData }: HeaderProps) => {
   // applies the correct html.class BEFORE React hydration, so we can lean
   // on Tailwind's dark: variants for initial paint without hiding both icons.
   const { resolvedTheme, setTheme } = useTheme();
-  const { isSignedIn } = useAuth();
   const [mounted, setMounted] = React.useState(false);
   const [menuOpen, setMenuOpen] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
@@ -44,20 +39,6 @@ const Header = ({ guidesData }: HeaderProps) => {
   const toggleTheme = () => {
     const next = effectiveTheme === "dark" ? "light" : "dark";
     setTheme(next);
-  };
-  const userButtonAppearance = {
-    elements: {
-      userButtonTrigger:
-        "rounded-full border border-gray-200/60 dark:border-white/10 bg-white/70 dark:bg-black/40 backdrop-blur-md px-2 py-1 hover:bg-white/80 dark:hover:bg-white/10",
-      userButtonAvatarBox:
-        "h-9 w-9 rounded-full bg-gradient-to-br from-slate-100 to-slate-200 text-gray-900 ring-2 ring-white/80 dark:from-slate-800 dark:to-slate-900 dark:text-white dark:ring-white/20",
-      userButtonPopoverCard:
-        "bg-white/85 dark:bg-black/70 border border-white/20 dark:border-white/10 shadow-2xl backdrop-blur-xl",
-      userButtonPopoverActionButton:
-        "text-gray-800 dark:text-white hover:bg-white/60 dark:hover:bg-white/10",
-      userButtonPopoverActionButtonText: "font-mono",
-      userButtonPopoverFooter: "hidden",
-    },
   };
 
   const openMenu = () => {
@@ -400,18 +381,7 @@ const Header = ({ guidesData }: HeaderProps) => {
               <div className="my-2 h-px bg-gray-200/60 dark:bg-white/10" />
 
               <div className="flex flex-col gap-2 px-2 py-2">
-                {isSignedIn ? (
-                  <UserButton
-                    showName
-                    appearance={userButtonAppearance}
-                  />
-                ) : (
-                  <SignInButton>
-                    <button className="w-full rounded-2xl border border-gray-200/60 dark:border-white/10 bg-white/80 dark:bg-black/50 px-4 py-2 font-mono text-sm font-semibold text-gray-900 dark:text-white shadow-sm transition hover:bg-white/90 dark:hover:bg-white/10">
-                      Sign in
-                    </button>
-                  </SignInButton>
-                )}
+                <HeaderAccountControls signInButtonClassName="w-full rounded-2xl border border-gray-200/60 dark:border-white/10 bg-white/80 dark:bg-black/50 px-4 py-2 font-mono text-sm font-semibold text-gray-900 dark:text-white shadow-sm transition hover:bg-white/90 dark:hover:bg-white/10" />
               </div>
             </nav>
           </div>
@@ -419,18 +389,7 @@ const Header = ({ guidesData }: HeaderProps) => {
       )}
       </header>
       <div className="hidden sm:flex fixed right-6 top-8 z-[100] h-12 items-center gap-2 rounded-full border border-gray-300/60 dark:border-white/10 bg-white/80 dark:bg-black/40 px-3 shadow-xl backdrop-blur-md">
-        {isSignedIn ? (
-          <UserButton
-            showName
-            appearance={userButtonAppearance}
-          />
-        ) : (
-          <SignInButton>
-            <button className="h-9 rounded-full border border-gray-200/60 dark:border-white/10 bg-white/80 dark:bg-black/50 px-4 font-mono text-sm font-semibold text-gray-900 dark:text-white shadow-sm transition hover:bg-white/90 dark:hover:bg-white/10">
-              Sign in
-            </button>
-          </SignInButton>
-        )}
+        <HeaderAccountControls signInButtonClassName="h-9 rounded-full border border-gray-200/60 dark:border-white/10 bg-white/80 dark:bg-black/50 px-4 font-mono text-sm font-semibold text-gray-900 dark:text-white shadow-sm transition hover:bg-white/90 dark:hover:bg-white/10" />
       </div>
     </>
   );
