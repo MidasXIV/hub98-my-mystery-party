@@ -1,10 +1,12 @@
 import React from "react";
 import { getCaseBySlug } from "@/data/coldCases";
 import type { Metadata } from "next";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 // Future-compatible: params may arrive as a Promise. Unwrap with React.use() when provided.
 // Keeping function async to allow any data fetching additions later.
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   // In server metadata functions we cannot call React.use(); just await if it's a Promise.
   const resolved = params instanceof Promise ? await params : params;
   const caseFile = getCaseBySlug(resolved.slug);
@@ -12,35 +14,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const title = `${titleBase} | My Mystery Party`;
   const description = caseFile?.description || "Interactive mystery experience on My Mystery Party.";
 
-  // Prefer dynamic composite FIRST so crawlers that only take the first image use it.
-  // Provide static thumbnail as a fallback second.
-  const ogImages = [
-    {
-      url: `/play/${resolved.slug}/opengraph-image`,
-      width: 1200,
-      height: 630,
-      type: "image/png",
-      alt: `${titleBase} – My Mystery Party`,
-    },
-    ...(caseFile
-      ? [
-          {
-            url: caseFile.imageUrl,
-            width: 1200,
-            height: 630,
-            type: "image/png",
-            alt: `${titleBase} Thumbnail – My Mystery Party`,
-          },
-        ]
-      : []),
-  ];
-
-  const twitterImages = [
-  `/play/${resolved.slug}/twitter-image`,
-  caseFile?.imageUrl || `/play/${resolved.slug}/opengraph-image`,
-  ];
-
   return {
+    metadataBase,
     title,
     description,
     openGraph: {
@@ -48,14 +23,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       type: "website",
       siteName: "My Mystery Party",
-  url: `/play/${resolved.slug}`,
-  images: ogImages,
+      url: `/play/${resolved.slug}`,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: twitterImages,
     },
     alternates: { canonical: `/play/${resolved.slug}` },
   };

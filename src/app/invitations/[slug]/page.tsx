@@ -5,6 +5,7 @@ import { getInvitationBySlug, invitationDesigns } from "@/data/invitations";
 import InvitationPreview from "@/components/invitations/InvitationPreview";
 import EnvelopePreview from "@/components/invitations/EnvelopePreview";
 import PhotoGallery from "@/components/invitations/PhotoGallery";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 type Params = { slug: string };
 
@@ -18,13 +19,15 @@ export function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const resolved = params instanceof Promise ? await params : params;
   const slug = resolved.slug;
   
     // const { slug } = await params;
   const design = getInvitationBySlug(slug);
-  if (!design) return {};
+  if (!design) return { metadataBase };
   return {
+    metadataBase,
     title: `${design.title} – Online Invitation`,
     description: design.description,
     alternates: { canonical: `/invitations/${design.slug}` },

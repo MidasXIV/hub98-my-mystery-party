@@ -7,6 +7,7 @@ import Markdown from "@/components/markdown";
 import Toc from "@/components/toc";
 import PopularArticles from "@/components/popular-articles";
 import Image from "next/image";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -14,13 +15,15 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { slug } = await params;
   const post = getPostBySlug(slug);
-  if (!post) return {};
+  if (!post) return { metadataBase };
   const base = getBaseUrl();
   const url = `${base}/blog/${post.slug}`;
   const images = post.heroImage ? [post.heroImage] : undefined;
   return {
+    metadataBase,
     title: post.title,
     description: post.description,
     alternates: { canonical: url },

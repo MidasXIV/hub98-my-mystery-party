@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { mysteryKits } from "@/data/mysteryKits";
 import Footer from "@/components/footer";
 import ParticipantPacketStack from "@/components/participant-packet-stack";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 interface CharacterPageProps {
   params:
@@ -20,7 +22,8 @@ export async function generateStaticParams() {
   );
 }
 
-export async function generateMetadata({ params }: CharacterPageProps) {
+export async function generateMetadata({ params }: CharacterPageProps): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { slug, characterSlug } =
     params instanceof Promise ? await params : params;
   const kit = mysteryKits.find((k) => k.slug === slug);
@@ -28,14 +31,34 @@ export async function generateMetadata({ params }: CharacterPageProps) {
 
   if (!kit || !character) {
     return {
+      metadataBase,
       title: "Character Dossier | Mystery Party",
       description: "Character dossier details for this mystery kit.",
     };
   }
 
+  const title = `${character.name} | ${kit.title} Character Dossier`;
+  const description = `${character.name} is the ${character.role}. ${character.summary}`;
+  const routePath = `/kits/${kit.slug}/play/characters/${character.slug}`;
+  const ogImageUrl = `${routePath}/opengraph-image`;
+
   return {
-    title: `${character.name} | ${kit.title} Character Dossier`,
-    description: `${character.name} is the ${character.role}. ${character.summary}`,
+    metadataBase,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "My Mystery Party",
+      url: routePath,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 

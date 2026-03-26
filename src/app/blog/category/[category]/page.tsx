@@ -3,6 +3,7 @@ import Link from "next/link";
 import Footer from "@/components/footer";
 import { getPostsByCategory, getCategories } from "@/lib/blog";
 import { notFound } from "next/navigation";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 export async function generateStaticParams() {
   const cats = getCategories();
@@ -10,9 +11,11 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ category: string }> }): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { category } = await params;
   const label = category.replace(/-/g, " ");
   return {
+    metadataBase,
     title: `${label} – Blog Category`,
     description: `Articles for ${label}: curated posts to help you plan, style, and host mystery parties.`,
     alternates: { canonical: `/blog/category/${category}` },

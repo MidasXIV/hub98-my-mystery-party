@@ -14,6 +14,7 @@ import Footer from "@/components/footer";
 import KitCharacterRosterCard from "@/components/kit-character-roster-card";
 import KitMobileStackedCards from "@/components/kit-mobile-stacked-cards";
 import KitPurchaseDetails from "@/components/kit-purchase-details";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 interface KitPageProps {
   params: Promise<{ slug: string }> | { slug: string };
@@ -71,10 +72,11 @@ function buildKitJsonLd(kit: MysteryKit) {
 export async function generateMetadata({
   params,
 }: KitPageProps): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { slug } = params instanceof Promise ? await params : params;
   const kit = getMysteryKitBySlug(slug);
 
-  if (!kit) return { title: "Kit Not Found" };
+  if (!kit) return { metadataBase, title: "Kit Not Found" };
 
   const title = kit.seoTitle ?? `${kit.title} | Modern Murder Mystery Party Kit`;
   const description = kit.seoDescription ?? kit.description;
@@ -92,6 +94,7 @@ export async function generateMetadata({
     .slice(0, 220);
 
   return {
+    metadataBase,
     title,
     description,
     keywords,

@@ -15,6 +15,7 @@ import Header from "../components/header";
 import type { GuidesMenuPayload } from "../components/header-guides-menu";
 import { getAllPosts, getCategories } from "../lib/blog";
 import { ThemeProvider } from "../components/theme-provider";
+import { getBaseSiteUrl, getMetadataBase } from "@/lib/metadata-base";
 
 // Server-side font declarations
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -45,25 +46,14 @@ const kalam = Kalam({
   variable: "--font-kalam",
 });
 
-function getBase() {
-  const vercelHost = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : undefined;
-  const site =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    vercelHost ||
-    "https://hub98-my-mystery-party.vercel.app";
-  return site.replace(/\/$/, "");
-}
-
-const base = getBase();
+const base = getBaseSiteUrl();
 // NOTE: Root-level OG/Twitter images removed to prevent precedence over route-level
 // dynamic images (e.g. /play/[slug]/opengraph-image). Individual pages now fully
 // control their own image arrays. Provide only fallback twitter image as needed.
 const twitterDynamic = `${base}/twitter-image`;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(base),
+  metadataBase: getMetadataBase(),
   title: {
     default: "My Mystery Party – Unravel Every Mystery",
     template: "%s | My Mystery Party",

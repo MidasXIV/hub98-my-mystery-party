@@ -1,12 +1,14 @@
 import React from "react";
 import { getCaseBySlug } from "@/data/coldCases";
 import type { Metadata } from "next";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 export async function generateMetadata({
   params,
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const resolved = params instanceof Promise ? await params : params;
   const slug = resolved.slug;
   const caseFile = getCaseBySlug(slug);
@@ -18,33 +20,8 @@ export async function generateMetadata({
     caseFile?.description ||
     "Interactive mystery experience on My Mystery Party.";
 
-  const ogImages = [
-    {
-      url: `/cases/${slug}/opengraph-image`,
-      width: 1200,
-      height: 630,
-      type: "image/png",
-      alt: `${titleBase} – My Mystery Party`,
-    },
-    ...(caseFile
-      ? [
-          {
-            url: caseFile.imageUrl,
-            width: 1200,
-            height: 630,
-            type: "image/png",
-            alt: `${titleBase} Thumbnail – My Mystery Party`,
-          },
-        ]
-      : []),
-  ];
-
-  const twitterImages = [
-    `/cases/${slug}/twitter-image`,
-    caseFile?.imageUrl || `/cases/${slug}/opengraph-image`,
-  ];
-
   return {
+    metadataBase,
     title,
     description,
     keywords: caseFile?.seoKeywords,
@@ -54,13 +31,11 @@ export async function generateMetadata({
       type: "website",
       siteName: "My Mystery Party",
       url: `/cases/${slug}`,
-      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: twitterImages,
     },
     alternates: { canonical: `/cases/${slug}` },
   };

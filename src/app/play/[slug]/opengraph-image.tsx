@@ -23,8 +23,13 @@ function truncate(str: string, max = 70) {
   return str.length > max ? str.slice(0, max - 1) + "…" : str;
 }
 
-export default async function Image({ params }: { params: { slug: string } }) {
-  const { slug } = params;
+export default async function Image({
+  params,
+}: {
+  params: { slug: string } | Promise<{ slug: string }>;
+}) {
+  const resolved = params instanceof Promise ? await params : params;
+  const { slug } = resolved;
   const coldCase = getCaseBySlug(slug);
 
   if (coldCase) {

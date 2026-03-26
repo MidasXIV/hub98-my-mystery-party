@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { mysteryKits, getMysteryKitBySlug } from "@/data/mysteryKits";
 import Footer from "@/components/footer";
 import KitCharacterShareCard from "@/components/kit-character-share-card";
 import { getBaseUrl } from "@/lib/blog";
 import { Users, Clock, Puzzle, UserPlus } from "lucide-react";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 type KitCharacter = {
   id: string;
@@ -23,15 +25,35 @@ export async function generateStaticParams() {
   return mysteryKits.map((k) => ({ slug: k.slug }));
 }
 
-export async function generateMetadata({ params }: KitPlayPageProps) {
+export async function generateMetadata({ params }: KitPlayPageProps): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { slug } = params instanceof Promise ? await params : params;
   const kit = getMysteryKitBySlug(slug);
 
-  if (!kit) return { title: "Not Found" };
+  if (!kit) return { metadataBase, title: "Not Found" };
+
+  const title = `${kit.title} | Host Dashboard`;
+  const description = kit.openingBrief ?? kit.description;
+  const routePath = `/kits/${kit.slug}/play`;
+  const ogImageUrl = `${routePath}/opengraph-image`;
 
   return {
-    title: `${kit.title} | Host Dashboard`,
-    description: kit.openingBrief ?? kit.description,
+    metadataBase,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "My Mystery Party",
+      url: routePath,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 import { getMysteryKitBySlug, mysteryKits } from "@/data/mysteryKits";
 import KitCharacterGrid from "@/components/kit-character-grid";
 import Footer from "@/components/footer";
+import { getMetadataBase } from "@/lib/metadata-base";
 
 interface KitCharactersPageProps {
   params: Promise<{ slug: string }> | { slug: string };
@@ -12,20 +14,41 @@ export async function generateStaticParams() {
   return mysteryKits.map((kit) => ({ slug: kit.slug }));
 }
 
-export async function generateMetadata({ params }: KitCharactersPageProps) {
+export async function generateMetadata({ params }: KitCharactersPageProps): Promise<Metadata> {
+  const metadataBase = getMetadataBase();
   const { slug } = params instanceof Promise ? await params : params;
   const kit = getMysteryKitBySlug(slug);
 
   if (!kit) {
     return {
+      metadataBase,
       title: "Character Dossiers | Mystery Party",
       description: "Browse character dossiers for this mystery kit.",
     };
   }
 
+  const title = `${kit.title} Characters | Mystery Party Kits`;
+  const description = `Meet the suspects and allies in ${kit.title}. Click a dossier to learn each character's story, alibi, and secret.`;
+  const routePath = `/kits/${kit.slug}/play/characters`;
+  const ogImageUrl = `${routePath}/opengraph-image`;
+
   return {
-    title: `${kit.title} Characters | Mystery Party Kits`,
-    description: `Meet the suspects and allies in ${kit.title}. Click a dossier to learn each character's story, alibi, and secret.`,
+    metadataBase,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: "My Mystery Party",
+      url: routePath,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
