@@ -63,9 +63,9 @@ export default function MissingPersonViewer({ content }: { content: string }) {
           <div className="flex justify-between items-start border-b-4 border-red-900 pb-4 mb-8">
              <div className="flex-1">
                 <div className="font-label text-red-900 opacity-70 mb-1">Riverdale Police Dept.</div>
-                <h1 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter text-red-950 font-sans leading-none">
-                  Missing Person<br/>Report
-                </h1>
+                        <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter text-red-950 font-sans leading-none">
+                           Missing Person<br/>Report
+                        </h2>
              </div>
              
              {/* Case Stamp */}

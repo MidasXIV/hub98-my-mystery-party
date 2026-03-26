@@ -78,7 +78,7 @@ export default function TelecomLogViewer({ content }: { content: string }) {
           <div className="header-box mb-6">
             <div className="flex justify-between items-start border-b border-black pb-2 mb-2">
                <div>
-                 <h1 className="text-3xl font-bold">{data.provider}</h1>
+                 <h2 className="text-3xl font-bold">{data.provider}</h2>
                  <p className="text-sm">DATA PROCESSING CENTER • SUBPOENA FULFILLMENT UNIT</p>
                </div>
                <div className="text-right">

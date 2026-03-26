@@ -129,9 +129,9 @@ export default function NewspaperViewer({ content }: NewspaperViewerProps) {
         <header className="mb-6 border-b-[3px] border-black pb-4">
           
           {/* Main Headline */}
-          <h1 className="font-headline font-black text-5xl md:text-7xl mb-3 ink-bleed">
+          <h2 className="font-headline font-black text-5xl md:text-7xl mb-3 ink-bleed">
             {data.headline}
-          </h1>
+          </h2>
 
           {/* Subheadline (Dynamic) */}
           {data.subheadline && (

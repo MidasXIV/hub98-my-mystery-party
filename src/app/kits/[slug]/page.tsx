@@ -78,17 +78,14 @@ export async function generateMetadata({
 
   if (!kit) return { metadataBase, title: "Kit Not Found" };
 
-  const title = kit.seoTitle ?? `${kit.title} | Modern Murder Mystery Party Kit`;
+  const title =
+    kit.seoTitle ?? `${kit.title} | Modern Murder Mystery Party Kit`;
   const description = kit.seoDescription ?? kit.description;
   const keywords = kit.seoKeywords;
   const absoluteImageUrl = kit.imageUrl.startsWith("http")
     ? kit.imageUrl
     : `https://mymystery.party${kit.imageUrl}`;
-  const seoQueryCopy = [
-    kit.description,
-    kit.openingBrief,
-    kit.seoBlock,
-  ]
+  const seoQueryCopy = [kit.description, kit.openingBrief, kit.seoBlock]
     .filter(Boolean)
     .join(" ")
     .slice(0, 220);
@@ -320,9 +317,9 @@ export default async function MysteryKitDetailPage({ params }: KitPageProps) {
       />
 
       {/* Background Decor */}
-  <div className="pointer-events-none fixed left-[10%] top-0 h-80 w-80 rounded-full bg-amber-200/30 blur-[120px] dark:bg-fuchsia-500/14" />
-  <div className="pointer-events-none fixed bottom-0 right-[8%] h-96 w-96 rounded-full bg-rose-100/35 blur-[140px] dark:bg-cyan-400/12" />
-  <div className="pointer-events-none fixed left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-100/25 blur-[120px] dark:bg-amber-300/10" />
+      <div className="pointer-events-none fixed left-[10%] top-0 h-80 w-80 rounded-full bg-amber-200/30 blur-[120px] dark:bg-fuchsia-500/14" />
+      <div className="pointer-events-none fixed bottom-0 right-[8%] h-96 w-96 rounded-full bg-rose-100/35 blur-[140px] dark:bg-cyan-400/12" />
+      <div className="pointer-events-none fixed left-1/2 top-1/3 h-72 w-72 -translate-x-1/2 rounded-full bg-cyan-100/25 blur-[120px] dark:bg-amber-300/10" />
 
       <main className="relative z-10">
         {/* --- MOBILE VIEW (Preserving the "Mirror Blur" design) --- */}

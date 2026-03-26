@@ -175,7 +175,7 @@ export const RoadmapVoting: React.FC = () => {
       <div className="embossed-backdrop">ROADMAP</div>
       <div className="relative z-10 space-y-10">
         <header className="space-y-3">
-          <h1 className="text-4xl font-semibold tracking-tight">Community Roadmap</h1>
+          <h2 className="text-4xl font-semibold tracking-tight">Community Roadmap</h2>
           <p className="text-muted-foreground max-w-2xl">
             Vote on features you&apos;d love to see. Your selections help us prioritize what ships next. This is a local prototype—votes are stored in your browser for now.
           </p>

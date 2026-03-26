@@ -234,9 +234,13 @@ function Footer() {
                   delay={0.5}
                   className="mt-2 md:mt-6 select-none"
                 >
-                  <h1 className="text-[20vw] md:text-[19vw] font-bold tracking-tighter leading-[0.75] -ml-1 md:-ml-2">
+                  {/* Decorative brand mark: keep visual style but remove semantic H1 to avoid multiple H1 per page */}
+                  <div
+                    aria-hidden="true"
+                    className="text-[20vw] md:text-[19vw] font-bold tracking-tighter leading-[0.75] -ml-1 md:-ml-2"
+                  >
                     hub98
-                  </h1>
+                  </div>
                 </AnimatedContainer>
 
                 {/* 4. BOTTOM UTILITY BAR: Stacks on mobile */}

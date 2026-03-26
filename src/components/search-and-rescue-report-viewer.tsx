@@ -79,14 +79,14 @@ export default function SearchAndRescueReportViewer({
       <div className="a4-sheet w-full max-w-[800px] min-h-[1130px] flex flex-col relative">
         {/* --- 1. HEADER SECTION --- */}
         <header className="border-b-4 border-slate-800 p-6 pb-4">
-          <div className="flex justify-between items-start mb-2">
+              <div className="flex justify-between items-start mb-2">
             <div>
               <div className="font-tech text-xs text-slate-500 mb-1">
                 FORM SAR-09-B // UNCLASSIFIED
               </div>
-              <h1 className="font-label text-4xl font-bold uppercase tracking-tight text-slate-900">
+              <h2 className="font-label text-4xl font-bold uppercase tracking-tight text-slate-900">
                 {data.operationName}
-              </h1>
+              </h2>
             </div>
             <div className="text-right">
               <div className="font-tech text-xl font-bold bg-slate-800 text-white px-3 py-1 inline-block">

@@ -106,9 +106,9 @@ export default function NewspaperPreview({ content }: NewspaperPreviewProps) {
            </div>
            
            {/* THE HEADLINE */}
-           <h1 className="headline-font font-black text-xl md:text-2xl uppercase tracking-tight ink-bleed leading-none">
+           <h2 className="headline-font font-black text-xl md:text-2xl uppercase tracking-tight ink-bleed leading-none">
              {data.headline}
-           </h1>
+           </h2>
            
            {/* Sub-meta (Author) */}
            <div className="mt-1 flex items-center gap-2">

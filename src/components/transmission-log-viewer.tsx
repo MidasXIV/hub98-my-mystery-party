@@ -89,9 +89,9 @@ export default function TransmissionLogViewer({ content }: { content: string }) 
           {/* --- PAGE HEADER --- */}
           <div className="border-b-2 border-black pb-4 mb-6">
              <div className="flex justify-between items-start mb-2">
-                <h1 className="font-header text-3xl font-bold uppercase tracking-tight">
+                <h2 className="font-header text-3xl font-bold uppercase tracking-tight">
                   Transmission Log
-                </h1>
+                </h2>
                 <div className="text-right">
                    <div className="bg-black text-white px-2 py-1 font-mono text-xs font-bold inline-block mb-1">
                      CLASSIFIED // LEVEL 4

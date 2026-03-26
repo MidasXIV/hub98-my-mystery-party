@@ -1905,7 +1905,7 @@ export default function PlayBoardPage({
       onTouchEnd={handleInteractionEnd}
       onTouchCancel={handleInteractionEnd}
     >
-      <h1 className="sr-only">{caseFile.title}</h1>
+  {/* Primary page title rendered in PlayHeader for playable boards (keeps layout consistent and visible for SEO) */}
       {!isPlayable ? (
         <section className="w-full max-w-2xl border border-amber-200/20 bg-black/40 backdrop-blur rounded-xl p-6 md:p-10 shadow-xl">
           <p className="text-xs tracking-[0.35em] uppercase text-amber-200/70">

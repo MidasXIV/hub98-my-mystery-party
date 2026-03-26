@@ -45,7 +45,7 @@ export const PlayHeader: React.FC<PlayHeaderComponentProps> = ({
       </Link>
       {/* Center title */}
       <div className="flex-1 flex flex-col items-center min-w-0">
-        <span className="text-[12px] md:text-sm font-semibold truncate text-center" title={titleOverride || caseFile?.title}>{titleOverride || caseFile?.title || "Detective Board"}</span>
+        <h1 className="text-[12px] md:text-sm font-semibold truncate text-center" title={titleOverride || caseFile?.title}>{titleOverride || caseFile?.title || "Detective Board"}</h1>
         <div className="hidden md:flex flex-wrap justify-center gap-1 text-[9px] md:text-[10px] leading-tight text-gray-700 dark:text-gray-300 max-h-[30px] overflow-hidden">
           {loc && <span className="truncate">Loc: {loc}</span>}
           {characters.length > 0 && (

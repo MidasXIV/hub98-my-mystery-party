@@ -75,9 +75,9 @@ export default function PersonOfInterestViewer({ content }: { content: string })
                    <path d="M50 55 L58 80 L35 65 L65 65 L42 80 Z" fill="currentColor" opacity="0.2"/>
                 </svg>
              </div>
-             <h1 className="text-2xl md:text-3xl font-bold font-['Oswald'] tracking-wider uppercase">
-                {data.policeStation}
-             </h1>
+                 <h2 className="text-2xl md:text-3xl font-bold font-['Oswald'] tracking-wider uppercase">
+                     {data.policeStation}
+                 </h2>
           </div>
           <div className="text-center">
              <h2 className="text-2xl md:text-4xl font-black uppercase tracking-tight font-['Oswald']">
