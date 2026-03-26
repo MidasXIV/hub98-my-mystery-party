@@ -5,7 +5,15 @@ import Footer from "@/components/footer";
 export const metadata = {
   title: "Mystery Party Kits | Mystery Party",
   description:
-    "Browse all mystery party kits and pick the perfect whodunit for your next event.",
+    "Browse printable mystery party kits for dinner parties, event planners, singles mixers, birthday parties, and hosted social events.",
+  keywords: [
+    "mystery party kits",
+    "printable mystery party kit",
+    "murder mystery party for adults",
+    "party game for event planners",
+    "singles mixer party game",
+    "hosted mystery event kit",
+  ],
 };
 
 export default function MysteryKitsIndexPage() {

@@ -1,15 +1,9 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import { mysteryKits, getMysteryKitBySlug } from "@/data/mysteryKits";
 import Footer from "@/components/footer";
-import {
-  Users,
-  Clock,
-  Puzzle,
-  ChevronRight,
-  UserPlus,
-} from "lucide-react";
+import KitCharacterShareCard from "@/components/kit-character-share-card";
+import { getBaseUrl } from "@/lib/blog";
+import { Users, Clock, Puzzle, UserPlus } from "lucide-react";
 
 type KitCharacter = {
   id: string;
@@ -57,68 +51,13 @@ const StatBadge = ({
       <Icon size={18} />
     </div>
     <div>
-      <p className="text-[10px] uppercase tracking-[0.35em] text-text-secondary">{label}</p>
+      <p className="text-[10px] uppercase tracking-[0.35em] text-text-secondary">
+        {label}
+      </p>
       <p className="font-semibold text-text-primary">{value}</p>
     </div>
   </div>
 );
-
-const CharacterCard = ({
-  character,
-  kitSlug,
-}: {
-  character: KitCharacter;
-  kitSlug: string;
-}) => {
-  return (
-    <Link 
-      href={`/kits/${kitSlug}/play/characters/${character.slug ?? character.id}`}
-      className="group relative flex aspect-[3/4] w-full flex-col overflow-hidden rounded-[28px] border border-subtle-stroke bg-white/5 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.8)] backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:bg-white/10"
-    >
-      {/* Image Container */}
-      <div className="relative h-full w-full overflow-hidden">
-        {character.imageUrl ? (
-          <Image
-            src={character.imageUrl}
-            alt={character.name}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-white/5 text-text-secondary">
-            <Users size={48} strokeWidth={1} />
-          </div>
-        )}
-        
-        {/* Gradient Overlay: Darkens bottom for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent opacity-90 transition-opacity group-hover:opacity-100" />
-      </div>
-
-      {/* Content Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-5 text-center">
-        {/* Decorative Line */}
-        <div className="mx-auto mb-3 h-px w-8 bg-indigo-300/80 opacity-80 group-hover:w-16 transition-all duration-500" />
-        
-        <h3 className="text-xl font-semibold tracking-wide text-white drop-shadow-md">
-          {character.name}
-        </h3>
-        
-        <p className="mt-1 text-xs font-semibold tracking-[0.35em] text-indigo-200/90 uppercase">
-          {character.role || "Suspect"}
-        </p>
-
-        {/* Hover CTA */}
-        <div className="mt-3 flex items-center justify-center gap-1 text-[10px] font-bold uppercase tracking-[0.35em] text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 translate-y-2">
-          <span>Open File</span>
-          <ChevronRight size={12} className="text-indigo-200" />
-        </div>
-      </div>
-
-      {/* Border Highlight on Hover */}
-      <div className="absolute inset-0 rounded-[28px] border-2 border-transparent transition-colors duration-300 group-hover:border-indigo-300/40 pointer-events-none" />
-    </Link>
-  );
-};
 
 // --- Main Page ---
 export default async function KitPlayPage({ params }: KitPlayPageProps) {
@@ -128,10 +67,10 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
   if (!kit) notFound();
 
   const characters: KitCharacter[] = (kit.characters ?? []) as KitCharacter[];
+  const baseUrl = getBaseUrl();
 
   return (
     <main className="min-h-screen bg-background text-text-primary font-sans">
-      
       {/* --- Background Ambience --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Ambient blobs (aligned with kits detail page vibe) */}
@@ -140,9 +79,8 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 lg:px-8">
-        
         {/* --- Header Section --- */}
-  <header className="mb-16 flex flex-col items-center text-center">
+        <header className="mb-16 flex flex-col items-center text-center">
           {/* Status Badge */}
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-subtle-stroke bg-white/5 px-4 py-1.5 backdrop-blur">
             <span className="relative flex h-2 w-2">
@@ -153,19 +91,27 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
               Session Active
             </span>
           </div>
-          
-          <h1 className="mb-6 text-5xl font-bold md:text-7xl">
-            {kit.title}
-          </h1>
-          
+
+          <h1 className="mb-6 text-5xl font-bold md:text-7xl">{kit.title}</h1>
+
           <p className="mx-auto max-w-2xl text-lg leading-relaxed text-text-secondary">
             {kit.openingBrief ?? kit.description}
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            {kit.players && <StatBadge icon={Users} label="Players" value={kit.players} />}
-            {kit.duration && <StatBadge icon={Clock} label="Duration" value={kit.duration} />}
-            {kit.difficulty && <StatBadge icon={Puzzle} label="Difficulty" value={kit.difficulty} />}
+            {kit.players && (
+              <StatBadge icon={Users} label="Players" value={kit.players} />
+            )}
+            {kit.duration && (
+              <StatBadge icon={Clock} label="Duration" value={kit.duration} />
+            )}
+            {kit.difficulty && (
+              <StatBadge
+                icon={Puzzle}
+                label="Difficulty"
+                value={kit.difficulty}
+              />
+            )}
           </div>
         </header>
 
@@ -182,13 +128,21 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
 
           <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {characters.map((char) => (
-              <CharacterCard key={char.id} character={char} kitSlug={kit.slug} />
+              <KitCharacterShareCard
+                key={char.id}
+                character={char}
+                href={`/kits/${kit.slug}/play/characters/${char.slug ?? char.id}`}
+                absoluteUrl={`${baseUrl}/kits/${kit.slug}/play/characters/${char.slug ?? char.id}`}
+              />
             ))}
-            
+
             {/* Host "Invite" Placeholder */}
             <button className="group flex aspect-[3/4] w-full flex-col items-center justify-center rounded-[28px] border border-dashed border-subtle-stroke bg-white/5 backdrop-blur transition-colors hover:bg-white/10">
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-white/5 shadow-sm transition-transform group-hover:scale-110">
-                <UserPlus size={24} className="text-text-secondary group-hover:text-text-primary" />
+                <UserPlus
+                  size={24}
+                  className="text-text-secondary group-hover:text-text-primary"
+                />
               </div>
               <span className="text-xs font-bold uppercase tracking-[0.35em] text-text-secondary group-hover:text-text-primary">
                 Add Player
@@ -197,6 +151,35 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
           </div>
         </section>
 
+        {(kit.hostInstructions || kit.forensicExaminationReport) && (
+          <section className="mb-24 grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+            {kit.hostInstructions && (
+              <article className="rounded-[32px] border border-subtle-stroke bg-white/5 p-8 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.82)] backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-emerald-300/75">
+                  Host guide
+                </p>
+                <div
+                  className="prose prose-invert mt-5 max-w-none prose-headings:text-white prose-p:text-text-secondary prose-li:text-text-secondary prose-strong:text-white prose-em:text-white/85"
+                  dangerouslySetInnerHTML={{ __html: kit.hostInstructions }}
+                />
+              </article>
+            )}
+
+            {kit.forensicExaminationReport && (
+              <article className="rounded-[32px] border border-rose-200/15 bg-rose-500/8 p-8 shadow-[0_30px_80px_-40px_rgba(0,0,0,0.82)] backdrop-blur">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-rose-200/80">
+                  Forensic examination report
+                </p>
+                <div
+                  className="prose prose-invert mt-5 max-w-none prose-headings:text-white prose-p:text-text-secondary prose-li:text-text-secondary prose-strong:text-white prose-em:text-white/85"
+                  dangerouslySetInnerHTML={{
+                    __html: kit.forensicExaminationReport,
+                  }}
+                />
+              </article>
+            )}
+          </section>
+        )}
       </div>
       <Footer />
     </main>

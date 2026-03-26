@@ -28,6 +28,10 @@ const localImagePatterns = [
     pathname: "/invitations/**",
     search: "",
   },
+  {
+    pathname: "/mystery_kits/**",
+    search: "",
+  },
 ];
 
 const nextConfig: NextConfig = {
