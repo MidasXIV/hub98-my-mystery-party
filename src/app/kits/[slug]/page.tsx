@@ -367,6 +367,15 @@ export default async function MysteryKitDetailPage({ params }: KitPageProps) {
                     {kit.description}
                   </p>
 
+                  {kit.betaNotice ? (
+                    <div className="mb-6 rounded-3xl border border-amber-500/35 bg-amber-100 px-4 py-4 text-sm leading-relaxed text-amber-950 shadow-[0_20px_60px_-30px_rgba(251,191,36,0.35)] dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100">
+                      <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-amber-900 dark:text-amber-300/90">
+                        Beta Notice
+                      </span>
+                      {kit.betaNotice}
+                    </div>
+                  ) : null}
+
                   <div className="rounded-[22px] border border-fuchsia-100 bg-gradient-to-r from-fuchsia-50 via-white to-cyan-50 px-4 py-3 shadow-[0_18px_30px_-24px_rgba(68,64,60,0.28)] dark:border-white/10 dark:bg-[linear-gradient(135deg,rgba(217,70,239,0.14),rgba(255,255,255,0.05),rgba(34,211,238,0.12))] dark:shadow-[0_24px_40px_-28px_rgba(0,0,0,0.8)]">
                     <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-500 dark:text-white/48">
                       Party energy
@@ -634,6 +643,14 @@ export default async function MysteryKitDetailPage({ params }: KitPageProps) {
                 <p className="max-w-3xl text-xl leading-relaxed text-stone-600 sm:text-2xl dark:text-white/70">
                   {kit.description}
                 </p>
+                {kit.betaNotice ? (
+                  <div className="mb-6 rounded-3xl border border-amber-500/35 bg-amber-100 px-4 py-4 text-sm leading-relaxed text-amber-950 shadow-[0_20px_60px_-30px_rgba(251,191,36,0.35)] dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100">
+                    <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-amber-900 dark:text-amber-300/90">
+                      Beta Notice
+                    </span>
+                    {kit.betaNotice}
+                  </div>
+                ) : null}
                 <p className="max-w-3xl text-sm leading-relaxed text-stone-500 sm:text-base dark:text-white/55">
                   {helperMessage}
                 </p>

@@ -93,6 +93,8 @@ export interface MysteryKit {
   hostInstructions?: string;
   guestInstructions?: string;
   forensicExaminationReport?: string;
+  /** Optional beta / development notice shown on the kit detail page */
+  betaNotice?: string;
   seoBlock?: string;
   seoTitle?: string;
   seoDescription?: string;

@@ -10,6 +10,7 @@ type ProgressEventRequestBody =
       type: "case-opened";
       caseSlug?: string;
       occurredAt?: string;
+      isKit?: boolean;
     }
   | {
       type: "objective-solved";
@@ -18,6 +19,7 @@ type ProgressEventRequestBody =
       score?: number;
       occurredAt?: string;
       markCaseComplete?: boolean;
+      isKit?: boolean;
     };
 
 function isNonEmptyString(value: unknown): value is string {
@@ -62,6 +64,7 @@ export async function POST(req: Request) {
           type: "case-opened" as const,
           caseSlug: body.caseSlug,
           occurredAt: body.occurredAt,
+          isKit: body.isKit === true,
         }
       : {
           type: "objective-solved" as const,
@@ -70,12 +73,14 @@ export async function POST(req: Request) {
           score: typeof body.score === "number" ? body.score : undefined,
           occurredAt: body.occurredAt,
           markCaseComplete: body.markCaseComplete === true,
+          isKit: body.isKit === true,
         }),
   });
 
   await client.users.updateUser(userId, {
+    // Ensure we don't attempt to spread undefined if the user has no publicMetadata yet
     publicMetadata: {
-      ...user.publicMetadata,
+      ...(user.publicMetadata ?? {}),
       [PLAYER_PROGRESS_PUBLIC_METADATA_KEY]: nextProgress,
     },
   });

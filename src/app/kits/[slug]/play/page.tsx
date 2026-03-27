@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+// Auth gating is handled by the surrounding play layout (kits/[slug]/play/layout.tsx)
 import { mysteryKits, getMysteryKitBySlug } from "@/data/mysteryKits";
 import Footer from "@/components/footer";
+import PlayerProgressTracker from "@/components/player-progress-tracker";
 import KitCharacterShareCard from "@/components/kit-character-share-card";
 import { getBaseUrl } from "@/lib/blog";
 import { Users, Clock, Puzzle, UserPlus } from "lucide-react";
@@ -86,6 +88,8 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
   const { slug } = params instanceof Promise ? await params : params;
   const kit = getMysteryKitBySlug(slug);
 
+  // Auth gating is handled by the surrounding play layout (kits/[slug]/play/layout.tsx)
+
   if (!kit) notFound();
 
   const characters: KitCharacter[] = (kit.characters ?? []) as KitCharacter[];
@@ -93,6 +97,8 @@ export default async function KitPlayPage({ params }: KitPlayPageProps) {
 
   return (
     <main className="min-h-screen bg-background text-text-primary font-sans">
+      {/* Track that the signed-in user opened this kit's play view */}
+  <PlayerProgressTracker caseSlug={kit.slug} completedObjectiveIds={[]} isKit />
       {/* --- Background Ambience --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {/* Ambient blobs (aligned with kits detail page vibe) */}

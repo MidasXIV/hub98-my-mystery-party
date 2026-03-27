@@ -20,6 +20,8 @@ export type PlayerCaseProgress = {
 export type PlayerProgressPublicMetadata = {
   version: 1;
   cases: PlayerCaseProgress[];
+  /** Optional separate tracking for kits (printable kits / hosted kits) */
+  kits?: PlayerCaseProgress[];
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,15 +76,26 @@ function normalizeCaseProgress(value: unknown): PlayerCaseProgress | null {
 export function normalizePlayerProgressMetadata(
   value: unknown,
 ): PlayerProgressPublicMetadata {
-  if (!isRecord(value) || !Array.isArray(value.cases)) {
-    return { version: 1, cases: [] };
+  if (!isRecord(value)) {
+    return { version: 1, cases: [], kits: [] };
   }
+
+  const cases = Array.isArray(value.cases)
+    ? value.cases
+        .map(normalizeCaseProgress)
+        .filter((entry): entry is PlayerCaseProgress => Boolean(entry))
+    : [];
+
+  const kits = Array.isArray(value.kits)
+    ? value.kits
+        .map(normalizeCaseProgress)
+        .filter((entry): entry is PlayerCaseProgress => Boolean(entry))
+    : [];
 
   return {
     version: 1,
-    cases: value.cases
-      .map(normalizeCaseProgress)
-      .filter((entry): entry is PlayerCaseProgress => Boolean(entry)),
+    cases,
+    kits,
   };
 }
 
@@ -91,6 +104,8 @@ type MergeProgressEvent =
       type: "case-opened";
       caseSlug: string;
       occurredAt?: string;
+      /** If true, treat this event as applying to the 'kits' collection instead of 'cases' */
+      isKit?: boolean;
     }
   | {
       type: "objective-solved";
@@ -99,6 +114,8 @@ type MergeProgressEvent =
       score?: number;
       occurredAt?: string;
       markCaseComplete?: boolean;
+      /** If true, treat this event as applying to the 'kits' collection instead of 'cases' */
+      isKit?: boolean;
     };
 
 export function mergePlayerProgressEvent(
@@ -107,7 +124,13 @@ export function mergePlayerProgressEvent(
 ): PlayerProgressPublicMetadata {
   const now = toIsoDate(event.occurredAt, new Date().toISOString());
   const current = normalizePlayerProgressMetadata(currentValue);
-  const existingCase = current.cases.find((entry) => entry.caseSlug === event.caseSlug);
+  // Choose target collection: 'kits' when event.isKit === true, otherwise 'cases'
+  const targetKey: "cases" | "kits" = event.isKit ? "kits" : "cases";
+  // Ensure both collections exist locally
+  current.kits = current.kits ?? [];
+  const existingCase = (targetKey === "cases" ? current.cases : current.kits).find(
+    (entry) => entry.caseSlug === event.caseSlug,
+  );
 
   const nextCase: PlayerCaseProgress = existingCase
     ? {
@@ -154,14 +177,20 @@ export function mergePlayerProgressEvent(
     }
   }
 
-  const remainingCases = current.cases.filter(
-    (entry) => entry.caseSlug !== nextCase.caseSlug,
-  );
+  if (targetKey === "cases") {
+    const remainingCases = current.cases.filter((entry) => entry.caseSlug !== nextCase.caseSlug);
+    return {
+      version: 1,
+      cases: [...remainingCases, nextCase].sort((a, b) => a.caseSlug.localeCompare(b.caseSlug)),
+      kits: current.kits ?? [],
+    };
+  }
 
+  // target is kits
+  const remainingKits = (current.kits ?? []).filter((entry) => entry.caseSlug !== nextCase.caseSlug);
   return {
     version: 1,
-    cases: [...remainingCases, nextCase].sort((a, b) =>
-      a.caseSlug.localeCompare(b.caseSlug),
-    ),
+    cases: current.cases,
+    kits: [...remainingKits, nextCase].sort((a, b) => a.caseSlug.localeCompare(b.caseSlug)),
   };
 }
