@@ -1,3 +1,5 @@
+import { cagliostroLastProphecyKitV2 } from "./mystery-kits/cagliostro-last-prophecy-kit-v2";
+
 export interface MysteryKit {
   id: string;
   slug: string;
@@ -896,6 +898,7 @@ export const mysteryKits: MysteryKit[] = [
       "online roleplay scripts",
     ],
   },
+  cagliostroLastProphecyKitV2,
 ];
 
 export function getMysteryKitBySlug(slug: string) {
