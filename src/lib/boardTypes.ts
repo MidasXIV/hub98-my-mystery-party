@@ -22,6 +22,7 @@ export const ITEM_TYPES = [
   "electronic-messages", // (email and sms/chat)
   "case-briefing",
   "transmission-log",
+  "objectives-cleared-badge", // new type for badge when all objectives are cleared
 ] as const;
 
 export type BoardItemType = (typeof ITEM_TYPES)[number];

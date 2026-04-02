@@ -84,6 +84,9 @@ import { parsePhotoContent } from "@/lib/photo-utils";
 import PhotoViewer from "@/components/photo-viewer";
 import PhotoPreview from "@/components/photo-preview";
 import PlayerProgressTracker from "@/components/player-progress-tracker";
+import BadgeBoardPreview from "@/components/badge-board-preview";
+import BadgeBoardViewer from "@/components/badge-board-viewer";
+import { toast } from "sonner";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -122,6 +125,7 @@ const DEFAULT_ITEM_SIZES: Record<
   "electronic-messages": { width: 280, height: 160 },
   "case-briefing": { width: 300, height: 170 },
   "transmission-log": { width: 280, height: 160 },
+  "objectives-cleared-badge": { width: 150, height: 150 },
 };
 
 function normalizeItemSize(item: BoardItem): BoardItem {
@@ -246,6 +250,8 @@ function Modal({
         return <TransmissionLogViewer content={item.content} />;
       case "bank-statement":
         return <BankStatementViewer content={item.content} />;
+      case "objectives-cleared-badge":
+        return <BadgeBoardViewer content={item.content} title={item.title} />;
       case "folder-tab":
         return (
           <div className="bg-yellow-600 text-white text-2xl p-4 uppercase font-staatliches tracking-wider">
@@ -541,6 +547,7 @@ export default function PlayBoardPage({
   const touchStartPos = useRef({ x: 0, y: 0 });
   const dragStartPoint = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
+  const previousAvailableTypesRef = useRef<Set<BoardItemType>>(new Set());
 
   // Generate the board structure
   useEffect(() => {
@@ -581,10 +588,20 @@ export default function PlayBoardPage({
   // for types that don't exist for the current case.
   useEffect(() => {
     setActiveFilters((prev) => {
+      const previousAvailable = previousAvailableTypesRef.current;
       const next = new Set<BoardItemType>();
       for (const t of availableTypes) {
-        if (prev.has(t)) next.add(t);
+        const typed = t as BoardItemType;
+        const isNewlyAvailable = !previousAvailable.has(typed);
+        // Keep user's existing enabled filters, and auto-enable newly introduced
+        // types (e.g. completion badge added later in the session).
+        if (prev.has(typed) || isNewlyAvailable) next.add(typed);
       }
+
+      previousAvailableTypesRef.current = new Set(
+        availableTypes as BoardItemType[],
+      );
+
       // If the previous filter set becomes empty (e.g., initial load or case swap),
       // default to showing everything that exists.
       if (next.size === 0) {
@@ -1884,6 +1901,22 @@ export default function PlayBoardPage({
             <BankStatementPreview content={item.content} />
           </div>
         );
+      case "objectives-cleared-badge":
+        return (
+          
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} shadow-none ${dynamicClasses} hover:shadow-none overflow-hidden`}
+          >
+            <BadgeBoardPreview content={item.content} title={item.title} />
+          </div>
+        );
       default:
         return null;
     }
@@ -1942,15 +1975,88 @@ export default function PlayBoardPage({
           onClose={() => setSolvingObjective(null)}
           normalizeItemSize={normalizeItemSize}
           onSolved={({ objectiveId, correct, score, unlockedItems, unlockedConnections }) => {
-            // 1) Merge unlocked evidence into board state
+            const totalObjectives = Array.isArray(boardData?.objectives)
+              ? boardData.objectives.length
+              : 0;
+            const alreadyHadObjective = completedObjectives.has(objectiveId);
+            const nextCompletedCount = correct
+              ? alreadyHadObjective
+                ? completedObjectives.size
+                : completedObjectives.size + 1
+              : completedObjectives.size;
+            const completedAllNow =
+              totalObjectives > 0 && nextCompletedCount >= totalObjectives;
+
+            // 1) Merge unlocked evidence into board state and add completion badge only when all objectives are cleared
             setBoardData((prev) => {
               if (!prev) return prev;
+
+              const nextItems = [...prev.items];
+              const nextConnections = [...prev.connections];
+
+              // Dedupe item unlocks by id
+              for (const item of unlockedItems) {
+                if (!nextItems.some((existing) => existing.id === item.id)) {
+                  nextItems.push(item);
+                }
+              }
+
+              // Dedupe connections by from->to key
+              const existingConnectionKeys = new Set(
+                nextConnections.map((c) => `${c.from}->${c.to}`),
+              );
+              for (const connection of unlockedConnections) {
+                const key = `${connection.from}->${connection.to}`;
+                if (!existingConnectionKeys.has(key)) {
+                  nextConnections.push(connection);
+                  existingConnectionKeys.add(key);
+                }
+              }
+
               return {
                 ...prev,
-                items: [...prev.items, ...unlockedItems],
-                connections: [...prev.connections, ...unlockedConnections],
+                items: nextItems,
+                connections: nextConnections,
               };
             });
+
+            // 1b) If this solve completes all objectives, fetch badge data from casefile API and add if available.
+            if (completedAllNow) {
+              void (async () => {
+                try {
+                  const res = await fetch("/api/board/badge", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ caseSlug: slug }),
+                  });
+
+                  if (!res.ok) return;
+
+                  const payload = (await res.json()) as {
+                    item?: BoardItem | null;
+                  };
+                  const badgeItem = payload?.item;
+                  if (!badgeItem) return;
+
+                  setBoardData((prev) => {
+                    if (!prev) return prev;
+                    const alreadyExists = prev.items.some(
+                      (item) => item.id === badgeItem.id || item.type === "objectives-cleared-badge",
+                    );
+                    if (alreadyExists) return prev;
+
+                    return {
+                      ...prev,
+                      items: [...prev.items, normalizeItemSize(badgeItem)],
+                    };
+                  });
+
+                  toast.success("Completion badge unlocked.");
+                } catch (err) {
+                  console.warn("Failed to fetch completion badge", err);
+                }
+              })();
+            }
 
             // 2) Only mark objective complete if it's actually correct
             if (correct) {
@@ -1961,13 +2067,21 @@ export default function PlayBoardPage({
               });
             }
 
-            // 3) Notify user when new evidence is added
+            // 3) Notify user with Sonner toasts
             if (correct && unlockedItems.length > 0) {
-              alert(
-                `${unlockedItems.length} new evidence ${unlockedItems.length === 1 ? "item" : "items"} added to the board!`,
+              toast.success(
+                `${unlockedItems.length} new evidence ${unlockedItems.length === 1 ? "item" : "items"} unlocked.`,
               );
+              if (completedAllNow) {
+                toast.success("All objectives cleared.");
+              }
+            } else if (correct) {
+              toast.success("Objective solved.");
+              if (completedAllNow) {
+                toast.success("All objectives cleared.");
+              }
             } else if (!correct) {
-              alert(
+              toast.error(
                 `Not quite. Your analysis scored ${Math.round(score * 100)}%. Try linking more specific evidence to your theory.`,
               );
             }

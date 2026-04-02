@@ -15,6 +15,8 @@ function filterLockedEvidence(boardData: unknown) {
   const unlockedItems = items.filter((it) => {
     if (!it || typeof it !== 'object') return true;
     const obj = it as Record<string, unknown>;
+    // Badge is unlocked dynamically in gameplay; exclude it from initial board payload.
+    if (obj.type === 'objectives-cleared-badge') return false;
     return obj.unlockOnObjectiveId == null;
   });
 
@@ -549,10 +551,6 @@ export async function POST(req: Request) {
       } return NextResponse.json(filterLockedEvidence(boardData));
     }
 
-    // Legacy homicide board for operation-shadowfall / john-doe scenario.
-    if (caseSlug === 'operation-shadowfall' || caseSlug === 'john-doe') {
-      return NextResponse.json(mockData);
-    }
 
     // If the slug matches another cold case, return placeholder (currently Shadowfall mock until bespoke data is authored).
     const existing = getCaseBySlug(caseSlug);

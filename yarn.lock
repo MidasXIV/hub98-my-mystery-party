@@ -88,38 +88,38 @@
   resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.28.5.tgz#010b6938fab7cb7df74aa2bbc06aa503b8fe5fb4"
   integrity sha512-qSs4ifwzKJSV39ucNjsvc6WVHs6b7S03sOh2OcHF9UHfVPqWWALUsNUVzhSBiItjRZoLHx7nIarVjqKVusUZ1Q==
 
-"@clerk/backend@3.2.3-canary.v20260320214053":
-  version "3.2.3-canary.v20260320214053"
-  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-3.2.3-canary.v20260320214053.tgz#1855995999458e60b31bea8474d5ddd5b13c75e1"
-  integrity sha512-Bixv6PCrzUysdsX1sMqDC0K8PYPw8KUY0e+T3yjj1xCtMW4+1+26rtZbZAacVUAyl9nMGgO/noQ5QOPx9eD4/A==
+"@clerk/backend@^3.2.4":
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/@clerk/backend/-/backend-3.2.4.tgz#66fd256a4efa715fed380c2131dd6fb5b5f0e934"
+  integrity sha512-zEK0xE47dVZl1AAovMbiG95kxXjEt9A2RKNEmIJveuXoNdX5AK5yV6vdCEFTblhymlFAYvTr+NHIe6iJAtp50g==
   dependencies:
-    "@clerk/shared" "4.3.3-canary.v20260320214053"
+    "@clerk/shared" "^4.4.0"
     standardwebhooks "^1.0.0"
     tslib "2.8.1"
 
-"@clerk/nextjs@^7.9.6":
-  version "7.0.7-canary.v20260320214053"
-  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-7.0.7-canary.v20260320214053.tgz#7aa1bf6ab7f03dc673340e53299626e5a67c8b22"
-  integrity sha512-v6CZPawi/YR0s03AHMR0/cXi7a2zMoxTpP/5gof1wsRhCLr9S3lspz6kH434LfurKOX5yHoYaLJbZFx1/VPevg==
+"@clerk/nextjs@^7.0.6":
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-7.0.8.tgz#3629583a98e653a9ddafe23a0a702680c8cb493e"
+  integrity sha512-Suwl7Mox+Oiht1wqC/g1b7YdDlicciVJAP+YujgtHBHdcgQ7JgtOtXYV7xHJgBnMUZw23F2f64vPualm5TtPFg==
   dependencies:
-    "@clerk/backend" "3.2.3-canary.v20260320214053"
-    "@clerk/react" "6.1.3-canary.v20260320214053"
-    "@clerk/shared" "4.3.3-canary.v20260320214053"
+    "@clerk/backend" "^3.2.4"
+    "@clerk/react" "^6.1.4"
+    "@clerk/shared" "^4.4.0"
     server-only "0.0.1"
     tslib "2.8.1"
 
-"@clerk/react@6.1.3-canary.v20260320214053":
-  version "6.1.3-canary.v20260320214053"
-  resolved "https://registry.yarnpkg.com/@clerk/react/-/react-6.1.3-canary.v20260320214053.tgz#5269fb5644e8556812315867a590ad83453828ee"
-  integrity sha512-HpieJ/hh0Ch5iKayLbazBhd0iOqnY/ZOVJSHo53J5Lot+REIdTe8bCcet656OOH7BeDoVtSo/1RaMzXyDUNVSA==
+"@clerk/react@^6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@clerk/react/-/react-6.1.4.tgz#b6bc1e625c1b8c930f87b582db4655fe3561b4bf"
+  integrity sha512-3qNlYn3j4kZmt50385jNuJqLOxmvPI8P6PBxj7cSJZbU+pxjk6T196gPMPZdLFpgQOHYzifMyAHxSD+bvsrmiw==
   dependencies:
-    "@clerk/shared" "4.3.3-canary.v20260320214053"
+    "@clerk/shared" "^4.4.0"
     tslib "2.8.1"
 
-"@clerk/shared@4.3.3-canary.v20260320214053":
-  version "4.3.3-canary.v20260320214053"
-  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-4.3.3-canary.v20260320214053.tgz#a71213d2f7163ca8dada3c61f6e5d95091526be4"
-  integrity sha512-rsWqZVLaEFYzlW0OsQ3WSfRYivDL5f6mUDShTQ/sio9craAeMrGGpfBC/UQmmjsy0DxFWs4AH7egB7XSvB3Rxw==
+"@clerk/shared@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@clerk/shared/-/shared-4.4.0.tgz#396a602c36799fe2479dc6ad4889879b8eaa987a"
+  integrity sha512-3iBX7Svp2XrSIgFk4VtyVq5OZsGStkMGqVfTBbbiFCbSKQ745OfM8j/c2wgpq5QdyavesoeDA6YiMWlpZM9/ng==
   dependencies:
     "@tanstack/query-core" "5.90.16"
     dequal "2.0.3"
@@ -4023,7 +4023,7 @@ netmask@^2.0.2:
 
 next-themes@^0.4.6:
   version "0.4.6"
-  resolved "https://registry.npmjs.org/next-themes/-/next-themes-0.4.6.tgz"
+  resolved "https://registry.yarnpkg.com/next-themes/-/next-themes-0.4.6.tgz#8d7e92d03b8fea6582892a50a928c9b23502e8b6"
   integrity sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==
 
 next@^16.1.0:
@@ -4684,6 +4684,11 @@ socks@^2.8.3:
   dependencies:
     ip-address "^10.0.1"
     smart-buffer "^4.2.0"
+
+sonner@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/sonner/-/sonner-2.0.7.tgz#810c1487a67ec3370126e0f400dfb9edddc3e4f6"
+  integrity sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==
 
 source-map-js@^1.0.2, source-map-js@^1.2.1:
   version "1.2.1"

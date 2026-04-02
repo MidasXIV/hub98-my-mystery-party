@@ -13,6 +13,7 @@ const PREDEFINED_IMAGES = {
   still_irregular: "/cold_case_data/station_zero/still_irregular.png",
   still_system_fault: "/cold_case_data/station_zero/still_system_fault.jpeg",
   still_confrontation: "/cold_case_data/station_zero/still_confrontation.jpeg",
+  case_badge: "/cold_case_data/station_zero/station_zero_badge.png",
 };
 
 const STATION_ZERO_DATA: {
@@ -62,7 +63,10 @@ Good luck.`,
       id: "profile_cass",
       type: "photo",
       title: "photo of Cassandra 'Cass' Hale",
-      content: JSON.stringify({ title: "Cassandra 'Cass' Hale", variant: "overlay" }),
+      content: JSON.stringify({
+        title: "Cassandra 'Cass' Hale",
+        variant: "overlay",
+      }),
       imageUrl: PREDEFINED_IMAGES.profile_cass,
       position: { x: 30, y: 10 },
       size: { width: 360, height: 210 },
@@ -1777,6 +1781,22 @@ Good luck.`,
       rotation: -4.6,
       packIn: ["evidence"],
     },
+    {
+      id: "badge_station_zero",
+      type: "objectives-cleared-badge",
+      title: "Official Commendation: Station Zero",
+      content: JSON.stringify({
+        imageUrl: PREDEFINED_IMAGES.case_badge,
+        caseId: "SZ-8821",
+        issueDate: new Date().toLocaleDateString(),
+        officerSignature: "Capt. A. Sterling",
+        text: "This commendation is formally awarded for unparalleled deductive reasoning during the Station Zero investigation. Your actions have ensured the containment of the anomaly and the safety of the sector.",
+      }),
+      position: { x: 70, y: 40 },
+      size: { width: 250, height: 250 },
+      rotation: 0,
+      packIn: ["bonus"],
+    },
   ],
   connections: [
     {
@@ -1829,7 +1849,7 @@ Good luck.`,
       description:
         "Prove that the life support and system failures were a result of deliberate sabotage, not the solar storm.",
       solution:
-        "Jax Autopsy report states the system failures involed a forced manual override.",
+        "Jax Autopsy report states the system failures involved a forced manual override.",
     },
     {
       id: "obj_03",

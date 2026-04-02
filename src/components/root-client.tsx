@@ -8,7 +8,7 @@ import { Analytics } from "@vercel/analytics/next";
 import Link from "next/link";
 import { Banner } from "@/components/ui/banner";
 import { Button } from "@/components/ui/button";
-import RoadmapPreview from "./roadmap-preview";
+import { Toaster } from "@/components/ui/sonner";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
@@ -56,6 +56,7 @@ export default function RootClient({ children }: { children: React.ReactNode }) 
 
       {/* Header is rendered server-side in app/layout.tsx */}
       <div id="smooth-content">{children}</div>
+      <Toaster richColors position="top-right" />
       <Analytics />
     </>
   );

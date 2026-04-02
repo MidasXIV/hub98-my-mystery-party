@@ -28,6 +28,7 @@ import ReceiptPreview from "./receipt-preview";
 import SearchAndRescueReportPreview from "./search-and-rescue-report-preview";
 import TelephoneLogPreview from "./telephone-log-preview";
 import TicketStubPreview from "./ticket-stub-preview";
+import BadgeBoardPreview from "./badge-board-preview";
 // ---------------------------------------------------------------------------
 // 1. EXTRACT CONTENT RENDERERS
 // Strategy Pattern: Isolate specific item logic into small, testable chunks.
@@ -39,6 +40,11 @@ interface ContentRendererProps {
 }
 
 export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> = {
+  "objectives-cleared-badge": ({ item }) => (
+    <div className="w-full h-full flex items-center justify-center bg-white">
+      <BadgeBoardPreview content={item.content} title={item.title} />
+    </div>
+  ),
   photo: ({ item }) => {
     const imageUrl = item.imageUrl;
     return (

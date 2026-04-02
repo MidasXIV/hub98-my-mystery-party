@@ -15,6 +15,8 @@ const PREDEFINED_IMAGES = {
     "/cold_case_data/sins_of_saint_lazarus/evidence_agnes_prayer.jpeg",
   evidence_nandani_wardrobe:
     "/cold_case_data/sins_of_saint_lazarus/evidence_nandani_wardrobe.png",
+  case_badge:
+    "/cold_case_data/sins_of_saint_lazarus/sins_of_saint_lazarus_badge.png",
 };
 
 const SINS_OF_SAINT_LAZARUS_DATA = {
@@ -1469,6 +1471,22 @@ For now, the hospital that once symbolized elite medical care finds itself under
       size: { width: 350, height: 300 },
       rotation: 0,
       packIn: ["suspect"],
+    },
+    {
+      id: "badge_saint_lazarus",
+      type: "objectives-cleared-badge",
+      title: "Official Commendation: Saint Lazarus Incident",
+      content: JSON.stringify({
+        imageUrl: PREDEFINED_IMAGES.case_badge,
+        caseId: "STL-2026-001",
+        issueDate: new Date().toLocaleDateString(),
+        officerSignature: "Inspector A. Dutta",
+        text: "This commendation is formally awarded for exceptional investigative precision during the Saint Lazarus Incident. Your analysis untangled a web of family pressure, professional rivalry, and surgical deception to reveal the truth behind the operating theatre death.",
+      }),
+      position: { x: 70, y: 40 },
+      size: { width: 250, height: 250 },
+      rotation: 0,
+      packIn: ["bonus"],
     },
   ],
   connections: [

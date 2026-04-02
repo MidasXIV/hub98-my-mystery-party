@@ -123,7 +123,7 @@ export const coldCases: ColdCase[] = [
       {
         title: "How hard is the Station Zero sci-fi cold case?",
         body:
-          "Station Zero is one of the more challenging cases on the site. It asks you to read carefully, connect scattered clues, and stay patient while the bigger picture comes together. If you enjoy puzzle-heavy mysteries and slow-burn reveals, it should feel rewarding rather than overwhelming.",
+          "Station Zero is one of the easier cases on the site. It asks you to read carefully, connect scattered clues, and stay patient while the bigger picture comes together. If you enjoy puzzle-heavy mysteries and slow-burn reveals, it should feel rewarding rather than overwhelming.",
       },
       {
         title: "What kind of evidence is included in Station Zero?",
