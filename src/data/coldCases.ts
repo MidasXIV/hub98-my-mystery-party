@@ -523,7 +523,7 @@ export const coldCases: ColdCase[] = [
     evidence: ZERO_SUM_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: false,
+    isPlayable: true,
   },
 
   {
