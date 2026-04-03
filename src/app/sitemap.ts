@@ -8,7 +8,7 @@ export default function sitemap() {
   const routes = [
     "",
     "/blog",
-    "/invitations",
+    // "/invitations",
     "/invitations/dashboard",
     "/cases",
     "/kits",
