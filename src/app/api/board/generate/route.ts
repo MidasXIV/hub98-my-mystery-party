@@ -493,62 +493,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing case slug. Provide { "case": "station-zero" } in body or ?case=station-zero.' }, { status: 400 });
     }
 
-    // Special handling for station-zero (reuse rich evidence defined in coldCases data file).
-    if (caseSlug === 'station-zero') {
-      const station = getCaseBySlug('station-zero');
-      const stationBoard = (station?.evidence && 'items' in station.evidence) ? station.evidence : undefined;
-      if (!stationBoard) {
-        return NextResponse.json({ error: 'Board data not available for station-zero.' }, { status: 404 });
-      }
-      return NextResponse.json(filterLockedEvidence(stationBoard));
-    }
+    const supportedBoardSlugs = new Set([
+      'station-zero',
+      'her-shadows-name',
+      'palazzo-of-bones',
+      'zero-sum',
+      'the-final-rehearsal',
+      'the-final-bench-off',
+      'sins-of-saint-lazarus',
+      'the-last-check-in',
+    ]);
 
-    if(caseSlug === 'her-shadows-name') {
-      const board = getCaseBySlug('her-shadows-name');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
+    if (supportedBoardSlugs.has(caseSlug)) {
+      const board = getCaseBySlug(caseSlug);
+      const boardData =
+        board?.evidence && 'items' in board.evidence ? board.evidence : undefined;
+
       if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for her_shadows_name.' }, { status: 404 });
+        return NextResponse.json(
+          { error: `Board data not available for ${caseSlug}.` },
+          { status: 404 },
+        );
       }
+
       return NextResponse.json(filterLockedEvidence(boardData));
-    }
-    if( caseSlug === 'palazzo-of-bones') {
-      const board = getCaseBySlug('palazzo-of-bones');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
-      if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
-      }
-      return NextResponse.json(filterLockedEvidence(boardData));
-    }
-    if( caseSlug === 'zero-sum') {
-      const board = getCaseBySlug('zero-sum');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
-      if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for the-last-witch.' }, { status: 404 });
-      }
-      return NextResponse.json(filterLockedEvidence(boardData));
-    }
-    if( caseSlug === 'the-final-rehearsal') {
-      const board = getCaseBySlug('the-final-rehearsal');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
-      if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for the-final-rehearsal.' }, { status: 404 });
-      }
-      return NextResponse.json(filterLockedEvidence(boardData));
-    }
-    if( caseSlug === 'sins-of-saint-lazarus') {
-      const board = getCaseBySlug('sins-of-saint-lazarus');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
-      if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for sins-of-saint-lazarus.' }, { status: 404 });
-      }
-      return NextResponse.json(filterLockedEvidence(boardData));
-    }
-    if( caseSlug === 'the-last-check-in') {
-      const board = getCaseBySlug('the-last-check-in');
-      const boardData = (board?.evidence && 'items' in board.evidence) ? board.evidence : undefined;
-      if (!boardData) {
-        return NextResponse.json({ error: 'Board data not available for the-last-check-in.' }, { status: 404 });
-      } return NextResponse.json(filterLockedEvidence(boardData));
     }
 
 

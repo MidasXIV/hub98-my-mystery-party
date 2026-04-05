@@ -44,3 +44,6 @@ next-env.d.ts
 todo.md
 CASE_DISCOVERY_PLAYBOOK.md
 indexnow.http
+.github/case-data-authoring.md
+.gitignore
+.github/copilot-instructions.md

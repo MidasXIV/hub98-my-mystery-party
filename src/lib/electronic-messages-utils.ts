@@ -25,6 +25,23 @@ export interface ElectronicCommData {
   messages: MessageBubble[];
 }
 
+function normalizeElectronicType(rawType: unknown): ElectronicType {
+  if (typeof rawType !== "string") return "EMAIL";
+
+  const normalized = rawType.trim().toUpperCase();
+
+  if (["EMAIL", "SMS", "WHATSAPP", "CHAT"].includes(normalized)) {
+    return normalized as ElectronicType;
+  }
+
+  // Backward-compatible aliases found in older/hand-authored case data.
+  if (["GROUP CHAT", "TEXT THREAD", "THREAD", "MESSENGER"].includes(normalized)) {
+    return "CHAT";
+  }
+
+  return "EMAIL";
+}
+
 export function parseElectronicData(content: string): ElectronicCommData {
   let json: any = {};
   try {
@@ -34,14 +51,14 @@ export function parseElectronicData(content: string): ElectronicCommData {
   }
 
   return {
-    type: json.type || "EMAIL",
+    type: normalizeElectronicType(json.type),
     platformName: json.platformName || "System Log",
     caseRef: json.caseRef || `DIGITAL-EVID-${Math.floor(Math.random() * 999)}`,
     printDate: json.printDate || new Date().toLocaleDateString(),
     subject: json.subject,
     from: json.from,
     to: json.to,
-    participants: json.participants || "Unknown",
+    participants: json.participants || [json.from, json.to].filter(Boolean).join(" ↔ ") || "Unknown",
     messages: Array.isArray(json.messages) ? json.messages : [
       { sender: "System", time: "--:--", body: content || "No content", isMe: false }
     ]

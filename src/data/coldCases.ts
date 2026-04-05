@@ -3,6 +3,7 @@ import PALAZZO_OF_BONES_DATA from "./palazzo-of-bones-data";
 import STATION_ZERO_DATA from "./station-zero-data";
 import ZERO_SUM_DATA from "./zero-sum-data";
 import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
+import FINAL_BENCH_OFF_DATA from "./the-final-bench-off-data";
 import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data"
 import THE_LAST_CHECK_IN_DATA from "./the-last-check-in";
 
@@ -207,6 +208,111 @@ export const coldCases: ColdCase[] = [
         hideProfile: true,
         mediaUrl:
           "https://kioubj9rw7g55npk.public.blob.vercel-storage.com/station_zero/SZ_demo-2.mp4",
+      },
+    ],
+  },
+  {
+    id: 8,
+    slug: "the-final-bench-off",
+    title: "The Final [2] Bench-Off",
+    seoTitle: "Free Cold Case Date Night | The Final Bench-Off Oakwood Fitness Mystery",
+    playTitle: "Play The Final Bench-Off",
+    pageTitle: "The Final Bench-Off",
+    shortDescription:
+      "A free sequel to The Final Rehearsal where Oakwood's Fitness Gala goes off the rails after influencer-student Jim Nasium's limited Neon-Aura stash vanishes from the Gym Vault.",
+    seoDescription:
+      "Play The Final Bench-Off, a free high school cold case sequel set at Oakwood's Fitness Gala. Investigate missing Neon-Aura cans, tangled alibis, and chaotic witness statements in a funny interactive whodunit.",
+    playDescription:
+      "Jump into The Final Bench-Off interactive board to inspect Gym Vault logs, cross-check witness statements, and solve Oakwood's most dramatic hydration scandal.",
+    seoKeywords: [
+      "free cold case date night sequel",
+      "the final bench off",
+      "oakwood high mystery game",
+      "high school mystery game",
+      "interactive whodunit game",
+      "funny detective game",
+    ],
+    betaNotice:
+      "The Final Bench-Off is currently in beta. The full mystery is playable, with ongoing polish to pacing, visuals, and a few interface details.",
+    imageUrl: "/cold_cases/thumbnails/the_final_bench_off.png",
+    tags: [
+      "Free Cold Case",
+      "Part 2",
+      "Date Night",
+      "School Mystery",
+      "Comedy Mystery",
+      "Who Dun It",
+      "Detective Game",
+      "1-2 Players",
+      "Easy/Medium",
+    ],
+    description:
+      "Oakwood is back, and so is the chaos. Right before the Oakwood Fitness Gala, influencer-student Jim Nasium discovers his private stash of limited-edition Neon-Aura has vanished from the high-security Gym Vault. Without it, his aura is 'depleted' and he's 'literally a flop.' Naturally, the panic spreads faster than pre-workout in an empty stomach.\n\nAs the lead investigator, you'll revisit familiar Oakwood legends like Anita Break, Ray Deo-o, and Justin Case—plus meet the school's new no-nonsense principal, Skye Th'Limit. Was this a petty energy-drink heist, a policy crackdown gone rogue, or another masterpiece of student-level overreaction? Dig through logs, interviews, and digital messages to separate flex from facts and solve this pun-packed sequel before the gala face-plants.",
+    difficulty: "Easy/Medium",
+    players: "1-2",
+    duration: "1.5-2 hours",
+    price: 0,
+    evidence: FINAL_BENCH_OFF_DATA,
+    isPurchasable: false,
+    hasDownloadSample: false,
+    isPlayable: true,
+    seoSections: [
+      {
+        title: "Why The Final Bench-Off is a great free sequel for date night",
+        body:
+          "The Final Bench-Off keeps everything players loved about The Final Rehearsal: quick setup, funny suspect dialogue, and a mystery that is easy to follow but still satisfying to solve. It works especially well for date night because the case is free, the pacing is tight, and the tone stays playful instead of grim. You can finish it in one evening, compare theories, and still have time left to celebrate your detective gains.",
+      },
+      {
+        title: "What happens in this Oakwood Fitness Gala mystery",
+        body:
+          "Hours before the Oakwood Fitness Gala, Jim Nasium's limited Neon-Aura stash disappears from the Gym Vault, triggering a full-scale campus meltdown. You investigate witness statements, vault logs, and group-chat messages from returning fan favorites Anita Break, Ray Deo-o, and Justin Case, while new principal Skye Th'Limit enforces strict policy changes. The case blends goofy school drama with a real clue trail, so every joke still points you toward the truth.",
+      },
+      {
+        title: "Is The Final Bench-Off actually free to play?",
+        body:
+          "Yes. The Final Bench-Off is available as a free playable case, making it a low-risk way to jump back into Oakwood's world. If you enjoyed The Final Rehearsal and want a direct follow-up with the same comedy-forward style, this is the natural next case to open.",
+      },
+      {
+        title: "Who should play The Final Bench-Off",
+        body:
+          "This case is ideal for new detectives, returning Oakwood fans, and couples looking for a fun mystery game that doesn't require a huge time commitment. Because the difficulty sits around easy to medium, it's friendly for first-time players but still gives enough twists to keep experienced sleuths entertained. If your group likes puns, school chaos, and fast-moving clue work, this case is all reps and no rest.",
+      },
+    ],
+    preview: [
+      {
+        name: "The Game Board",
+        profile:
+          "/cold_cases/previews/final_rehearsal/final_rehearsal_preview.png",
+        thumbnail:
+          "/cold_cases/previews/final_rehearsal/final_rehearsal_preview.png",
+        title: "A New Oakwood Meltdown",
+        typeOfPreview: "video",
+        content:
+          "Same Oakwood chaos, new crime scene. Pin clues, compare alibis, and bench-press your way through contradictory stories on the interactive board.",
+        hideProfile: true,
+        mediaUrl:
+          "https://kioubj9rw7g55npk.public.blob.vercel-storage.com/the_final_rehearsal/final%20rehearsal_board.mp4",
+      },
+      {
+        name: "Vault Access Evidence",
+        profile: "/cold_cases/previews/final_rehearsal/school_map.png",
+        thumbnail: "/cold_cases/previews/final_rehearsal/school_map.png",
+        title: "Track the Movement",
+        typeOfPreview: "image",
+        content:
+          "Use movement logs and map markers to catch who really went near the Gym Vault during the Neon-Aura disappearance window.",
+        hideProfile: true,
+      },
+      {
+        name: "Witness Drama",
+        profile:
+          "/cold_cases/previews/final_rehearsal/justin_interrogation.png",
+        thumbnail:
+          "/cold_cases/previews/final_rehearsal/justin_interrogation.png",
+        title: "Interrogate the Vibes",
+        typeOfPreview: "image",
+        content:
+          "Read hilariously inconsistent interviews, test your theory in plain English, and expose who lied when the pressure was on.",
       },
     ],
   },
@@ -456,7 +562,7 @@ export const coldCases: ColdCase[] = [
     evidence: THE_LAST_CHECK_IN_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: false,
+    isPlayable: true,
     seoSections:[
       {
         title: "Why The Last Check-In stands out as a locked-room mystery",
