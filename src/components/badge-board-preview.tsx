@@ -34,6 +34,8 @@ export default function BadgeBoardPreview({
             src={data.imageUrl}
             alt={title || "Objectives Cleared Badge"}
             fill
+            draggable={false}
+            onDragStart={(e) => e.preventDefault()}
             className="object-contain drop-shadow-[0_8px_12px_rgba(0,0,0,0.6)]"
           />
         </div>

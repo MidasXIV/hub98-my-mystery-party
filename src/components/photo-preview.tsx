@@ -26,6 +26,8 @@ export default function PhotoPreview({
                 src={imageUrl}
                 alt={displayName || "Photo"}
                 fill
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -59,6 +61,8 @@ export default function PhotoPreview({
             src={imageUrl}
             alt={displayName || "Photo"}
             fill
+            draggable={false}
+            onDragStart={(e) => e.preventDefault()}
             className="w-full h-full object-cover"
           />
         ) : (

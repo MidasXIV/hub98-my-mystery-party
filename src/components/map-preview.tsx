@@ -54,6 +54,8 @@ export default function MapPreview({ content }: { content: string }) {
                src={data.imageUrl} 
                alt="Map Preview" 
                fill 
+               draggable={false}
+               onDragStart={(e) => e.preventDefault()}
                className="object-cover"
              />
            )}

@@ -77,6 +77,8 @@ export default function MissingPersonPreview({ content }: { content: string }) {
                 alt={data.name || "Missing person photo"}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
+                draggable={false}
+                onDragStart={(e) => e.preventDefault()}
                 className="object-cover"
               />
               {/* Film grain overlay */}
