@@ -118,6 +118,11 @@ export default function RootLayout({
             name="msvalidate.01"
             content="FEC44A25DD8E4802152191B8C1CB3BC9"
           />
+          <script
+            src="https://analytics.ahrefs.com/analytics.js"
+            data-key="lXslnaFsiu/+f57aZCQ8yg"
+            async
+          ></script>
         </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} ${blinkerFont.variable} ${specialElite.variable} ${staatliches.variable} ${kalam.variable} antialiased`}
