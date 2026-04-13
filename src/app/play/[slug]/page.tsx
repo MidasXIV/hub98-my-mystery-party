@@ -30,15 +30,22 @@ import ObjectiveSolver from "@/components/objective-solver";
 // Removed unused PlayPageProps interface
 
 
-const PREDEFINED_CLUES = [
-  "A faint scent of almond in the air...",
-  "The victim's watch is stopped at 3:14.",
-  "A single, muddy boot print near the back door, too small for the victim.",
-  "A torn piece of a prescription for a powerful sedative.",
-  "Two coffee cups on the table, but the victim lived alone.",
-  "The library book is overdue. The title? 'A Perfect Poison'.",
-  "A dog that didn't bark in the night.",
-  "A hastily scribbled note: 'Meet me at the pier. Urgent.'",
+const FALLBACK_CLUES: BoardClue[] = [
+  {
+    id: "fallback_clue_01",
+    clue: "A faint scent of almond in the air...",
+    forObjective: "obj_01",
+  },
+  {
+    id: "fallback_clue_02",
+    clue: "The victim's watch is stopped at 3:14.",
+    forObjective: "obj_01",
+  },
+  {
+    id: "fallback_clue_03",
+    clue: "A torn piece of a prescription for a powerful sedative.",
+    forObjective: "obj_02",
+  },
 ];
 
 import {
@@ -47,6 +54,7 @@ import {
   BoardData,
   BoardItemType,
   Objective,
+  BoardClue,
 } from "../../../lib/boardTypes";
 import { computeDeclutterLayout } from "../../../lib/declutter";
 import FeedbackPanel from "@/components/feedback-panel";
@@ -87,6 +95,12 @@ import PlayerProgressTracker from "@/components/player-progress-tracker";
 import BadgeBoardPreview from "@/components/badge-board-preview";
 import BadgeBoardViewer from "@/components/badge-board-viewer";
 import { toast } from "sonner";
+import CluePreview from "@/components/clue-preview";
+import ClueViewer from "@/components/clue-viewer";
+import {
+  ObjectiveStatusToastContent,
+  UnlockedEvidenceToastContent,
+} from "@/lib/objective-toast-utils";
 
 // Minimal decorative tape component (placeholder for previous implementation)
 function Tape({ rotation }: { rotation?: number }) {
@@ -106,7 +120,7 @@ const DEFAULT_ITEM_SIZES: Record<
   photo: { width: 220, height: 220 },
   document: { width: 260, height: 190 },
   note: { width: 180, height: 180 },
-  clue: { width: 200, height: 100 },
+  clue: { width: 260, height: 140 },
   "folder-tab": { width: 140, height: 48 },
   "autopsy-report": { width: 300, height: 130 },
   "formal-alibi": { width: 250, height: 160 },
@@ -208,16 +222,7 @@ function Modal({
           </div>
         );
       case "clue":
-        return (
-          <div className="bg-[#f0e6d6] text-black p-8 font-special-elite max-w-md w-full border-t-8 border-red-700">
-            <h3 className="text-sm uppercase text-center text-red-900/80 tracking-widest mb-6">
-              EVIDENCE LOG: CLUE
-            </h3>
-            <p className="text-3xl text-center leading-relaxed">
-              {item.content}
-            </p>
-          </div>
-        );
+        return <ClueViewer content={item.content} />;
       case "autopsy-report":
         return <AutopsyReportViewer content={item.content} />;
       case "formal-alibi":
@@ -526,8 +531,11 @@ export default function PlayBoardPage({
     null,
   );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [usedClueIndices, setUsedClueIndices] = useState(new Set<number>());
+  const [usedClueIds, setUsedClueIds] = useState(new Set<string>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
+  const [unlockedByObjective, setUnlockedByObjective] = useState<
+    Record<string, string[]>
+  >({});
   // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
 
   const isPlayable = caseFile.isPlayable ?? false;
@@ -535,9 +543,29 @@ export default function PlayBoardPage({
     () => Array.from(completedObjectives),
     [completedObjectives],
   );
+  const availableClues = useMemo<BoardClue[]>(() => {
+    const incoming = boardData?.clues;
+    return Array.isArray(incoming) && incoming.length > 0
+      ? incoming
+      : FALLBACK_CLUES;
+  }, [boardData?.clues]);
+  const evidenceObjectiveFilters = useMemo(() => {
+    if (!boardData?.objectives) return [];
+    return boardData.objectives
+      .map((objective) => {
+        const itemIds = unlockedByObjective[objective.id] ?? [];
+        return {
+          objectiveId: objective.id,
+          label: objective.description,
+          itemIds,
+        };
+      })
+      .filter((entry) => entry.itemIds.length > 0);
+  }, [boardData?.objectives, unlockedByObjective]);
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const boardDataRef = useRef<BoardData | null>(null);
   const lastPanPoint = useRef({ x: 0, y: 0 });
   const pinchDistRef = useRef(0);
   const pinchStartScaleRef = useRef(1);
@@ -569,6 +597,10 @@ export default function PlayBoardPage({
     };
     generateBoard();
   }, []);
+
+  useEffect(() => {
+    boardDataRef.current = boardData;
+  }, [boardData]);
 
 
   const visibleItems = useMemo(
@@ -1226,20 +1258,17 @@ export default function PlayBoardPage({
   const handleRequestClue = () => {
     if (!viewportRef.current) return;
 
-    const availableClueIndices = PREDEFINED_CLUES.map(
-      (_: string, i: number) => i,
-    ).filter((i: number) => !usedClueIndices.has(i));
+    const unconsumedClues = availableClues.filter(
+      (clue) => !usedClueIds.has(clue.id),
+    );
 
-    if (availableClueIndices.length === 0) {
+    if (unconsumedClues.length === 0) {
       alert("No more clues available.");
       return;
     }
 
-    const randomIndex =
-      availableClueIndices[
-        Math.floor(Math.random() * availableClueIndices.length)
-      ];
-    const newClueContent = PREDEFINED_CLUES[randomIndex];
+    const chosenClue =
+      unconsumedClues[Math.floor(Math.random() * unconsumedClues.length)];
 
     const viewportWidth = viewportRef.current.clientWidth;
     const viewportHeight = viewportRef.current.clientHeight;
@@ -1251,9 +1280,9 @@ export default function PlayBoardPage({
     const newClueItem: BoardItem = {
       id: `clue-${Date.now()}`,
       type: "clue",
-      content: newClueContent,
+      content: JSON.stringify(chosenClue),
       position: { x: x_percent, y: y_percent },
-      size: { width: 160, height: 80 },
+      size: { width: 260, height: 140 },
       rotation: Math.random() * 5 - 2.5,
       packIn: ["clues"],
     };
@@ -1265,6 +1294,7 @@ export default function PlayBoardPage({
           items: [newClueItem],
           connections: [],
           objectives: [],
+          clues: availableClues,
         };
       }
       return {
@@ -1275,12 +1305,22 @@ export default function PlayBoardPage({
         objectives: prev.objectives,
       };
     });
+
+    // Make sure newly spawned clues are immediately visible even if the clue
+    // filter was previously disabled.
+    setActiveFilters((prev) => {
+      if (prev.has("clue")) return prev;
+      const next = new Set(prev);
+      next.add("clue");
+      return next;
+    });
+
     setNewItemId(newClueItem.id);
     setTimeout(() => setNewItemId(null), 600);
 
-    setUsedClueIndices((prev) => {
+    setUsedClueIds((prev) => {
       const newSet = new Set(prev);
-      newSet.add(randomIndex);
+      newSet.add(chosenClue.id);
       return newSet;
     });
   };
@@ -1313,8 +1353,16 @@ export default function PlayBoardPage({
   const handleFocusItem = (itemId: string) => {
     setIsTimelineVisible(false);
 
-    const item = boardData?.items.find((i) => i.id === itemId);
+    const latestBoardData = boardDataRef.current;
+    const item = latestBoardData?.items.find((i) => i.id === itemId);
     if (!item || !viewportRef.current) return;
+
+    setActiveFilters((prev) => {
+      if (prev.has(item.type)) return prev;
+      const next = new Set(prev);
+      next.add(item.type);
+      return next;
+    });
 
     const viewport = viewportRef.current;
     const viewportWidth = viewport.clientWidth;
@@ -1423,7 +1471,22 @@ export default function PlayBoardPage({
     const objectives = Array.isArray(raw.objectives)
       ? raw.objectives.filter((o: any) => o && o.id && o.description)
       : [];
-    return { items, connections, objectives };
+    const clues: BoardClue[] = Array.isArray(raw.clues)
+      ? raw.clues
+          .filter(
+            (c: any) =>
+              c &&
+              typeof c.id === "string" &&
+              typeof c.clue === "string" &&
+              typeof c.forObjective === "string",
+          )
+          .map((c: any) => ({
+            id: c.id,
+            clue: c.clue,
+            forObjective: c.forObjective,
+          }))
+      : [];
+    return { items, connections, objectives, clues };
   }
 
   if (loadingMessage) {
@@ -1588,11 +1651,9 @@ export default function PlayBoardPage({
             }}
             key={item.id}
             style={style}
-            className={`${commonClasses} ${dynamicClasses} clue-item-effect text-black text-xs flex items-center justify-center text-center font-special-elite ${
-              isNewClue ? "clue-item-appear" : ""
-            }`}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
-            <p>{item.content}</p>
+            <CluePreview content={item.content} isNew={isNewClue} />
           </div>
         );
       case "autopsy-report":
@@ -2051,7 +2112,17 @@ export default function PlayBoardPage({
                     };
                   });
 
-                  toast.success("Completion badge unlocked.");
+                  toast.custom(
+                    (t) => (
+                      <ObjectiveStatusToastContent
+                        title="Reward Unlocked"
+                        message="Completion badge unlocked."
+                        tone="success"
+                        onDismiss={() => toast.dismiss(t)}
+                      />
+                    ),
+                    { duration: 6000, closeButton: true },
+                  );
                 } catch (err) {
                   console.warn("Failed to fetch completion badge", err);
                 }
@@ -2065,24 +2136,84 @@ export default function PlayBoardPage({
                 next.add(objectiveId);
                 return next;
               });
+
+              if (unlockedItems.length > 0) {
+                setUnlockedByObjective((prev) => {
+                  const existing = prev[objectiveId] ?? [];
+                  const nextSet = new Set(existing);
+                  unlockedItems.forEach((item) => nextSet.add(item.id));
+                  return {
+                    ...prev,
+                    [objectiveId]: Array.from(nextSet),
+                  };
+                });
+              }
             }
 
             // 3) Notify user with Sonner toasts
             if (correct && unlockedItems.length > 0) {
-              toast.success(
-                `${unlockedItems.length} new evidence ${unlockedItems.length === 1 ? "item" : "items"} unlocked.`,
+              toast.custom(
+                (t) => (
+                  <UnlockedEvidenceToastContent
+                    unlockedItems={unlockedItems}
+                    onFocus={handleFocusItem}
+                    onDismiss={() => toast.dismiss(t)}
+                  />
+                ),
+                {
+                  duration: Infinity,
+                  closeButton: true,
+                },
               );
               if (completedAllNow) {
-                toast.success("All objectives cleared.");
+                toast.custom(
+                  (t) => (
+                    <ObjectiveStatusToastContent
+                      title="Case Progress"
+                      message="All objectives cleared."
+                      tone="success"
+                      onDismiss={() => toast.dismiss(t)}
+                    />
+                  ),
+                  { duration: Infinity, closeButton: true },
+                );
               }
             } else if (correct) {
-              toast.success("Objective solved.");
+              toast.custom(
+                (t) => (
+                  <ObjectiveStatusToastContent
+                    title="Objective Solved"
+                    message="No new evidence unlocked from this submission."
+                    tone="info"
+                    onDismiss={() => toast.dismiss(t)}
+                  />
+                ),
+                { duration: 6000, closeButton: true },
+              );
               if (completedAllNow) {
-                toast.success("All objectives cleared.");
+                toast.custom(
+                  (t) => (
+                    <ObjectiveStatusToastContent
+                      title="Case Progress"
+                      message="All objectives cleared."
+                      tone="success"
+                      onDismiss={() => toast.dismiss(t)}
+                    />
+                  ),
+                  { duration: Infinity, closeButton: true },
+                );
               }
             } else if (!correct) {
-              toast.error(
-                `Not quite. Your analysis scored ${Math.round(score * 100)}%. Try linking more specific evidence to your theory.`,
+              toast.custom(
+                (t) => (
+                  <ObjectiveStatusToastContent
+                    title="Objective Not Solved"
+                    message={`Your analysis scored ${Math.round(score * 100)}%. Try linking more specific evidence to your theory.`}
+                    tone="error"
+                    onDismiss={() => toast.dismiss(t)}
+                  />
+                ),
+                { duration: 7000, closeButton: true },
               );
             }
           }}
@@ -2120,6 +2251,7 @@ export default function PlayBoardPage({
               content: i.content,
               title: i.title,
             }))}
+            objectiveUnlocks={evidenceObjectiveFilters}
             onFocus={(id) => handleFocusItem(id)}
           />
           <TimelinePanel
@@ -2156,7 +2288,7 @@ export default function PlayBoardPage({
           handleRequestClue,
           handleDeclutter: handleToggleDeclutter,
           isDecluttered,
-          cluesLeft: PREDEFINED_CLUES.length - usedClueIndices.size,
+          cluesLeft: availableClues.length - usedClueIds.size,
           isMobileMenuOpen,
           setIsMobileMenuOpen,
           variant: "integrated",

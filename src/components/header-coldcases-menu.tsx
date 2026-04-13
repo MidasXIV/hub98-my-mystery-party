@@ -7,6 +7,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { coldCases } from "@/data/coldCases";
 import { mysteryKits } from "@/data/mysteryKits";
 
+const CASE_MENU_FILTERS = [
+  { href: "/cases?v=horror", label: "Horror", tag: "Horror" },
+  { href: "/cases?v=classic", label: "Classic", tag: "Classic" },
+  { href: "/cases?v=holiday", label: "Holidays", tag: "Holiday" },
+  { href: "/cases?v=fantasy", label: "Fantasy", tag: "Fantasy" },
+  { href: "/cases?v=family", label: "Family Friendly", tag: "Family Friendly" },
+] as const;
+
 type HeaderMegaMenuProps = {
   open: boolean;
   anchorRef: React.RefObject<HTMLDivElement | null>;
@@ -25,6 +33,7 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
   const [activeRightPanel, setActiveRightPanel] = React.useState<
     "cases" | "kits"
   >("cases");
+  const [activeSubtypeTag, setActiveSubtypeTag] = React.useState<string | null>(null);
 
   React.useEffect(() => setMounted(true), []);
 
@@ -60,9 +69,22 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
   // We don't currently store publish dates, so we use array order (last = latest).
   const latestKits = [...mysteryKits].reverse().slice(0, 3);
 
-  const rightTitle = activeRightPanel === "kits" ? "Latest Mystery Kits" : "Top Cases";
+  const rightTitle = activeRightPanel === "kits"
+    ? "Latest Mystery Kits"
+    : activeSubtypeTag
+    ? `${activeSubtypeTag} Cases`
+    : "Top Cases";
   const rightCtaHref = activeRightPanel === "kits" ? "/kits" : "/cases";
   const rightCtaLabel = activeRightPanel === "kits" ? "View All Kits" : "View All Cases";
+
+  // Filter by subtype tag (tag-driven supports multiple subtypes per case)
+  const getCasesBySubtypeTag = (tag: string | null) => {
+    if (!tag) return coldCases.slice(0, 3);
+    const filtered = coldCases.filter((c) =>
+      c.tags.some((caseTag) => caseTag.toLowerCase() === tag.toLowerCase())
+    );
+    return filtered.length > 0 ? filtered.slice(0, 3) : coldCases.slice(0, 3);
+  };
 
   const panel = (
     <AnimatePresence>
@@ -95,49 +117,36 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
                   <Link
                     href="/cases"
                     className="font-medium text-gray-900 dark:text-white hover:underline"
+                    onMouseEnter={() => { setActiveRightPanel("cases"); setActiveSubtypeTag(null); }}
+                    onFocus={() => { setActiveRightPanel("cases"); setActiveSubtypeTag(null); }}
                   >
                     All Cases
                   </Link>
                   <Link
                     href="/cases?v=top"
                     className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
-                    onMouseEnter={() => setActiveRightPanel("cases")}
-                    onFocus={() => setActiveRightPanel("cases")}
+                    onMouseEnter={() => { setActiveRightPanel("cases"); setActiveSubtypeTag(null); }}
+                    onFocus={() => { setActiveRightPanel("cases"); setActiveSubtypeTag(null); }}
                   >
                     Top Sellers <span aria-hidden>›</span>
                   </Link>
-                  <Link
-                    href="/cases?v=classic"
-                    className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
-                    onMouseEnter={() => setActiveRightPanel("cases")}
-                    onFocus={() => setActiveRightPanel("cases")}
-                  >
-                    Classics <span aria-hidden>›</span>
-                  </Link>
-                  <Link
-                    href="/cases?v=modern"
-                    className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
-                    onMouseEnter={() => setActiveRightPanel("cases")}
-                    onFocus={() => setActiveRightPanel("cases")}
-                  >
-                    Modern Mysteries <span aria-hidden>›</span>
-                  </Link>
-                  <Link
-                    href="/cases?v=holiday"
-                    className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
-                    onMouseEnter={() => setActiveRightPanel("cases")}
-                    onFocus={() => setActiveRightPanel("cases")}
-                  >
-                    Holidays <span aria-hidden>›</span>
-                  </Link>
-                  <Link
-                    href="/cases?v=fantasy"
-                    className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
-                    onMouseEnter={() => setActiveRightPanel("cases")}
-                    onFocus={() => setActiveRightPanel("cases")}
-                  >
-                    Fantasy <span aria-hidden>›</span>
-                  </Link>
+                  {CASE_MENU_FILTERS.map((filter) => (
+                    <Link
+                      key={filter.tag}
+                      href={filter.href}
+                      className="text-gray-700 dark:text-gray-200 hover:underline flex items-center gap-1"
+                      onMouseEnter={() => {
+                        setActiveRightPanel("cases");
+                        setActiveSubtypeTag(filter.tag);
+                      }}
+                      onFocus={() => {
+                        setActiveRightPanel("cases");
+                        setActiveSubtypeTag(filter.tag);
+                      }}
+                    >
+                      {filter.label} <span aria-hidden>›</span>
+                    </Link>
+                  ))}
 
                   <div className="mt-5 pt-5 border-t border-gray-200/60 dark:border-white/10">
                     <Link
@@ -197,7 +206,7 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
                             </div>
                           </Link>
                         ))
-                      : coldCases.slice(0, 3).map((c) => (
+                      : getCasesBySubtypeTag(activeSubtypeTag).map((c) => (
                           <Link
                             key={c.slug}
                             href={`/cases/${c.slug}`}
@@ -215,6 +224,11 @@ export const HeaderMegaMenu: React.FC<HeaderMegaMenuProps> = ({
                               <div className="line-clamp-1 text-sm font-semibold text-gray-900 dark:text-white">
                                 {c.title}
                               </div>
+                              {activeSubtypeTag ? (
+                                <div className="mt-1 line-clamp-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
+                                  {activeSubtypeTag}
+                                </div>
+                              ) : null}
                               <div className="mt-1 line-clamp-1 text-xs text-gray-600 dark:text-gray-300">
                                 {c.duration ? `${c.duration} • ` : ""}
                                 {c.players ? c.players : ""}

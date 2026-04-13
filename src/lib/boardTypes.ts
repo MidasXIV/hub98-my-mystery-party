@@ -60,8 +60,15 @@ export interface Objective {
   solution?: string;
 }
 
+export interface BoardClue {
+  id: string;
+  clue: string;
+  forObjective: string;
+}
+
 export interface BoardData {
   items: BoardItem[];
   connections: Connection[];
   objectives: Objective[];
+  clues?: BoardClue[];
 }

@@ -4,7 +4,7 @@ import STATION_ZERO_DATA from "./station-zero-data";
 import ZERO_SUM_DATA from "./zero-sum-data";
 import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
 import FINAL_BENCH_OFF_DATA from "./the-final-bench-off-data";
-import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data"
+import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data";
 import THE_LAST_CHECK_IN_DATA from "./the-last-check-in";
 
 export interface Evidence {
@@ -47,7 +47,6 @@ export interface ColdCase {
   hasDownloadSample?: boolean;
   /** Whether the interactive board/play experience is available */
   isPlayable?: boolean;
-
   preview?: Array<{
     name: string;
     typeOfPreview: string;
@@ -65,7 +64,8 @@ export const coldCases: ColdCase[] = [
     id: 6,
     slug: "station-zero",
     title: "Station Zero: Ghost of the Machine",
-    seoTitle: "Sci-Fi Cold Case Date Night | Station Zero: Ghost of the Machine",
+    seoTitle:
+      "Sci-Fi Cold Case Date Night | Station Zero: Ghost of the Machine",
     playTitle: "Play Station Zero: Ghost of the Machine",
     pageTitle: "Station Zero: Ghost of the Machine",
     shortDescription:
@@ -85,7 +85,14 @@ export const coldCases: ColdCase[] = [
     betaNotice:
       "Station Zero is currently in beta. The core mystery is playable, but some features, polish, and pacing details may still change. If you're planning a date night and want the smoothest experience possible, treat this as an early-access investigation rather than a fully finalized premium case.",
     imageUrl: "/cold_cases/thumbnails/station_zero.png",
-    tags: ["Sci-Fi Mystery", "Space Horror", "Puzzle Heavy", "High Difficulty"],
+    tags: [
+      "Sci-Fi",
+      "Horror",
+      "Sci-Fi Mystery",
+      "Space Horror",
+      "Puzzle Heavy",
+      "High Difficulty",
+    ],
     description:
       "Station Zero is a sci-fi cold case set aboard a deep-space research platform that went silent during a brutal solar storm. The last thing anyone heard was a terrified voice, whispers tangled in static, and one phrase that never should’ve made it into an official report: a ‘ghost in the machine.’\n\nNow the Cold Case Division has recovered a fragmented ‘data ghost’—crew diaries, corrupted system logs, classified xenobotany research, and sealed incident records tied to Myco‑Veridia. Your job is to investigate the station’s final days, sort sabotage from hallucination, and uncover what really happened behind those locked bulkheads. If you want a cinematic space mystery game with layered evidence, tense deduction, and a dark sci-fi horror atmosphere, this is your case.",
     difficulty: "Hard",
@@ -103,38 +110,31 @@ export const coldCases: ColdCase[] = [
     seoSections: [
       {
         title: "Why Station Zero works as a sci-fi cold case date night",
-        body:
-          "Station Zero blends the tension of a classic cold case with the atmosphere of a deep-space thriller. Instead of racing through a short set of clues, you and your partner can slowly piece together crew diaries, corrupted system logs, research files, and fractured transmissions. That makes it a strong choice for players who want a more immersive date night mystery: there is enough evidence to discuss, argue over, and revisit as your theories change. The mystery is readable and cinematic, but still layered enough to reward careful attention.",
+        body: "Station Zero blends the tension of a classic cold case with the atmosphere of a deep-space thriller. Instead of racing through a short set of clues, you and your partner can slowly piece together crew diaries, corrupted system logs, research files, and fractured transmissions. That makes it a strong choice for players who want a more immersive date night mystery: there is enough evidence to discuss, argue over, and revisit as your theories change. The mystery is readable and cinematic, but still layered enough to reward careful attention.",
       },
       {
         title: "What you investigate inside the Station Zero mystery",
-        body:
-          "The case begins after a long-abandoned research platform goes silent during a solar storm. From there, your investigation moves through personal diaries, technical failures, classified xenobotany records, and signs of possible sabotage. Every document adds context to the crew’s final days. Some clues point toward psychological collapse. Others suggest a very human conspiracy hiding behind the station’s haunting final message. The result is a sci-fi cold case that feels more like reconstructing a disaster than following a simple trail of breadcrumbs.",
+        body: "The case begins after a long-abandoned research platform goes silent during a solar storm. From there, your investigation moves through personal diaries, technical failures, classified xenobotany records, and signs of possible sabotage. Every document adds context to the crew’s final days. Some clues point toward psychological collapse. Others suggest a very human conspiracy hiding behind the station’s haunting final message. The result is a sci-fi cold case that feels more like reconstructing a disaster than following a simple trail of breadcrumbs.",
       },
       {
         title: "Who should play this space mystery game",
-        body:
-          "Station Zero is best for players who enjoy solving dense mysteries, comparing notes, and sitting with uncertainty before the full picture comes into focus. If you want a fast free mystery game, one of the lighter cases on the site may be a better match. But if you want a longer sci-fi investigation for date night, game night, or a solo weekend puzzle session, Station Zero is designed for that deeper experience. The evidence is substantial, the tone is darker, and the case asks you to think like an investigator rather than wait for the story to hand you answers.",
+        body: "Station Zero is best for players who enjoy solving dense mysteries, comparing notes, and sitting with uncertainty before the full picture comes into focus. If you want a fast free mystery game, one of the lighter cases on the site may be a better match. But if you want a longer sci-fi investigation for date night, game night, or a solo weekend puzzle session, Station Zero is designed for that deeper experience. The evidence is substantial, the tone is darker, and the case asks you to think like an investigator rather than wait for the story to hand you answers.",
       },
       {
         title: "Is Station Zero a good case for date night?",
-        body:
-          "Yes, if your idea of a great date night is solving a deeper mystery together. Station Zero gives you enough evidence to compare theories, debate motives, and work through the case as a team. It is less of a quick casual game and more of an atmospheric investigative experience.",
+        body: "Yes, if your idea of a great date night is solving a deeper mystery together. Station Zero gives you enough evidence to compare theories, debate motives, and work through the case as a team. It is less of a quick casual game and more of an atmospheric investigative experience.",
       },
       {
         title: "How hard is the Station Zero sci-fi cold case?",
-        body:
-          "Station Zero is one of the easier cases on the site. It asks you to read carefully, connect scattered clues, and stay patient while the bigger picture comes together. If you enjoy puzzle-heavy mysteries and slow-burn reveals, it should feel rewarding rather than overwhelming.",
+        body: "Station Zero is one of the easier cases on the site. It asks you to read carefully, connect scattered clues, and stay patient while the bigger picture comes together. If you enjoy puzzle-heavy mysteries and slow-burn reveals, it should feel rewarding rather than overwhelming.",
       },
       {
         title: "What kind of evidence is included in Station Zero?",
-        body:
-          "You investigate crew diaries, corrupted transmission logs, classified research files, and other digital evidence recovered from the station. The mix of personal writing and technical records helps the mystery feel grounded while still delivering the eerie sci-fi tone.",
+        body: "You investigate crew diaries, corrupted transmission logs, classified research files, and other digital evidence recovered from the station. The mix of personal writing and technical records helps the mystery feel grounded while still delivering the eerie sci-fi tone.",
       },
       {
         title: "Can Station Zero be played solo or with a group?",
-        body:
-          "Yes. The case works for solo players who like immersive deduction, but it is also designed for small groups. Two players make a strong pair for date night, while a larger group can split up clue review and compare interpretations as the investigation unfolds.",
+        body: "Yes. The case works for solo players who like immersive deduction, but it is also designed for small groups. Two players make a strong pair for date night, while a larger group can split up clue review and compare interpretations as the investigation unfolds.",
       },
     ],
     preview: [
@@ -215,7 +215,8 @@ export const coldCases: ColdCase[] = [
     id: 8,
     slug: "the-final-bench-off",
     title: "The Final [2] Bench-Off",
-    seoTitle: "Free Cold Case Date Night | The Final Bench-Off Oakwood Fitness Mystery",
+    seoTitle:
+      "Free Cold Case Date Night | The Final Bench-Off Oakwood Fitness Mystery",
     playTitle: "Play The Final Bench-Off",
     pageTitle: "The Final Bench-Off",
     shortDescription:
@@ -236,6 +237,8 @@ export const coldCases: ColdCase[] = [
       "The Final Bench-Off is currently in beta. The full mystery is playable, with ongoing polish to pacing, visuals, and a few interface details.",
     imageUrl: "/cold_cases/thumbnails/the_final_bench_off.png",
     tags: [
+      "Family Friendly",
+      "School",
       "Free Cold Case",
       "Part 2",
       "Date Night",
@@ -259,23 +262,19 @@ export const coldCases: ColdCase[] = [
     seoSections: [
       {
         title: "Why The Final Bench-Off is a great free sequel for date night",
-        body:
-          "The Final Bench-Off keeps everything players loved about The Final Rehearsal: quick setup, funny suspect dialogue, and a mystery that is easy to follow but still satisfying to solve. It works especially well for date night because the case is free, the pacing is tight, and the tone stays playful instead of grim. You can finish it in one evening, compare theories, and still have time left to celebrate your detective gains.",
+        body: "The Final Bench-Off keeps everything players loved about The Final Rehearsal: quick setup, funny suspect dialogue, and a mystery that is easy to follow but still satisfying to solve. It works especially well for date night because the case is free, the pacing is tight, and the tone stays playful instead of grim. You can finish it in one evening, compare theories, and still have time left to celebrate your detective gains.",
       },
       {
         title: "What happens in this Oakwood Fitness Gala mystery",
-        body:
-          "Hours before the Oakwood Fitness Gala, Jim Nasium's limited Neon-Aura stash disappears from the Gym Vault, triggering a full-scale campus meltdown. You investigate witness statements, vault logs, and group-chat messages from returning fan favorites Anita Break, Ray Deo-o, and Justin Case, while new principal Skye Th'Limit enforces strict policy changes. The case blends goofy school drama with a real clue trail, so every joke still points you toward the truth.",
+        body: "Hours before the Oakwood Fitness Gala, Jim Nasium's limited Neon-Aura stash disappears from the Gym Vault, triggering a full-scale campus meltdown. You investigate witness statements, vault logs, and group-chat messages from returning fan favorites Anita Break, Ray Deo-o, and Justin Case, while new principal Skye Th'Limit enforces strict policy changes. The case blends goofy school drama with a real clue trail, so every joke still points you toward the truth.",
       },
       {
         title: "Is The Final Bench-Off actually free to play?",
-        body:
-          "Yes. The Final Bench-Off is available as a free playable case, making it a low-risk way to jump back into Oakwood's world. If you enjoyed The Final Rehearsal and want a direct follow-up with the same comedy-forward style, this is the natural next case to open.",
+        body: "Yes. The Final Bench-Off is available as a free playable case, making it a low-risk way to jump back into Oakwood's world. If you enjoyed The Final Rehearsal and want a direct follow-up with the same comedy-forward style, this is the natural next case to open.",
       },
       {
         title: "Who should play The Final Bench-Off",
-        body:
-          "This case is ideal for new detectives, returning Oakwood fans, and couples looking for a fun mystery game that doesn't require a huge time commitment. Because the difficulty sits around easy to medium, it's friendly for first-time players but still gives enough twists to keep experienced sleuths entertained. If your group likes puns, school chaos, and fast-moving clue work, this case is all reps and no rest.",
+        body: "This case is ideal for new detectives, returning Oakwood fans, and couples looking for a fun mystery game that doesn't require a huge time commitment. Because the difficulty sits around easy to medium, it's friendly for first-time players but still gives enough twists to keep experienced sleuths entertained. If your group likes puns, school chaos, and fast-moving clue work, this case is all reps and no rest.",
       },
     ],
     preview: [
@@ -320,7 +319,8 @@ export const coldCases: ColdCase[] = [
     id: 4,
     slug: "the-final-rehearsal",
     title: "The Final Rehearsal",
-    seoTitle: "Free Cold Case Date Night | The Final Rehearsal High School Mystery",
+    seoTitle:
+      "Free Cold Case Date Night | The Final Rehearsal High School Mystery",
     playTitle: "Play The Final Rehearsal",
     pageTitle: "The Final Rehearsal",
     shortDescription:
@@ -341,6 +341,8 @@ export const coldCases: ColdCase[] = [
       "The Final Rehearsal is currently in beta. The full mystery is playable, but details, pacing, and UI polish may still shift as we keep improving the experience.",
     imageUrl: "/cold_cases/thumbnails/final_rehearsal.png",
     tags: [
+      "Family Friendly",
+      "School",
       "Free Cold Case",
       "Free Mystery",
       "Date Night",
@@ -365,23 +367,19 @@ export const coldCases: ColdCase[] = [
     seoSections: [
       {
         title: "Why The Final Rehearsal works for a free cold case date night",
-        body:
-          "The Final Rehearsal is an easy pick for date night because it is free, funny, and built for one or two players. You are not walking into a grim or overly dense mystery. Instead, you get a lighter high school cold case full of backstage gossip, dramatic suspects, and clues that are simple to follow without feeling boring. That makes it a good option for couples who want to solve something together without committing to a long or emotionally heavy investigation.",
+        body: "The Final Rehearsal is an easy pick for date night because it is free, funny, and built for one or two players. You are not walking into a grim or overly dense mystery. Instead, you get a lighter high school cold case full of backstage gossip, dramatic suspects, and clues that are simple to follow without feeling boring. That makes it a good option for couples who want to solve something together without committing to a long or emotionally heavy investigation.",
       },
       {
         title: "What happens in this high school cold case",
-        body:
-          "Right before opening night, the lead actress is discovered locked inside the prop vault. That turns the school’s final rehearsal into a full-blown investigation. You will dig through secret notes, interview transcripts, suspicious security logs, and other messy backstage clues to figure out who planned the sabotage. The case keeps the stakes fun and dramatic, but there is still a real mystery to solve beneath the jokes and teen chaos.",
+        body: "Right before opening night, the lead actress is discovered locked inside the prop vault. That turns the school’s final rehearsal into a full-blown investigation. You will dig through secret notes, interview transcripts, suspicious security logs, and other messy backstage clues to figure out who planned the sabotage. The case keeps the stakes fun and dramatic, but there is still a real mystery to solve beneath the jokes and teen chaos.",
       },
       {
         title: "Is The Final Rehearsal actually free to play?",
-        body:
-          "Yes. The Final Rehearsal is one of the free cold case games on the site, which is part of why it ranks well as a date night option. If you want a no-risk mystery to try together before moving on to a bigger or darker case, this is a strong place to start. You get a complete investigation experience without needing to buy a premium case first.",
+        body: "Yes. The Final Rehearsal is one of the free cold case games on the site, which is part of why it ranks well as a date night option. If you want a no-risk mystery to try together before moving on to a bigger or darker case, this is a strong place to start. You get a complete investigation experience without needing to buy a premium case first.",
       },
       {
         title: "Who should play The Final Rehearsal",
-        body:
-          "This case is best for new detectives, couples looking for a relaxed date night mystery, and anyone who likes high school comedy with a little sabotage mixed in. Because the difficulty sits around easy to medium and the playtime is short, it is also great for players who want a complete mystery in one evening. If you want something heavier, darker, or more puzzle-dense, you can always move up to one of the harder cases after this one.",
+        body: "This case is best for new detectives, couples looking for a relaxed date night mystery, and anyone who likes high school comedy with a little sabotage mixed in. Because the difficulty sits around easy to medium and the playtime is short, it is also great for players who want a complete mystery in one evening. If you want something heavier, darker, or more puzzle-dense, you can always move up to one of the harder cases after this one.",
       },
     ],
     preview: [
@@ -433,33 +431,6 @@ export const coldCases: ColdCase[] = [
       },
     ],
   },
-  // {
-  //   id: 1,
-  //   slug: "mayfield-manor-mystery",
-  //   title: "The Mayfield Manor Mystery",
-  //   imageUrl: "/cold_cases/thumbnails/shining_star.png",
-  //   tags: ["Date Night", "1-2 Players", "High Difficulty"],
-  //   description:
-  //     "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
-  //   difficulty: "Hard",
-  //   players: "1-2",
-  //   duration: "2-3 hours",
-  //   price: 29.99,
-  //   evidence: [
-  //     {
-  //       title: "Letter from the Manor",
-  //       description: "A cryptic letter found in the study.",
-  //       imageUrl: "/cold_cases/thumbnails/evidence_letter.png",
-  //     },
-  //     {
-  //       title: "Blueprints",
-  //       description: "Blueprints of the manor with hidden markings.",
-  //       imageUrl: "/cold_cases/thumbnails/evidence_blueprint.png",
-  //     },
-  //   ],
-  //   isPurchasable: false,
-  //   hasDownloadSample: false,
-  // },
   {
     id: 1,
     slug: "sins-of-saint-lazarus",
@@ -485,7 +456,9 @@ export const coldCases: ColdCase[] = [
       "The Sins of Saint Lazarus is currently in beta. The investigation is available, but some presentation details and quality-of-life touches may still change.",
     imageUrl: "/cold_cases/thumbnails/sins_of_saint_lazarus.png",
     tags: [
+      "Medical",
       "Medical Mystery",
+      "Classic",
       "Hospital Thriller",
       "1-2 Players",
       "High Difficulty",
@@ -503,23 +476,19 @@ export const coldCases: ColdCase[] = [
     seoSections: [
       {
         title: "Why The Sins of Saint Lazarus stands out as a medical mystery",
-        body:
-          "The Sins of Saint Lazarus stands out because it mixes personal betrayal with institutional pressure inside a hospital setting. This is not a light or playful mystery. It is built around negligence, secrecy, family strain, and professional sabotage, which gives the case a heavier and more dramatic tone than the rest of the catalog. If you like mysteries that feel tense, morally messy, and character-driven, Lazarus has the right kind of weight.",
+        body: "The Sins of Saint Lazarus stands out because it mixes personal betrayal with institutional pressure inside a hospital setting. This is not a light or playful mystery. It is built around negligence, secrecy, family strain, and professional sabotage, which gives the case a heavier and more dramatic tone than the rest of the catalog. If you like mysteries that feel tense, morally messy, and character-driven, Lazarus has the right kind of weight.",
       },
       {
         title: "What makes this hospital mystery different",
-        body:
-          "Instead of focusing on a single obvious suspect, The Sins of Saint Lazarus drops you into a hospital environment full of layered pressure points. Medical records, personal betrayals, family strain, and professional sabotage all collide around one catastrophic surgery. That gives the mystery a very particular energy: every clue feels tied to both personal emotion and institutional failure. The result is a medical mystery game that feels claustrophobic, high-stakes, and deeply human.",
+        body: "Instead of focusing on a single obvious suspect, The Sins of Saint Lazarus drops you into a hospital environment full of layered pressure points. Medical records, personal betrayals, family strain, and professional sabotage all collide around one catastrophic surgery. That gives the mystery a very particular energy: every clue feels tied to both personal emotion and institutional failure. The result is a medical mystery game that feels claustrophobic, high-stakes, and deeply human.",
       },
       {
         title: "What evidence you investigate in Saint Lazarus",
-        body:
-          "As you work through the case, you will examine evidence connected to the operating theater, the people around Dr. Khanna, and the wider collapse of trust inside St. Lazarus. The case leans into layered documents and contradictory accounts rather than quick gimmicks. You are asked to weigh negligence against intent, emotional fallout against hard proof, and personal loyalty against self-preservation.",
+        body: "As you work through the case, you will examine evidence connected to the operating theater, the people around Dr. Khanna, and the wider collapse of trust inside St. Lazarus. The case leans into layered documents and contradictory accounts rather than quick gimmicks. You are asked to weigh negligence against intent, emotional fallout against hard proof, and personal loyalty against self-preservation.",
       },
       {
         title: "Who should play The Sins of Saint Lazarus",
-        body:
-          "This case is best for players who enjoy darker mystery fiction, complicated suspects, and a more mature tone. If you like unraveling affairs, institutional pressure, and morally messy decisions, this case fits well. If you want something lighter or more beginner-friendly, one of the easier cases may be a better first stop before returning to Saint Lazarus.",
+        body: "This case is best for players who enjoy darker mystery fiction, complicated suspects, and a more mature tone. If you like unraveling affairs, institutional pressure, and morally messy decisions, this case fits well. If you want something lighter or more beginner-friendly, one of the easier cases may be a better first stop before returning to Saint Lazarus.",
       },
     ],
   },
@@ -536,7 +505,7 @@ export const coldCases: ColdCase[] = [
       "Play The Last Check-In, a psychological locked-room mystery game. Nine guests quarantined in a motel, but only five survive. Interrogate suspects and find the killer.",
     playDescription:
       "Use the interactive case board to review police interrogations, motel security photos, and crime scene evidence to determine which of the five survivors is a cold-blooded killer.",
-    seoKeywords:[
+    seoKeywords: [
       "locked room mystery game",
       "motel murder mystery",
       "quarantine thriller game",
@@ -547,7 +516,8 @@ export const coldCases: ColdCase[] = [
     betaNotice:
       "The Last Check-In is currently in beta. The investigation is available, but some presentation details and quality-of-life touches may still change.",
     imageUrl: "/cold_cases/thumbnails/the_last_check_in.png",
-    tags:[
+    tags: [
+      "Classic",
       "Locked Room Mystery",
       "Psychological Thriller",
       "1-2 Players",
@@ -562,27 +532,23 @@ export const coldCases: ColdCase[] = [
     evidence: THE_LAST_CHECK_IN_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: true,
-    seoSections:[
+    isPlayable: false,
+    seoSections: [
       {
         title: "Why The Last Check-In stands out as a locked-room mystery",
-        body:
-          "The Last Check-In takes the classic 'closed-circle' whodunit and adds the agonizing, slow-burn tension of a month-long quarantine. It plays heavily on psychological paranoia. The killer uses the threat of a viral sickness to their advantage, tricking the other guests into leaving the victims completely alone. If you love mysteries built on cabin fever, mounting dread, and brilliant cover-ups, this case provides an incredibly immersive atmosphere.",
+        body: "The Last Check-In takes the classic 'closed-circle' whodunit and adds the agonizing, slow-burn tension of a month-long quarantine. It plays heavily on psychological paranoia. The killer uses the threat of a viral sickness to their advantage, tricking the other guests into leaving the victims completely alone. If you love mysteries built on cabin fever, mounting dread, and brilliant cover-ups, this case provides an incredibly immersive atmosphere.",
       },
       {
         title: "What makes this motel mystery different",
-        body:
-          "Instead of tracking a killer on the run, you already have your suspects trapped in a room together. When the game begins, four people are dead, and the five remaining survivors are all pointing fingers at each other. Every single survivor—from the cynical motel manager to the disgraced surgeon—has a dark secret they were hiding before the lockdown even started. The tension comes from untangling who committed murder for survival, and who is just a very good liar.",
+        body: "Instead of tracking a killer on the run, you already have your suspects trapped in a room together. When the game begins, four people are dead, and the five remaining survivors are all pointing fingers at each other. Every single survivor—from the cynical motel manager to the disgraced surgeon—has a dark secret they were hiding before the lockdown even started. The tension comes from untangling who committed murder for survival, and who is just a very good liar.",
       },
       {
         title: "What evidence you investigate in The Last Check-In",
-        body:
-          "As you work through the case, you will examine gritty check-in photos taken from the manager's desk, rationing logs, fake medical assessments, and highly contradictory police interrogations from the five survivors. You are asked to reconstruct the timeline of a 30-day lockdown, figure out how the bodies were locked inside their rooms from the outside, and track a missing duffel bag of cash that serves as the ultimate motive.",
+        body: "As you work through the case, you will examine gritty check-in photos taken from the manager's desk, rationing logs, fake medical assessments, and highly contradictory police interrogations from the five survivors. You are asked to reconstruct the timeline of a 30-day lockdown, figure out how the bodies were locked inside their rooms from the outside, and track a missing duffel bag of cash that serves as the ultimate motive.",
       },
       {
         title: "Who should play The Last Check-In",
-        body:
-          "This case is perfect for fans of Agatha Christie-style setups, true-crime aesthetics, and psychological thrillers. If you enjoy analyzing character motives, spotting inconsistencies in witness testimonies, and unraveling a web of red herrings, you will thrive here. Because the killer is deeply manipulative and hiding among the victims, players will need a sharp eye for detail and a healthy dose of skepticism.",
+        body: "This case is perfect for fans of Agatha Christie-style setups, true-crime aesthetics, and psychological thrillers. If you enjoy analyzing character motives, spotting inconsistencies in witness testimonies, and unraveling a web of red herrings, you will thrive here. Because the killer is deeply manipulative and hiding among the victims, players will need a sharp eye for detail and a healthy dose of skepticism.",
       },
     ],
   },
@@ -596,7 +562,7 @@ export const coldCases: ColdCase[] = [
     playDescription:
       "Explore The Palazzo of Bones through the interactive case board, where you can examine evidence, connect suspects, and investigate the mystery at your own pace.",
     imageUrl: "/cold_cases/thumbnails/palazzo_of_bones.jpeg",
-    tags: ["Date Night", "1-2 Players", "High Difficulty"],
+    tags: ["Historical", "Date Night", "1-2 Players", "High Difficulty"],
     description:
       "An unsolved disappearance in an old manor. Piece together letters, blueprints, and alibis to reveal what really happened one stormy night.",
     difficulty: "Hard",
@@ -610,26 +576,110 @@ export const coldCases: ColdCase[] = [
   },
 
   {
-    id: 3,
-    slug: "zero-sum",
-    title: "Zero Sum",
-    playTitle: "Play Zero Sum",
-    betaNotice:
-      "Zero Sum is currently in beta. Core content is in place, but we are still iterating on polish, flow, and overall presentation.",
+    id: 5,
+    slug: "sentinel-1-the-zero-sum-game",
+    title: "Sentinel 1: The Zero Sum Game",
+    seoTitle: "Unsolved Cold Case Online | Sentinel 1: The Zero Sum Game",
+    playTitle: "Play The Zero Sum Game",
+    pageTitle: "Sentinel 1: The Zero Sum Game",
+    shortDescription:
+      "An AI judge finds you 98% guilty of murder. Use its own evidence to find the truth and lower your guilt in a race against time to survive execution.",
+    seoDescription:
+      "Play Sentinel 1: The Zero Sum Game, an interactive unsolved cold case where you must prove your innocence to an AI judge. Analyze forensic data, digital footprints, and crime scene evidence to solve your own murder mystery before time runs out.",
     playDescription:
-      "Step into the Zero Sum case board to inspect evidence, compare timelines, and solve the mystery inside the interactive play experience.",
-    imageUrl: "/cold_cases/thumbnails/zero_sum_2.jpeg",
-    tags: ["Date Night", "1-2 Players", "Medium Difficulty"],
+      "Open the Sentinel case file to analyze forensic reports, review digital evidence, and argue against the AI's logic to prove your innocence.",
+    seoKeywords: [
+      "unsolved cold case online",
+      "AI judge game",
+      "solve a murder mystery game",
+      "interactive crime investigation",
+      "sci-fi mystery game",
+      "detective simulator game",
+      "zero sum game",
+    ],
+    betaNotice:
+      "Sentinel 1: The Zero Sum Game is currently in beta. The core mystery is fully playable, with ongoing polish and balancing updates in progress.",
+    imageUrl: "/cold_cases/thumbnails/sentinel_1_zero_sum.png",
+    tags: [
+      "Sci-Fi",
+      "Unsolved Cold Case",
+      "Sci-Fi Mystery",
+      "AI Judge",
+      "Detective Game",
+      "Single Player",
+      "High Stakes",
+      "Hard",
+      "Immersive Sim",
+    ],
     description:
-      "A celebrated actor vanishes during a film shoot in a remote location. Analyze scripts, call sheets, and personal notes to uncover hidden motives and secrets.",
-    difficulty: "Medium",
-    players: "1-2",
-    duration: "2-3 hours",
-    price: 24.99,
+      "Dive into the most immersive unsolved cold case online. In SENTINEL, you aren’t just a detective; you are the lead suspect in a trial where the verdict is already written.\n\nThe year is 2026. Los Angeles is governed by the Mercy Court—a fully autonomous AI justice system designed to act as judge, jury, and executioner. You are Dr. Aris Thorne, a brilliant chemical engineer whose logic is now being used against him. The tables have turned. You stand accused of the brutal murder of your wife.\n\nThe Sentinel AI has analyzed your digital footprint, your movements, and forensic data from the scene. Its verdict? 98% Probability of Guilt. In 90 minutes, the fatal pulse will be delivered. Your only hope is to use the Sentinel’s own interface to scour the evidence, revisit the crime scene, and find the 'glitches' in the facts.\n\nTo survive, you must dismantle the case piece by piece. Lower your guilt percentage to below 60% by uncovering hidden truths the AI ignored. Can you solve the most personal cold case in history before the clock hits zero? Or will you become another statistic in the perfect system you once admired?",
+    difficulty: "Hard",
+    players: "1",
+    duration: "1.5-2 hours",
+    price: 0,
     evidence: ZERO_SUM_DATA,
-    isPurchasable: false,
+    isPurchasable: true,
     hasDownloadSample: false,
-    isPlayable: true,
+    isPlayable: false,
+    seoSections: [
+      {
+        title: "Why is this an 'unsolved cold case online' with a twist?",
+        body: "The Zero Sum Game takes the classic cold case format and turns it on its head. Instead of being an outside detective, you are the prime suspect with a 98% guilt rating. The twist is that your judge is a flawless AI, and all the evidence is presented through its digital interface. You must re-examine facts that have already led to a verdict, making it a high-stakes investigation into your own life.",
+      },
+      {
+        title: "How do you play against an AI that can't be wrong?",
+        body: "Sentinel's logic is perfect, but it lacks human context. Your goal isn't to prove the AI made a mistake, but to provide it with new data that forces a recalculation. By analyzing digital footprints, smart home logs, and drone footage, you can find 'glitches' in the narrative—evidence of human emotion, motive, or opportunity that the machine miscategorized. Each discovery lowers your guilt percentage and gets you closer to survival.",
+      },
+      {
+        title: "What is the 60% Guilt Threshold?",
+        body: "This isn't a traditional trial about guilt or innocence; it's a battle of probabilities. To win, you don't need to find the real killer or prove yourself 100% innocent. You simply need to introduce enough new evidence to lower Sentinel's guilt calculation to below 60%. This creates enough 'reasonable doubt' for the AI to stay its own execution order, making every piece of evidence critical to your survival.",
+      },
+      {
+        title: "Who is this detective game for?",
+        body: "This case is perfect for players who love high-stakes thrillers, sci-fi mysteries, and escape room-style pressure. If you enjoy analyzing evidence, challenging logic, and racing against a clock, The Zero Sum Game offers a challenging single-player experience. It’s for the detective who wants to solve the most difficult and personal case imaginable.",
+      },
+    ],
+    preview: [
+      {
+        name: "The Sentinel Interface",
+        profile: "/cold_cases/previews/zero_sum_game/sentinel_interface.png",
+        thumbnail: "/cold_cases/previews/zero_sum_game/sentinel_interface.png",
+        title: "The Logic of the Machine",
+        typeOfPreview: "video",
+        content:
+          "Welcome to your courtroom and your prison. The Sentinel interface gives you access to every piece of evidence used to condemn you. Drag, connect, and analyze forensic reports, server data, and surveillance footage to see the case through the AI's eyes—and find what it missed.",
+        hideProfile: true,
+        mediaUrl: "https://your-video-host.com/sentinel_interface_preview.mp4",
+      },
+      {
+        name: "The Digital Footprint",
+        profile: "/cold_cases/previews/zero_sum_game/digital_footprint.png",
+        thumbnail: "/cold_cases/previews/zero_sum_game/digital_footprint.png",
+        title: "Trace the Digital Ghost",
+        typeOfPreview: "image",
+        content:
+          "The AI logged your every move. Now, use that data against it. Review smart-home activity logs, vehicle GPS data, and university lab access records. If your alibi was dismissed as irrelevant, it's up to you to prove its significance and force a recalculation.",
+        hideProfile: true,
+      },
+      {
+        name: "Arguing with the AI",
+        profile: "/cold_cases/previews/zero_sum_game/ai_interaction.png",
+        thumbnail: "/cold_cases/previews/zero_sum_game/ai_interaction.png",
+        title: "Challenge the Hard Facts",
+        typeOfPreview: "image",
+        content:
+          "You can't talk to a human jury, but you can interact with Sentinel. Use voice commands and text inputs to present your theories. If you connect two pieces of evidence in a way the AI hadn't considered, you might just lower that guilt percentage.",
+      },
+      {
+        name: "Evidence Unlocked",
+        profile: "/cold_cases/previews/zero_sum_game/evidence_unlocked.png",
+        thumbnail: "/cold_cases/previews/zero_sum_game/evidence_unlocked.png",
+        title: "Glitches in the Data",
+        typeOfPreview: "image",
+        content:
+          "As you successfully lower your guilt score, Sentinel is forced to release previously suppressed or low-priority evidence for your review. Every objective you solve unlocks a new layer of the mystery, giving you more tools to fight for your life.",
+      },
+    ],
   },
 
   {
@@ -642,7 +692,7 @@ export const coldCases: ColdCase[] = [
     playDescription:
       "Enter the Her Shadow's Name case board to sift through clues, trace connections, and investigate the mystery inside the playable experience.",
     imageUrl: "/cold_cases/thumbnails/her_shadows_name.jpeg",
-    tags: ["Missing", "1-2 Players", "High Difficulty"],
+  tags: ["Horror", "Missing", "1-2 Players", "High Difficulty"],
     description: `
       In the secluded, fog-choked town of Black Creek, Maine, some secrets are woven into the very wood and stone.
 On October 28th, Eleanor Vance, Age 24, disappeared.
@@ -663,7 +713,7 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     evidence: HER_SHADOWS_NAME_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: true,
+    isPlayable: false,
   },
 ];
 

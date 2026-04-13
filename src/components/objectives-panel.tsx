@@ -98,7 +98,7 @@ export default function ObjectivesPanel({
                     className={`font-special-elite text-sm transition-colors ${
                       isCompleted
                         ? "line-through text-gray-500"
-                        : "text-gray-700 dark:text-gray-300 group-hover:text-white"
+                        : "text-gray-700 dark:text-gray-300 dark:group-hover:text-white"
                     }`}
                   >
                     {obj.description}

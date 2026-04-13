@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import GenericFloatingPanel from "./floating-panel";
+import { parseClueContent } from "@/lib/clue-utils";
 
 // Align with BoardItem shape used in play/[slug]/page.tsx
 export interface EvidencePanelItem {
@@ -13,6 +14,11 @@ export interface EvidencePanelItem {
 export interface EvidencePanelProps {
   items: EvidencePanelItem[];
   onFocus: (id: string) => void; // Called when user selects an evidence item
+  objectiveUnlocks?: Array<{
+    objectiveId: string;
+    label: string;
+    itemIds: string[];
+  }>;
   onClose?: () => void;
   className?: string;
 }
@@ -59,9 +65,28 @@ function groupByType(items: EvidencePanelItem[]) {
 export default function EvidencePanel({
   items,
   onFocus,
+  objectiveUnlocks = [],
   onClose,
 }: EvidencePanelProps) {
-  const grouped = React.useMemo(() => groupByType(items), [items]);
+  const [activeObjectiveFilter, setActiveObjectiveFilter] = React.useState<string>("all");
+
+  React.useEffect(() => {
+    if (activeObjectiveFilter === "all") return;
+    const exists = objectiveUnlocks.some((o) => o.objectiveId === activeObjectiveFilter);
+    if (!exists) setActiveObjectiveFilter("all");
+  }, [activeObjectiveFilter, objectiveUnlocks]);
+
+  const filteredItems = React.useMemo(() => {
+    if (activeObjectiveFilter === "all") return items;
+    const selected = objectiveUnlocks.find(
+      (o) => o.objectiveId === activeObjectiveFilter,
+    );
+    if (!selected) return items;
+    const idSet = new Set(selected.itemIds);
+    return items.filter((item) => idSet.has(item.id));
+  }, [activeObjectiveFilter, objectiveUnlocks, items]);
+
+  const grouped = React.useMemo(() => groupByType(filteredItems), [filteredItems]);
 
   return (
     <GenericFloatingPanel
@@ -102,18 +127,61 @@ export default function EvidencePanel({
       }}
       bodyClassName="flex flex-col gap-4 flex-1 overflow-y-auto px-0"
       headerActions={
-        <span
-          className="text-[10px] font-mono text-gray-500 dark:text-gray-400"
-          aria-hidden
-        >
-          {items.length} items
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-[10px] font-mono text-gray-500 dark:text-gray-400"
+            aria-hidden
+          >
+            {filteredItems.length}/{items.length} items
+          </span>
+        </div>
       }
     >
       <div className="flex flex-col gap-4 px-3 pb-3">
+        {objectiveUnlocks.length > 0 && (
+          <div className="flex flex-col gap-1">
+            <p className="font-staatliches tracking-wider text-[11px] uppercase text-gray-700 dark:text-gray-300">
+              Filter by objective unlock
+            </p>
+            <div className="flex flex-wrap gap-1">
+              <button
+                type="button"
+                onClick={() => setActiveObjectiveFilter("all")}
+                className={`px-2 py-1 rounded-md text-[10px] uppercase tracking-wide border transition ${
+                  activeObjectiveFilter === "all"
+                    ? "bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white"
+                    : "bg-gray-100/70 dark:bg-white/10 border-gray-300/60 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20"
+                }`}
+              >
+                All
+              </button>
+              {objectiveUnlocks.map((objective) => (
+                <button
+                  key={objective.objectiveId}
+                  type="button"
+                  onClick={() => setActiveObjectiveFilter(objective.objectiveId)}
+                  className={`px-2 py-1 rounded-md text-[10px] border transition ${
+                    activeObjectiveFilter === objective.objectiveId
+                      ? "bg-gray-900 text-white border-gray-900 dark:bg-white dark:text-black dark:border-white"
+                      : "bg-gray-100/70 dark:bg-white/10 border-gray-300/60 dark:border-white/10 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-white/20"
+                  }`}
+                  title={objective.label}
+                >
+                  <span className="font-special-elite">
+                    {objective.label}
+                  </span>{" "}
+                  <span className="font-mono opacity-70">({objective.itemIds.length})</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {grouped.length === 0 && (
           <p className="text-xs text-gray-500 dark:text-gray-400 font-mono px-1">
-            No evidence items yet.
+            {activeObjectiveFilter === "all"
+              ? "No evidence items yet."
+              : "No evidence unlocked for this objective yet."}
           </p>
         )}
         {grouped.map(({ type, items }) => {
@@ -127,11 +195,18 @@ export default function EvidencePanel({
               </h4>
               <ul className="flex flex-col gap-1">
                 {items.map((it) => {
-                  // Derive a short label from content (first 40 chars)
-                  const preview = it.title
-                    ? it.title
-                    : it.content.replace(/\n+/g, " ").slice(0, 40).trim() +
-                      (it.content.length > 40 ? "…" : "");
+                  // Derive a short label from content (first 40 chars),
+                  // with clue-specific parsing to avoid showing raw JSON.
+                  const sourceText =
+                    it.type === "clue"
+                      ? parseClueContent(it.content).clue
+                      : it.content;
+                  const compactSource = sourceText.replace(/\n+/g, " ").trim();
+                  const preview =
+                    it.title && it.title.trim().length > 0
+                      ? it.title
+                      : compactSource.slice(0, 40) +
+                        (compactSource.length > 40 ? "…" : "");
                   return (
                     <li key={it.id}>
                       <button

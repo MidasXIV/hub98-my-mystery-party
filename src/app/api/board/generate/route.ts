@@ -4,6 +4,7 @@ import { getCaseBySlug } from '@/data/coldCases';
 type MaybeBoardData = {
   items?: unknown[];
   connections?: unknown[];
+  clues?: unknown[];
   [k: string]: unknown;
 };
 
@@ -497,7 +498,7 @@ export async function POST(req: Request) {
       'station-zero',
       'her-shadows-name',
       'palazzo-of-bones',
-      'zero-sum',
+      'sentinel-1-the-zero-sum-game',
       'the-final-rehearsal',
       'the-final-bench-off',
       'sins-of-saint-lazarus',

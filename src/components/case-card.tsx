@@ -5,8 +5,12 @@ import { coldCases } from "@/data/coldCases";
 // Reusable card component for displaying a cold case preview.
 // Accepts one ColdCase item (inferred from coldCases type) and renders
 // image background, title, arrow icon, and tags similar to homepage styling.
+
 export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
   const isPlayable = caseData.isPlayable ?? false;
+  const caseSummary = (caseData.shortDescription || caseData.description || "")
+    .replace(/\s+/g, " ")
+    .trim();
 
   return (
     <Link
@@ -59,7 +63,7 @@ export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
             />
           </svg>
         </div>
-        <div className="absolute bottom-5 left-5 flex flex-wrap gap-2">
+        <div className="absolute bottom-5 left-5 z-10 flex flex-wrap gap-2 transition duration-300 group-hover:opacity-0 group-hover:translate-y-2 group-focus-visible:opacity-0 group-focus-visible:translate-y-2">
           {caseData.tags.map((tag, index) => (
             <span
               key={index}
@@ -68,6 +72,12 @@ export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
               {tag}
             </span>
           ))}
+        </div>
+
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 rounded-b-3xl bg-black/45 p-5 pt-10 opacity-0 backdrop-blur-md transition duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+          <p className="line-clamp-4 text-sm leading-relaxed text-white/95">
+            {caseSummary}
+          </p>
         </div>
       </div>
     </Link>

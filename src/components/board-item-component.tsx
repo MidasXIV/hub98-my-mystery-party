@@ -3,6 +3,7 @@ import React, { CSSProperties, useMemo } from "react";
 import {
   BoardItem,
 } from "@/lib/boardTypes";
+import CluePreview from "@/components/clue-preview";
 
 function Tape({ rotation }: { rotation?: number }) {
   return (
@@ -111,13 +112,7 @@ export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> =
   ),
 
   clue: ({ item, isNew }) => (
-    <div
-      className={`w-full h-full clue-item-effect text-black text-xs flex items-center justify-center text-center font-special-elite ${
-        isNew ? "clue-item-appear" : ""
-      }`}
-    >
-      <p>{item.content}</p>
-    </div>
+    <CluePreview content={item.content} isNew={isNew} />
   ),
 
   "autopsy-report": ({ item }) => (
