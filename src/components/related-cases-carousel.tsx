@@ -16,16 +16,44 @@ function isCaseAvailable(coldCase: ColdCase) {
   return Boolean(coldCase.isPurchasable || coldCase.isPlayable);
 }
 
+function applyMagneticOffset(
+  event: React.MouseEvent<HTMLElement>,
+  {
+    shiftStrength,
+    tiltStrength,
+  }: {
+    shiftStrength: number;
+    tiltStrength: number;
+  },
+) {
+  const target = event.currentTarget;
+  const bounds = target.getBoundingClientRect();
+  const xRatio = (event.clientX - bounds.left) / bounds.width - 0.5;
+  const yRatio = (event.clientY - bounds.top) / bounds.height - 0.5;
+
+  target.style.setProperty("--shift-x", `${xRatio * shiftStrength}px`);
+  target.style.setProperty("--shift-y", `${yRatio * shiftStrength}px`);
+  target.style.setProperty("--tilt-x", `${-yRatio * tiltStrength}deg`);
+  target.style.setProperty("--tilt-y", `${xRatio * tiltStrength}deg`);
+}
+
+function resetMagneticOffset(event: React.MouseEvent<HTMLElement>) {
+  const target = event.currentTarget;
+  target.style.setProperty("--shift-x", "0px");
+  target.style.setProperty("--shift-y", "0px");
+  target.style.setProperty("--tilt-x", "0deg");
+  target.style.setProperty("--tilt-y", "0deg");
+}
+
 function useCardsPerView() {
-  const [cardsPerView, setCardsPerView] = useState(1);
+  const [cardsPerView, setCardsPerView] = useState(2);
 
   useEffect(() => {
     const getCardsPerView = () => {
       if (window.innerWidth >= 1280) return 5;
       if (window.innerWidth >= 1024) return 4;
       if (window.innerWidth >= 768) return 3;
-      if (window.innerWidth >= 640) return 2;
-      return 1;
+      return 2;
     };
 
     const update = () => setCardsPerView(getCardsPerView());
@@ -53,7 +81,7 @@ export default function RelatedCasesCarousel({
   const canGoPrev = index > 0;
   const canGoNext = index < maxIndex;
   const cardBasisClass =
-    "basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5";
+    "basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5";
 
   return (
     <>
@@ -65,8 +93,12 @@ export default function RelatedCasesCarousel({
           <button
             type="button"
             onClick={() => setIndex((current) => Math.max(0, current - 1))}
+            onMouseMove={(event) =>
+              applyMagneticOffset(event, { shiftStrength: 6, tiltStrength: 0 })
+            }
+            onMouseLeave={resetMagneticOffset}
             disabled={!canGoPrev}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-text-primary transition hover:border-white/20 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-card text-text-primary transition-[transform,colors] duration-200 [transform:translate3d(var(--shift-x,0px),var(--shift-y,0px),0)] hover:bg-muted disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20 dark:hover:bg-white/10"
             aria-label="Show previous suggested cases"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -74,8 +106,12 @@ export default function RelatedCasesCarousel({
           <button
             type="button"
             onClick={() => setIndex((current) => Math.min(maxIndex, current + 1))}
+            onMouseMove={(event) =>
+              applyMagneticOffset(event, { shiftStrength: 6, tiltStrength: 0 })
+            }
+            onMouseLeave={resetMagneticOffset}
             disabled={!canGoNext}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-text-primary transition hover:border-white/20 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-35"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/70 bg-card text-text-primary transition-[transform,colors] duration-200 [transform:translate3d(var(--shift-x,0px),var(--shift-y,0px),0)] hover:bg-muted disabled:cursor-not-allowed disabled:opacity-35 dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20 dark:hover:bg-white/10"
             aria-label="Show more suggested cases"
           >
             <ChevronRight className="h-4 w-4" />
@@ -84,11 +120,8 @@ export default function RelatedCasesCarousel({
       </div>
 
       <div className="relative mt-8 overflow-hidden">
-        <div className="pointer-events-none absolute inset-y-0 left-0 z-10 hidden w-12 bg-gradient-to-r from-background via-background/80 to-transparent lg:block" />
-        <div className="pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-12 bg-gradient-to-l from-background via-background/80 to-transparent lg:block" />
-
         <motion.ul
-          className="-mx-2 flex touch-pan-y"
+          className="-mx-1 flex touch-pan-y sm:-mx-2"
           animate={{ x: `-${index * (100 / cardsPerView)}%` }}
           transition={{ type: "spring", stiffness: 280, damping: 32 }}
           drag="x"
@@ -114,34 +147,38 @@ export default function RelatedCasesCarousel({
             return (
               <motion.li
                 key={suggestedCase.slug}
-                className={`${cardBasisClass} min-w-0 shrink-0 list-none px-2`}
+                className={`${cardBasisClass} min-w-0 shrink-0 list-none px-1 sm:px-2`}
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: itemIndex * 0.04 }}
               >
                 <Link
                   href={`/cases/${suggestedCase.slug}`}
-                  className="group flex h-full min-h-[28rem] flex-col overflow-hidden rounded-[1.5rem] border border-white/10 bg-background/60 transition duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-background"
+                  onMouseMove={(event) =>
+                    applyMagneticOffset(event, { shiftStrength: 4, tiltStrength: 2.2 })
+                  }
+                  onMouseLeave={resetMagneticOffset}
+                  className="group flex h-full min-h-[21rem] flex-col overflow-hidden rounded-[1.25rem] border border-border/70 bg-card/80 transition-[transform,colors] duration-200 [transform:perspective(900px)_translate3d(var(--shift-x,0px),var(--shift-y,0px),0)_rotateX(var(--tilt-x,0deg))_rotateY(var(--tilt-y,0deg))] hover:border-border hover:bg-card focus:outline-none focus:ring-2 focus:ring-ring/60 focus:ring-offset-2 focus:ring-offset-background sm:min-h-[24rem] sm:rounded-[1.5rem] dark:border-white/10 dark:bg-background/60 dark:hover:border-white/20 dark:hover:bg-white/[0.05]"
                   aria-label={`Explore case ${suggestedCase.title}`}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden">
+                  <div className="relative aspect-[16/10] overflow-hidden sm:aspect-[4/3]">
                     <Image
                       src={suggestedCase.imageUrl}
                       alt={suggestedCase.title}
                       fill
-                      sizes="(max-width: 639px) 100vw, (max-width: 767px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
+                      sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, (max-width: 1279px) 25vw, 20vw"
                       className="object-cover transition duration-500 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-transparent" />
 
-                    <div className="absolute bottom-3 left-3 right-3 flex flex-wrap items-center gap-2">
+                    <div className="absolute bottom-2 left-2 right-2 flex flex-wrap items-center gap-1.5 sm:bottom-3 sm:left-3 sm:right-3 sm:gap-2">
                       <AnimatePresence>
                         {!isAvailable ? (
                           <motion.span
                             initial={{ opacity: 0, y: 6 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 6 }}
-                            className="rounded-full border border-amber-300/25 bg-amber-500/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-100 backdrop-blur"
+                            className="rounded-full border border-amber-300/25 bg-amber-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-amber-100 backdrop-blur sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.18em]"
                           >
                             Coming Soon
                           </motion.span>
@@ -154,7 +191,7 @@ export default function RelatedCasesCarousel({
                       ).map((tag) => (
                         <span
                           key={`${suggestedCase.slug}-${tag}`}
-                          className="rounded-full border border-white/15 bg-black/35 px-2.5 py-1 text-[11px] font-medium text-white/90 backdrop-blur"
+                          className="rounded-full border border-white/15 bg-black/35 px-2 py-0.5 text-[10px] font-medium text-white/90 backdrop-blur sm:px-2.5 sm:py-1 sm:text-[11px]"
                         >
                           {tag}
                         </span>
@@ -162,29 +199,29 @@ export default function RelatedCasesCarousel({
                     </div>
                   </div>
 
-                  <div className="flex flex-1 flex-col p-4">
+                  <div className="flex flex-1 flex-col p-3 sm:p-4">
                     <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-base font-semibold leading-snug text-text-primary transition group-hover:text-white">
+                      <h3 className="text-sm font-semibold leading-snug text-text-primary transition-colors group-hover:text-text-primary sm:text-base dark:group-hover:text-white">
                         {suggestedCase.pageTitle || suggestedCase.title}
                       </h3>
                       <span
                         aria-hidden
-                        className="mt-0.5 inline-flex h-8 w-8 flex-none items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/80 transition group-hover:border-white/20 group-hover:bg-white/10"
+                        className="mt-0.5 inline-flex h-7 w-7 flex-none items-center justify-center rounded-full border border-border/70 bg-muted/60 text-xs text-muted-foreground transition-colors group-hover:bg-muted sm:h-8 sm:w-8 sm:text-sm dark:border-white/10 dark:bg-white/5 dark:text-white/80 dark:group-hover:border-white/20 dark:group-hover:bg-white/10"
                       >
                         ↗
                       </span>
                     </div>
 
-                    <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-text-secondary">
+                    <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary sm:mt-3 sm:line-clamp-3 sm:text-sm">
                       {suggestedCase.shortDescription || suggestedCase.description}
                     </p>
 
-                    <div className="mt-auto pt-5">
-                      <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] px-4 py-2 text-sm font-medium text-text-primary transition group-hover:border-white/20 group-hover:bg-white/[0.08] group-hover:text-white">
+                    <div className="mt-auto pt-3 sm:pt-5">
+                      <div className="inline-flex items-center gap-1.5 rounded-full border border-border/80 bg-muted/50 px-3 py-1.5 text-xs font-medium text-text-primary transition-colors group-hover:bg-muted sm:gap-2 sm:px-4 sm:py-2 sm:text-sm dark:border-white/12 dark:bg-white/[0.05] dark:group-hover:border-white/20 dark:group-hover:bg-white/[0.08] dark:group-hover:text-white">
                         <span>{isAvailable ? "Play Case" : "Preview Case"}</span>
                         <span
                           aria-hidden
-                          className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/8 text-xs text-white/90"
+                          className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-foreground/10 text-[10px] text-foreground/80 sm:h-6 sm:w-6 sm:text-xs dark:bg-white/8 dark:text-white/90"
                         >
                           →
                         </span>

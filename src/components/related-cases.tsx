@@ -55,7 +55,8 @@ export default function RelatedCases({
 
   return (
     <section
-      className="mt-14 rounded-[2rem] border border-subtle-stroke bg-white/[0.03] px-4 py-6 shadow-[0_25px_80px_-50px_rgba(0,0,0,0.55)] sm:px-6 lg:mt-16 lg:px-8"
+      className="relative mt-14 py-10 sm:px-6 lg:mt-16 lg:px-8 before:pointer-events-none before:absolute before:left-1/2 before:top-0 before:h-px before:w-screen before:-translate-x-1/2 before:bg-border/70 after:pointer-events-none after:absolute after:bottom-0 after:left-1/2 after:h-px after:w-screen after:-translate-x-1/2 after:bg-border/70"
+      // className="mt-14 rounded-[2rem] border border-subtle-stroke bg-white/[0.03] px-4 py-6 shadow-[0_25px_80px_-50px_rgba(0,0,0,0.55)] sm:px-6 lg:mt-16 lg:px-8"
       aria-labelledby="related-cases-heading"
     >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
