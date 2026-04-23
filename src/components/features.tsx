@@ -124,16 +124,18 @@ function FeatureCard({ feature }: { feature: (typeof features)[0] }) {
 
   if (feature.type === "imageCard") {
     return (
-      <div className="group relative aspect-[4/5] bg-surface rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 ease-in-out hover:-translate-y-2">
+      <div className="group relative h-full aspect-[4/5] bg-surface rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg transition-transform duration-300 ease-in-out hover:-translate-y-2">
         <div
           className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-in-out group-hover:scale-110"
           style={{ backgroundImage: `url(${feature.imageUrl})` }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 p-6 text-white flex flex-col justify-end h-full">
+        <div className="absolute bottom-0 left-0 p-4 sm:p-6 text-white flex flex-col justify-end h-full">
           <div>
-            <h3 className="text-2xl font-bold">{feature.title}</h3>
-            <p className="mt-2 text-white/80 text-sm leading-relaxed">
+            <h3 className="text-lg sm:text-2xl font-bold leading-tight">
+              {feature.title}
+            </h3>
+            <p className="mt-2 text-white/80 text-[11px] sm:text-sm leading-snug sm:leading-relaxed">
               {feature.description}
             </p>
           </div>
@@ -144,12 +146,15 @@ function FeatureCard({ feature }: { feature: (typeof features)[0] }) {
 
   if (feature.type === "statCard") {
     return (
-      <div className="bg-surface-accent p-8 rounded-3xl flex flex-col justify-center items-center aspect-[4/5] text-center transition-transform duration-300 ease-in-out hover:-translate-y-2">
-        <h3 className="text-5xl md:text-6xl font-bold text-text-primary">
+      <div className="relative h-full overflow-hidden bg-gradient-to-br from-surface-accent to-surface p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/5 flex flex-col justify-center items-center aspect-[4/5] text-center transition-transform duration-300 ease-in-out hover:-translate-y-2">
+        <div className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-text-primary/5 blur-2xl" />
+        <h3 className="text-4xl sm:text-5xl md:text-6xl font-bold text-text-primary">
           50K+
         </h3>
-        <p className="mt-2 text-text-secondary font-semibold">Detectives</p>
-        <p className="mt-4 text-text-secondary text-sm leading-relaxed">
+        <p className="mt-2 text-text-secondary font-semibold text-sm sm:text-base">
+          Detectives
+        </p>
+        <p className="mt-4 text-text-secondary text-xs sm:text-sm leading-relaxed">
           {feature.description}
         </p>
       </div>
@@ -158,18 +163,19 @@ function FeatureCard({ feature }: { feature: (typeof features)[0] }) {
 
   // Default is 'iconCard'
   return (
-    <div className="bg-surface-accent p-8 rounded-3xl flex flex-col justify-between aspect-[4/5] transition-transform duration-300 ease-in-out hover:-translate-y-2">
-      <div>
+    <div className="relative h-full overflow-hidden bg-gradient-to-br from-surface-accent via-surface-accent to-surface p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-black/5 flex flex-col justify-between aspect-[4/5] transition-transform duration-300 ease-in-out hover:-translate-y-2">
+      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-text-primary/5 blur-2xl" />
+      <div className="relative">
         {Icon && (
-          <div className="w-12 h-12 bg-surface rounded-full flex items-center justify-center mb-6">
-            <Icon className="w-6 h-6 text-text-secondary" />
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-surface/90 rounded-full flex items-center justify-center mb-4 sm:mb-6 shadow-sm border border-black/5">
+            <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-text-secondary" />
           </div>
         )}
-        <h3 className="text-2xl font-bold text-text-primary">
+        <h3 className="text-lg sm:text-2xl font-bold text-text-primary leading-tight">
           {feature.title}
         </h3>
       </div>
-      <p className="text-text-secondary leading-relaxed text-sm">
+      <p className="relative text-text-secondary leading-snug sm:leading-relaxed text-[11px] sm:text-sm mt-3">
         {feature.description}
       </p>
     </div>
@@ -201,23 +207,23 @@ function Features() {
   return (
     <section
       ref={sectionRef}
-      className="bg-surface text-text-primary py-24 md:py-32 font-sans"
+      className="bg-surface text-text-primary py-16 md:py-32 font-sans"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight">
             Everything You Need to Crack the Case
           </h2>
-          <p className="mt-6 text-lg text-text-secondary">
+          <p className="mt-4 sm:mt-6 text-base sm:text-lg text-text-secondary">
             Our all-in-one digital platform provides an immersive, interactive,
             and collaborative way to solve mysteries. Here&apos;s how we&apos;ve changed
             the game.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
           {features.map((feature, index) => (
-            <div key={index} className="feature-card">
+            <div key={index} className="feature-card h-full">
               <FeatureCard feature={feature} />
             </div>
           ))}
