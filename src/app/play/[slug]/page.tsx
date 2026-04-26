@@ -962,12 +962,12 @@ export default function PlayBoardPage({
   };
 
   const handleInteractionEnd = () => {
-    // FIX: Check if timer exists before clearing, as `clearTimeout` doesn't accept `null`.
-    if (longPressTimer.current) clearTimeout(longPressTimer.current);
-    if (!longPressTimer.current) {
-      // Prevents drag end if context menu was shown
-      setDraggingItem(null);
+    // Always clear and reset timer ref so touch end can reliably exit drag mode.
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
     }
+    setDraggingItem(null);
     setIsPanning(false);
     pinchDistRef.current = 0;
   };
@@ -1567,7 +1567,6 @@ export default function PlayBoardPage({
       onTouchStart: (e: any) => handleItemTouchStart(e, item.id),
       onContextMenu: (e: any) => handleItemContextMenu(e, item.id),
       onClick: (e: any) => handleItemClick(e, item.id),
-      title: item.content,
     };
 
     switch (item.type) {

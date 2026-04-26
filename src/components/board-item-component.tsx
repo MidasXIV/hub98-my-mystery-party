@@ -408,9 +408,8 @@ const renderBoardItemComponent = React.memo(
         onTouchStart: (e: any) => onItemInteraction.onTouchStart(e, item.id),
         onContextMenu: (e: any) => onItemInteraction.onContextMenu(e, item.id),
         onClick: (e: any) => onItemInteraction.onClick(e, item.id),
-        title: item.content,
       }),
-      [item.id, item.content, onItemInteraction]
+      [item.id, onItemInteraction]
     );
 
     // 3e. Select Renderer
