@@ -49,8 +49,8 @@ Why it works:
 - the evidence has a layered, document-heavy style that rewards careful reading
 - it is a great pick for players who like darker and more dramatic mysteries
 
-- Play the case: https://www.mymystery.party/play/sins-of-saint-lazarus
-- Case page: https://www.mymystery.party/cases/sins-of-saint-lazarus
+- Play the case: [Play The Sins of Saint Lazarus](https://www.mymystery.party/play/sins-of-saint-lazarus)
+- Case page: [The Sins of Saint Lazarus case details](https://www.mymystery.party/cases/sins-of-saint-lazarus)
 
 ## 2. Station Zero: Ghost of the Machine
 
@@ -67,8 +67,8 @@ Why it works:
 - it has one of the strongest slow-burn atmospheres on the site
 - it is a great fit for experienced mystery players who want a challenge
 
-- Play the case: https://www.mymystery.party/play/station-zero
-- Case page: https://www.mymystery.party/cases/station-zero
+- Play the case: [Play Station Zero: Ghost of the Machine](https://www.mymystery.party/play/station-zero)
+- Case page: [Station Zero case details](https://www.mymystery.party/cases/station-zero)
 
 ## 3. The Final Rehearsal
 
@@ -85,8 +85,8 @@ Why it works:
 - the clue trail is clear, which makes it good for date night or first-time players
 - it is easy to share with friends and solve together
 
-- Play the case: https://www.mymystery.party/play/the-final-rehearsal
-- Case page: https://www.mymystery.party/cases/the-final-rehearsal
+- Play the case: [Play The Final Rehearsal](https://www.mymystery.party/play/the-final-rehearsal)
+- Case page: [The Final Rehearsal case details](https://www.mymystery.party/cases/the-final-rehearsal)
 
 ## 4. The Last Check-In
 
@@ -103,8 +103,8 @@ Why it works:
 - it is ideal for players who love paranoia, motive analysis, and red herrings
 - the motel setting gives the case a gritty psychological-thriller mood
 
-- Play the case: https://www.mymystery.party/play/the-last-check-in
-- Case page: https://www.mymystery.party/cases/the-last-check-in
+- Play the case: [Play The Last Check-In](https://www.mymystery.party/play/the-last-check-in)
+- Case page: [The Last Check-In case details](https://www.mymystery.party/cases/the-last-check-in)
 
 ## Which online cold case mystery game should you play first?
 
@@ -134,4 +134,4 @@ If you want the **best interactive cold case mystery games to play online**, the
 
 Each one offers a different flavor of investigation, but all of them are built around what makes online mystery games fun in the first place: evidence, suspense, and the thrill of solving something yourself.
 
-Browse all cases here: https://www.mymystery.party/cases
+Browse all cases here: [Browse all cold case mystery games](https://www.mymystery.party/cases)

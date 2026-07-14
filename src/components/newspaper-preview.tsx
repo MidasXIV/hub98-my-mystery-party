@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 
 // --- CSS & Assets ---
 const NewspaperStyles = () => (
@@ -62,6 +63,9 @@ function parseNewsData(content: string) {
       headline: data.headline || "BREAKING NEWS",
       date: data.date || "Unknown Date",
       body: data.body || content,
+      hasPhoto: data.hasPhoto ?? Boolean(data.imageUrl),
+      imageUrl: data.imageUrl || data.photoUrl || data.photo?.url || "",
+      imageCaption: data.imageCaption || "",
       // Optional: Extract a location or author if your future JSON supports it
       location: data.location || "RIVERDALE",
       author: data.author || "Staff Writer"
@@ -72,6 +76,9 @@ function parseNewsData(content: string) {
       headline: "EXTRA! EXTRA!",
       date: "Undated",
       body: content,
+      hasPhoto: false,
+      imageUrl: "",
+      imageCaption: "",
       location: "RIVERDALE",
       author: "Unknown"
     };
@@ -88,7 +95,6 @@ export default function NewspaperPreview({ content }: NewspaperPreviewProps) {
   // Truncate body if it's massive, to fit the "clipping" look
   const displayBody = data.body.length > 500 ? data.body.slice(0, 500) + "..." : data.body;
 
-  console.log("[NEWSPAPER] Render");
   return (
     <div className="w-full h-full relative group cursor-pointer select-none">
       <NewspaperStyles />
@@ -118,6 +124,18 @@ export default function NewspaperPreview({ content }: NewspaperPreviewProps) {
 
         {/* --- Body Content --- */}
         <div className="flex-1 overflow-hidden relative">
+          {data.hasPhoto && data.imageUrl && (
+            <figure className="mb-2 border border-black/20 bg-black/5 p-0.5">
+              <Image
+                src={data.imageUrl}
+                alt={data.imageCaption || data.headline}
+                width={320}
+                height={180}
+                className="w-full h-20 object-cover grayscale contrast-125 brightness-90"
+                loading="lazy"
+              />
+            </figure>
+          )}
           
           {/* Text */}
           <div className={`body-font text-[10px] md:text-[11px] ink-bleed ${displayBody.length > 200 ? 'news-columns' : ''}`}>

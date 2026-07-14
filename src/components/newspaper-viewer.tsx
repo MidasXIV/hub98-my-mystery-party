@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 
 // --- Types ---
 interface NewspaperData {
@@ -14,6 +15,7 @@ interface NewspaperData {
   authorRole?: string;
   publication: string;
   hasPhoto?: boolean;
+  imageUrl?: string;
   imageCaption?: string;
 }
 
@@ -103,7 +105,8 @@ function parseNewsViewerData(content: string): NewspaperData {
     author: json.author || "Staff Writer",
     authorRole: json.authorRole || undefined,
     publication: json.publication || "The Venice Gazette",
-    hasPhoto: json.hasPhoto ?? false, 
+    hasPhoto: json.hasPhoto ?? Boolean(json.imageUrl || json.photoUrl),
+    imageUrl: json.imageUrl || json.photoUrl || json.photo?.url || "",
     imageCaption: json.imageCaption || "Fig 1. Scene of the incident.",
   };
 }
@@ -170,14 +173,23 @@ export default function NewspaperViewer({ content }: NewspaperViewerProps) {
             {data.hasPhoto && (
               <figure className="mb-4 md:float-left md:mr-6 w-full md:w-[60%] break-inside-avoid">
                 <div className="w-full aspect-[4/5] bg-neutral-300 relative overflow-hidden newspaper-photo border border-black/20">
+                   {data.imageUrl ? (
+                     <Image
+                       src={data.imageUrl}
+                       alt={data.imageCaption || data.headline}
+                       fill
+                       className="object-cover"
+                       sizes="(max-width: 768px) 100vw, 60vw"
+                     />
+                   ) : (
+                     <svg viewBox="0 0 100 100" className="w-full h-full text-neutral-800 fill-current opacity-60 p-4">
+                        <path d="M50 20 C 40 20, 30 30, 30 45 C 30 60, 70 60, 70 45 C 70 30, 60 20, 50 20 Z M 10 100 L 10 80 C 10 55, 90 55, 90 80 L 90 100 Z" />
+                     </svg>
+                   )}
+
                    {/* CSS Noise for 'Grainy Photo' look */}
                    <div className="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] mix-blend-overlay" />
-                   
-                   {/* Placeholder Silhouette */}
-                   <svg viewBox="0 0 100 100" className="w-full h-full text-neutral-800 fill-current opacity-60 p-4">
-                      <path d="M50 20 C 40 20, 30 30, 30 45 C 30 60, 70 60, 70 45 C 70 30, 60 20, 50 20 Z M 10 100 L 10 80 C 10 55, 90 55, 90 80 L 90 100 Z" />
-                   </svg>
-                   
+
                    {/* Flash Effect */}
                    <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-tr from-black/40 to-transparent" />
                 </div>

@@ -54,7 +54,7 @@ function getCloudflareConfig() {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
   const token = process.env.CLOUDFLARE_API_TOKEN;
   const model =
-    process.env.CLOUDFLARE_AI_MODEL ?? "@cf/meta/llama-3-8b-instruct";
+    process.env.CLOUDFLARE_AI_MODEL ?? "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
   if (!accountId || !token) {
     throw new Error(
       "Missing CLOUDFLARE_ACCOUNT_ID or CLOUDFLARE_API_TOKEN on server"
@@ -164,24 +164,53 @@ function buildAssessmentPayload(
   };
 }
 
+function toModelText(raw: unknown): string {
+  if (typeof raw === "string") return raw;
+  if (raw == null) return "";
+
+  if (Array.isArray(raw)) {
+    return raw.map((item) => toModelText(item)).join("\n");
+  }
+
+  if (typeof raw === "object") {
+    const obj = raw as Record<string, unknown>;
+
+    // Common nested response fields from AI providers
+    for (const key of ["response", "text", "output_text", "content", "message"]) {
+      if (key in obj) {
+        const nested = toModelText(obj[key]);
+        if (nested.trim().length > 0) return nested;
+      }
+    }
+
+    try {
+      return JSON.stringify(raw);
+    } catch {
+      return String(raw);
+    }
+  }
+
+  return String(raw);
+}
+
 function extractTextFromCloudflare(result: { result?: Record<string, unknown> }) {
   const data = result?.result ?? {};
   return (
-    (data.response as string) ||
-    (data.text as string) ||
-    (data.output_text as string) ||
-    (data.message as { content?: string } | undefined)?.content ||
+    data.response ??
+    data.text ??
+    data.output_text ??
+    (data.message as { content?: unknown } | undefined)?.content ??
     ""
   );
 }
 
-function stripMarkdownCodeFences(raw: string) {
-  const trimmed = raw.trim();
+function stripMarkdownCodeFences(raw: unknown) {
+  const trimmed = toModelText(raw).trim();
   const fenced = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
   return fenced ? fenced[1].trim() : trimmed;
 }
 
-function extractFirstBalancedJsonObject(raw: string) {
+function extractFirstBalancedJsonObject(raw: unknown) {
   const text = stripMarkdownCodeFences(raw);
   const start = text.indexOf("{");
   if (start === -1) return text.trim();
@@ -245,7 +274,7 @@ function safeJsonPreview(raw: string, maxLength = 400) {
   return raw.length <= maxLength ? raw : `${raw.slice(0, maxLength)}…`;
 }
 
-function parseJsonWithRecovery(raw: string) {
+function parseJsonWithRecovery(raw: unknown) {
   const extracted = extractFirstBalancedJsonObject(raw);
 
   try {
@@ -772,7 +801,7 @@ export async function POST(req: Request) {
         solutionText,
       }),
       schema: scoringSchema,
-      geminiModel: "gemini-2.5-flash",
+      geminiModel: "google/gemini-3.5-flash",
     })) as ScoreResult;
     score =
       typeof parsed.score === "number"

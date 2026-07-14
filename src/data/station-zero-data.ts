@@ -60,6 +60,51 @@ Good luck.`,
       packIn: ["evidence"],
     },
     {
+      id: "brochure_station_zero_recruitment",
+      type: "brochure",
+      title: "Station Zero Research Program Brochure",
+      content: JSON.stringify({
+        title: "Station Zero",
+        location: "AegisCorp Orbital Research Initiative",
+        edition: "Volunteer Recruitment Flyer",
+        stamp: "Apply For Mission Rotation",
+        front: {
+          eyebrow: "Now Accepting Volunteers",
+          headline: "Join The Station Zero Program",
+          subheadline:
+            "Live and work aboard a next-generation orbital platform dedicated to breakthrough long-range research.",
+          body: `Station Zero is seeking qualified volunteers for an extended research mission in low-gravity conditions. Selected crew members will live aboard a state-of-the-art orbital station and contribute to a focused scientific program designed to expand humanity's reach beyond Earth.
+
+Volunteers will support a multidisciplinary team working in life sciences, station operations, medical monitoring, and advanced systems testing. This is a rare chance to take part in a mission built for discovery, discipline, and professional excellence.`,
+          bullets: [
+            "Six-person research crew with cross-functional training",
+            "Long-duration mission support and premium hazard compensation",
+            "Hands-on work with emerging biological and systems research",
+          ],
+          footer: "AegisCorp Interstellar Recruitment Office",
+        },
+        back: {
+          eyebrow: "Why Volunteer",
+          headline: "An Opportunity To Shape The Future",
+          subheadline:
+            "Station Zero offers ambitious professionals a direct path into frontier orbital research.",
+          body: `Applicants accepted into the Station Zero program will receive mission training, research certification, and placement within one of the most advanced private space initiatives currently in operation.
+
+Ideal volunteers are resilient, collaborative, and ready to contribute to a mission where every day matters. Whether your background is in engineering, medicine, operations, or research, your expertise can help define the next era of off-world study.`,
+          bullets: [
+            "Specialized preparation before launch",
+            "Direct participation in high-value scientific work",
+            "A chance to serve on a flagship orbital station",
+          ],
+          footer: "Volunteer intake coordinated through AegisCorp mission staff",
+        },
+      }),
+      position: { x: 95, y: 48 },
+      size: { width: 180, height: 256 },
+      rotation: -4,
+      packIn: ["evidence"],
+    },
+    {
       id: "profile_cass",
       type: "photo",
       title: "photo of Cassandra 'Cass' Hale",
@@ -75,6 +120,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_cassandra_hale",
+      title: "Cassandra 'Cass' Hale - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — CASSANDRA HALE\nROLE: Corporate Auditor / Compliance & Oversight\n\nBACKGROUND:\nCass Hale transferred to Internal Oversight after reporting financial misconduct by a former supervisor. The move was lateral, not promotional.\n\nPERSONAL NOTES:\nFormally distant. Socially isolated. Displays strong belief in institutional rules and accountability.\n\nBEHAVIORAL OBSERVATIONS:\nExtensive private logs tracking minor anomalies and personnel behavior. Drafted an unsent priority report to Corporate during the final days.\n\nINVESTIGATIVE NOTE:\nCass’s access to internal communications, logs, and reporting systems places her at the center of information flow. Her actions suggest both protective intent and potential motive for concealment.",
@@ -97,6 +143,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_kai_mercer",
+      title: "Dr. Kai Mercer - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — DR. KAI MERCER\nROLE: Medical Officer / Psychological Assessment\n\nBACKGROUND:\nDr. Kai Mercer specialized in long-duration isolation psychology. Station Zero was his first assignment with full medical authority.\n\nPERSONAL NOTES:\nConfident, articulate, and academically respected. Maintains professional detachment from crew outside scheduled evaluations.\n\nBEHAVIORAL OBSERVATIONS:\nDismissed early signs of cognitive and emotional decline among crew members as stress-related. Later logs show inconsistencies and self-reported tremors.\n\nINVESTIGATIVE NOTE:\nAs medical officer, Kai controlled sedatives, bio-monitor interpretations, and mental fitness clearances. Errors in judgment—or intent—could have catastrophic consequences.",
@@ -119,6 +166,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_jax_calder",
+      title: "Jax Calder - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — JAX CALDER\nROLE: Station Engineer / Life Support & Infrastructure\n\nBACKGROUND:\nJax Calder previously served on multiple commercial orbital platforms. Known for crisis response and improvisational problem-solving.\n\nPERSONAL NOTES:\nAffable, cooperative, emotionally open. Frequently assists other crew members outside formal duty assignments.\n\nBEHAVIORAL OBSERVATIONS:\nResponsible for several undocumented system adjustments intended to improve efficiency. These changes were not cleared through official channels.\n\nINVESTIGATIVE NOTE:\nAs primary engineer, Jax had hands-on access to life support, power distribution, and atmospheric systems. Unauthorized modifications introduce both risk and opportunity.",
@@ -130,6 +178,7 @@ Good luck.`,
 
     {
       id: "profile_ren",
+
       type: "photo",
       title: "photo of Ren Ilyanova",
       content: JSON.stringify({ title: "Ren Ilyanova", variant: "overlay" }),
@@ -141,6 +190,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_ren_ilyanova",
+      title: "Ren Ilyanova - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — REN ILYANOVA\nROLE: Xenobotanist / Lead Myco-Veridia Researcher\n\nBACKGROUND:\nRen Ilyanova is a leading authority in extremophile biology. Her work has drawn both acclaim and criticism for its ethical ambiguity. Station Zero marked her first long-duration off-world assignment.\n\nPERSONAL NOTES:\nHighly intelligent, intensely private. Maintains encrypted research folders. Displays discomfort with oversight and auditing procedures.\n\nBEHAVIORAL OBSERVATIONS:\nReports of fatigue, irritability, and secrecy increased following experimental trials. Several data entries were intentionally omitted from official research logs.\n\nINVESTIGATIVE NOTE:\nRen’s work directly involved a classified biological organism. Any containment failure, accidental or deliberate, would likely originate within her lab domain.",
@@ -163,6 +213,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_elara_voss",
+      title: "Elara Voss - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — ELARA VOSS\nROLE: Flight Systems Specialist / Mission Operations\n\nBACKGROUND:\nElara Voss was recruited following an exemplary career as a test pilot and systems analyst. She trained under Commander Althea Rostova, a decorated flight instructor whose fatal accident remains a subject of internal review. Elara later transitioned into operations and navigation systems, citing a desire for 'control over outcomes.'\n\nPERSONAL NOTES:\nDescribed by peers as precise, emotionally reserved, and intolerant of procedural deviation. Maintains meticulous logs. Limited social engagement aboard the station.\n\nBEHAVIORAL OBSERVATIONS:\nRepeated interpersonal conflicts logged with External Systems Technician Zane Moreno. Displays heightened vigilance regarding station safety and protocol.\n\nINVESTIGATIVE NOTE:\nElara’s access to core navigation, power routing, and command systems would allow for significant operational influence. Her rigid adherence to procedure may mask personal motivations.",
@@ -185,6 +236,7 @@ Good luck.`,
     },
     {
       id: "doc_crew_profile_zane_moreno",
+      title: "Zane Moreno - Crew Profile",
       type: "document",
       content:
         "CREW PROFILE — ZANE MORENO\nROLE: External Systems & Navigation Technician\n\nBACKGROUND:\nZane Moreno joined Station Zero after clearance from a past flight training incident investigation. Though officially absolved, records indicate the event resulted in a fatality and lasting professional stigma.\n\nPERSONAL NOTES:\nQuiet, withdrawn. Avoids extended social interaction. Known to work long hours alone during station night cycles.\n\nBEHAVIORAL OBSERVATIONS:\nMedical logs indicate recurring nightmares, anxiety, and reports of visual disturbances prior to the incident. Increased isolation noted during the final weeks.\n\nINVESTIGATIVE NOTE:\nZane’s technical access to external cameras, navigation sensors, and maintenance corridors positions him near multiple unexplained system anomalies. Psychological stressors raise concerns about judgment under pressure.",
@@ -427,13 +479,13 @@ Good luck.`,
         height: "185 cm",
 
         description:
-          "Subject was discovered in the Engineering section, near the primary life support control panel. The body's posture suggests a state of frantic activity at the time of death. The panel itself is catastrophically damaged by what appears to be both a power surge and forced manual override.",
+          "Found in Engineering beside the primary life-support panel. Body position indicates urgent system intervention at time of collapse.",
 
         externalInjuries:
-          "Severe third-degree electrical burns are present on the subject's palms and forearms, consistent with attempting to manipulate a malfunctioning, high-voltage system. Fingernails are broken and torn, indicating a desperate struggle with the panel's fused casing.",
+          "Third-degree electrical burns on both palms and forearms. Broken fingernails and torn nail beds suggest prolonged forced contact with damaged controls.",
 
         internalInjuries:
-          "Lungs show acute edema characteristic of rapid depressurization and hypoxia. TOXICOLOGY: A significant concentration of an unidentified psychoactive compound was found in the blood. Neurological markers suggest a state of extreme paranoia and disorganized thought, which would be inconsistent with the focused work required of an engineer in a crisis.",
+          "Pulmonary edema and severe hypoxic damage. Toxicology detected a high concentration of an unidentified psychoactive compound.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -465,13 +517,13 @@ Good luck.`,
         height: "168 cm",
 
         description:
-          "Subject was found in the Hydroponics Bay. The primary containment unit for a specimen labeled 'Myco-Veridia' was breached. The subject was found on the floor, facing the breached unit. Her expression is one of profound terror.",
+          "Found in Hydroponics Bay facing a breached Myco-Veridia containment unit. Posture and facial tension indicate acute distress before death.",
 
         externalInjuries:
-          "A faint, greenish-black residue was observed around the subject's nostrils and mouth. Skin shows signs of severe cyanosis (blue discoloration) due to oxygen deprivation.",
+          "Green-black residue present around nostrils and mouth. Marked cyanosis consistent with rapid oxygen deprivation.",
 
         internalInjuries:
-          "Subject's respiratory tract, from trachea to lungs, shows extreme inflammation and is coated with the same foreign residue seen externally. Microscopic analysis confirms the presence of non-terrestrial fungal spores. TOXICOLOGY: Subject's bloodstream contains the highest concentration of the unidentified psychoactive compound among all crew members, by a significant margin.",
+          "Severe airway and lung inflammation with matching foreign residue. Microscopy confirmed non-terrestrial fungal spores. Toxicology showed the highest psychoactive-compound load in the crew.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -503,13 +555,13 @@ Good luck.`,
         height: "173 cm",
 
         description:
-          "Subject was located at the main communications hub, collapsed beneath the console. Her hand was outstretched towards the emergency broadcast activation switch. The console logs were wiped by a massive power surge.",
+          "Found collapsed beneath the communications console with one hand extended toward the emergency broadcast switch.",
 
         externalInjuries:
-          "Deep excoriations (scratch marks) are present on the subject's own arms and neck, suggesting a state of extreme, self-injurious panic. No other signs of physical trauma.",
+          "Deep self-inflicted scratch marks on both forearms and neck. No blunt-force trauma identified.",
 
         internalInjuries:
-          "Standard signs of death by asphyxiation. Adrenal glands were exceptionally taxed, and cortisol levels were the highest recorded. The physiological data indicates the subject was experiencing a state of absolute terror for a prolonged period before death.",
+          "Asphyxiation markers present. Adrenal stress response was extreme, with peak-record cortisol suggesting prolonged panic before death.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -541,13 +593,13 @@ Good luck.`,
         height: "180 cm",
 
         description:
-          "Subject was located in the Med-Bay, slumped against a medical supply locker. An empty auto-injector was found on the floor near his right hand.",
+          "Found in Med-Bay slumped against a supply locker. An empty auto-injector was recovered near the right hand.",
 
         externalInjuries:
-          "A single, fresh puncture wound is visible on the subject's left quadriceps, consistent with the use of an auto-injector. Post-mortem muscle tissue analysis reveals cellular degradation consistent with a chronic nervous system disorder (tremor).",
+          "Single fresh puncture wound on left quadriceps consistent with injector use. Muscle tissue shows degeneration aligned with chronic tremor history.",
 
         internalInjuries:
-          "Evidence of death by asphyxiation is present. TOXICOLOGY: Subject's blood contains the unidentified psychoactive compound, as well as a massive dose of a standard-issue anxiolytic (anti-anxiety) agent. It is notable that the sedative appears to have had no mitigating effect on the neurotoxin's activity.",
+          "Asphyxiation indicators confirmed. Toxicology found the psychoactive compound plus a heavy dose of standard anxiolytic with no protective effect.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -579,13 +631,13 @@ Good luck.`,
         height: "190 cm",
 
         description:
-          "Subject was discovered in the main corridor between the Hub and the Cockpit access tunnel. His body was oriented towards the cockpit, with one arm outstretched in that direction. His position suggests he was crawling towards it when he expired.",
+          "Found in corridor between Hub and Cockpit access, body oriented toward cockpit with one arm extended.",
 
         externalInjuries:
-          "Significant contusions on knees and elbows, consistent with crawling. A laceration on the forehead appears to be from a fall.",
+          "Knee and elbow contusions consistent with crawling. Forehead laceration likely secondary to collapse impact.",
 
         internalInjuries:
-          "Standard signs of death by asphyxiation. TOXICOLOGY NOTE: Subject's blood contains the lowest concentration of the psychoactive compound. Therapeutic levels of a prescribed sedative (matching the one used by subject Kai) were also present. It is theorized the sedative may have offered some minor resistance to the neurotoxin's effects.",
+          "Asphyxiation findings present. Toxicology showed the lowest psychoactive-compound concentration; therapeutic sedative levels were also detected.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -617,13 +669,13 @@ Good luck.`,
         height: "175 cm",
 
         description:
-          "Subject was discovered in the command chair of the station's cockpit. Unlike other crew members who showed signs of panic or struggle, the subject's posture was composed. The cockpit's internal logs were precisely wiped by a targeted power surge that originated from this console.",
+          "Found seated in the command chair in stable posture. Cockpit logs were erased by a targeted surge traced to this console.",
 
         externalInjuries:
-          "None. Subject shows no signs of struggle, panic, or self-injury.",
+          "No external trauma. No observable struggle markers or self-injury.",
 
         internalInjuries:
-          "Cause of death is consistent with asphyxiation. TOXICOLOGY: Subject has a high concentration of the psychoactive compound in her system, comparable to subjects Jax and Cass. CRITICAL NOTE: There is a profound and unexplained discrepancy between the subject's high neurotoxin levels and her complete lack of physiological panic markers. Her physical state suggests calm, deliberate action, not a hallucinatory psychosis.",
+          "Asphyxiation findings present. Toxicology showed high psychoactive-compound load, but physiological panic markers were notably absent.",
 
         causeOfDeath: "Asphyxiation due to environmental failure.",
         mannerOfDeath: "Undetermined",
@@ -651,6 +703,24 @@ Good luck.`,
       content: JSON.stringify({
         title: "KAI MERCER diary log",
         entriesPerPage: 4,
+        entryFont: "nanum-pen-script",
+        diaryStyle: {
+          preset: "clean",
+          handwritingStyle: "nanum-pen-script",
+          inkColor: "#1f2631",
+          pressureLevel: 0.38,
+          neatnessLevel: 0.88,
+          doodlePack: "science",
+          wearLevel: 0.18,
+          emboss: "soft",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+          lineOpacity: 0.13,
+        },
+        marginNotes: [
+          { text: "verify med log", page: 1, side: "right", offset: 18, rotate: -4 },
+          { text: "repeat baseline check", page: 2, side: "left", offset: 26, rotate: 5 },
+        ],
         diaryEntries: [
           {
             date: "October 1, 2025",
@@ -922,6 +992,23 @@ Good luck.`,
       content: JSON.stringify({
         title: "ZANE MORENO diary log",
         entriesPerPage: 4,
+        entryFont: "caveat",
+        diaryStyle: {
+          preset: "distressed",
+          handwritingStyle: "caveat",
+          inkColor: "#2e251c",
+          pressureLevel: 0.9,
+          neatnessLevel: 0.24,
+          doodlePack: "paranoid",
+          wearLevel: 0.9,
+          emboss: "deep",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+        },
+        marginNotes: [
+          { text: "not random", page: 1, side: "left", offset: 22, rotate: -8 },
+          { text: "cockpit = pattern", page: 2, side: "right", offset: 34, rotate: 7 },
+        ],
         diaryEntries: [
           {
             date: "October 1, 2025",
@@ -1184,6 +1271,23 @@ Good luck.`,
       content: JSON.stringify({
         title: "JAX CALDER diary log",
         entriesPerPage: 3,
+        entryFont: "gloria-hallelujah",
+        diaryStyle: {
+          preset: "worn",
+          handwritingStyle: "gloria-hallelujah",
+          inkColor: "#2f2a24",
+          pressureLevel: 0.62,
+          neatnessLevel: 0.58,
+          doodlePack: "mechanical",
+          wearLevel: 0.56,
+          emboss: "soft",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+        },
+        marginNotes: [
+          { text: "check relay B-17", page: 1, side: "right", offset: 20, rotate: -3 },
+          { text: "power curve wrong", page: 3, side: "left", offset: 30, rotate: 4 },
+        ],
         diaryEntries: [
           {
             date: "October 1",
@@ -1447,6 +1551,24 @@ Good luck.`,
       content: JSON.stringify({
         title: "REN ILYANOVA diary log",
         entriesPerPage: 2,
+        entryFont: "reenie-beanie",
+        diaryStyle: {
+          preset: "worn",
+          handwritingStyle: "reenie-beanie",
+          inkColor: "#3a2b22",
+          pressureLevel: 0.52,
+          neatnessLevel: 0.46,
+          doodlePack: "botanical",
+          wearLevel: 0.5,
+          emboss: "soft",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+          textureOpacity: 0.16,
+        },
+        marginNotes: [
+          { text: "spore drift ↑", page: 1, side: "left", offset: 18, rotate: -6 },
+          { text: "do NOT tell corp", page: 2, side: "right", offset: 28, rotate: 6 },
+        ],
         diaryEntries: [
           {
             date: "October 1",
@@ -1553,6 +1675,24 @@ Good luck.`,
       content: JSON.stringify({
         title: "CASSANDRA HALE diary log",
         entriesPerPage: 2,
+        entryFont: "fuggles",
+        diaryStyle: {
+          preset: "clean",
+          handwritingStyle: "fuggles",
+          inkColor: "#2a2622",
+          pressureLevel: 0.48,
+          neatnessLevel: 0.82,
+          doodlePack: "minimal",
+          wearLevel: 0.22,
+          emboss: "deep",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+          lineOpacity: 0.15,
+        },
+        marginNotes: [
+          { text: "archive audio sample", page: 1, side: "right", offset: 16, rotate: -2 },
+          { text: "send when uplink opens", page: 2, side: "left", offset: 24, rotate: 3 },
+        ],
         diaryEntries: [
           {
             date: "October 1",
@@ -1662,6 +1802,23 @@ Good luck.`,
       content: JSON.stringify({
         title: "ELARA VOSS diary log",
         entriesPerPage: 2,
+        entryFont: "caveat",
+        diaryStyle: {
+          preset: "distressed",
+          handwritingStyle: "caveat",
+          inkColor: "#2b2420",
+          pressureLevel: 0.72,
+          neatnessLevel: 0.42,
+          doodlePack: "paranoid",
+          wearLevel: 0.68,
+          emboss: "deep",
+          embossLabel: "AEGISCORP",
+          embossSubLabel: "STATION ZERO",
+        },
+        marginNotes: [
+          { text: "he lied", page: 1, side: "left", offset: 19, rotate: -7 },
+          { text: "storm is cover", page: 2, side: "right", offset: 33, rotate: 8 },
+        ],
         diaryEntries: [
           {
             date: "October 1",

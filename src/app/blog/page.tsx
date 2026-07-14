@@ -51,6 +51,7 @@ export default function BlogIndexPage() {
                   key={cat}
                   href={`/blog/category/${cat}`}
                   className="group rounded-xl border border-border bg-card text-card-foreground p-4 hover:border-foreground/20 hover:shadow-sm transition cursor-pointer"
+                  aria-label={`Explore ${cat.replace(/-/g, " ")} articles`}
                 >
                   <h3 className="text-lg font-semibold capitalize">
                     {cat.replace(/-/g, " ")}
@@ -59,7 +60,7 @@ export default function BlogIndexPage() {
                     {posts.filter((p) => p.category === cat).length} articles
                   </p>
                   <span className="mt-2 inline-flex items-center text-sm text-primary group-hover:underline">
-                    Explore →
+                    Explore {cat.replace(/-/g, " ")} articles →
                   </span>
                 </Link>
               ))}
@@ -85,7 +86,13 @@ export default function BlogIndexPage() {
                 <section key={cat}>
                   <div className="flex items-baseline justify-between">
                     <h2 className="text-xl font-semibold capitalize">{label}</h2>
-                    <Link href={`/blog/category/${cat}`} className="text-sm text-primary hover:underline">View all →</Link>
+                    <Link
+                      href={`/blog/category/${cat}`}
+                      className="text-sm text-primary hover:underline"
+                      aria-label={`View all ${label} articles`}
+                    >
+                      View all {label} articles →
+                    </Link>
                   </div>
                   <div className="mt-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 grid-flow-dense">
                     {catPosts.map((post, i) => {

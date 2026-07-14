@@ -19,11 +19,11 @@ heroImage:
 If you want an **interactive murder mystery game to play solo online**, start with our free cases. You can play at your own pace, pause, and come back later. The two best places to start are below.
 
 - **The Final Rehearsal** (easy, short, funny)
-  - Play the case: https://www.mymystery.party/play/the-final-rehearsal
-  - Case page: https://www.mymystery.party/cases/the-final-rehearsal
+  - Play the case: [Play The Final Rehearsal](https://www.mymystery.party/play/the-final-rehearsal)
+  - Case page: [The Final Rehearsal case details](https://www.mymystery.party/cases/the-final-rehearsal)
 - **Station Zero** (hard, longer, sci‑fi)
-  - Play the case: https://www.mymystery.party/play/station-zero
-  - Case page: https://www.mymystery.party/cases/station-zero
+  - Play the case: [Play Station Zero](https://www.mymystery.party/play/station-zero)
+  - Case page: [Station Zero case details](https://www.mymystery.party/cases/station-zero)
 
 These are free and work great for solo play.
 
@@ -34,14 +34,14 @@ Looking for **murder mystery games to play with friends online for free**? The s
 - **The Final Rehearsal** is best for a quick game night.
 - **Station Zero** is best if your group likes puzzles.
 
-More free cases are listed here: https://www.mymystery.party/cases
+More free cases are listed here: [Browse all free mystery cases](https://www.mymystery.party/cases)
 
 ## Best free murder mystery co‑op games
 
 For **best free murder mystery co‑op games**, pick a case and split tasks. One person reads notes, another checks the map, and another tracks suspects.
 
-- Co‑op pick #1: https://www.mymystery.party/play/the-final-rehearsal
-- Co‑op pick #2: https://www.mymystery.party/play/station-zero
+- Co‑op pick #1: [Play The Final Rehearsal with your team](https://www.mymystery.party/play/the-final-rehearsal)
+- Co‑op pick #2: [Play Station Zero with your team](https://www.mymystery.party/play/station-zero)
 
 Both are free and built for shared sleuthing.
 
@@ -49,7 +49,7 @@ Both are free and built for shared sleuthing.
 
 If you want **murder mystery games for date night free**, go with a short case. It keeps the night fun and light.
 
-- Best date night pick: https://www.mymystery.party/play/the-final-rehearsal
+- Best date night pick: [Play The Final Rehearsal for date night](https://www.mymystery.party/play/the-final-rehearsal)
 
 You can finish it in about 1–2 hours and still have time for snacks and a movie.
 
@@ -59,4 +59,4 @@ You can finish it in about 1–2 hours and still have time for snacks and a movi
 - Take breaks and come back with fresh eyes.
 - Keep a short list of suspects and motives.
 
-Ready to play? Start here: https://www.mymystery.party/cases
+Ready to play? Start here: [Start with all available cases](https://www.mymystery.party/cases)

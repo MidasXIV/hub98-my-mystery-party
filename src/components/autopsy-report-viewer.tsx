@@ -30,13 +30,19 @@ export interface AutopsyReportData {
 // --- CSS & Assets ---
 const ReportStyles = () => (
   <style jsx global>{`
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto+Condensed:wght@400;700&family=Patrick+Hand&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto+Condensed:wght@400;700&family=Patrick+Hand&family=Caveat:wght@600&display=swap');
 
     /* Clinical Blue Form Paper */
     .autopsy-paper {
       background-color: #e8eff5; /* Matching the preview color */
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
       color: #1e293b;
+    }
+
+    .autopsy-page {
+      width: 210mm;
+      height: 297mm;
+      box-sizing: border-box;
     }
 
     /* Form Borders */
@@ -67,9 +73,18 @@ const ReportStyles = () => (
     /* Handwriting Style */
     .handwriting {
       font-family: 'Patrick Hand', cursive;
-      color: #b91c1c; /* Dark Red Ink */
+      color: #0f172a; /* Black ink */
       font-size: 1.1rem;
       line-height: 1.6rem;
+    }
+
+    .cause-handwriting {
+      font-family: 'Caveat', 'Patrick Hand', cursive;
+      color: #0f172a;
+      font-size: 1.35rem;
+      line-height: 1.6rem;
+      letter-spacing: 0.01em;
+      font-weight: 600;
     }
 
     /* Ruled Lines Background */
@@ -79,6 +94,31 @@ const ReportStyles = () => (
       line-height: 1.6rem;
       padding-top: 0.2rem;
     }
+
+    .max-3-lines {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-height: 4.9rem;
+    }
+
+    .max-5-lines {
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-height: 8.1rem;
+    }
+
+    .max-6-lines {
+      display: -webkit-box;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      max-height: 9.7rem;
+    }
+
   `}</style>
 );
 
@@ -130,7 +170,7 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
       <ReportStyles />
 
       {/* --- Paper Container --- */}
-      <div className="relative w-full max-w-[950px] min-h-[1200px] autopsy-paper p-8 shadow-2xl text-slate-900">
+      <div className="relative autopsy-page autopsy-paper p-[6mm] shadow-2xl text-slate-900 flex flex-col overflow-hidden">
         
         {/* --- Header --- */}
         <div className="flex border-b-[3px] border-slate-700 pb-2 mb-0">
@@ -194,39 +234,39 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
         </div>
 
         {/* --- Main Content Split --- */}
-        <div className="flex form-border border-t-0 min-h-[700px]">
+        <div className="h-[188mm] flex form-border border-t-0 min-h-0">
           
           {/* --- LEFT COLUMN (Narrative Fields) --- */}
-          <div className="w-1/2 flex flex-col cell-border-r">
+          <div className="w-2/5 flex flex-col cell-border-r">
             
             {/* Description */}
-            <div className="flex-1 cell-border-b p-2">
+            <div className="h-[46mm] shrink-0 cell-border-b p-2">
               <div className="field-label font-bold mb-1">Description of Corpse</div>
-              <div className="ruled-bg handwriting h-full w-full min-h-[120px]">
+              <div className="ruled-bg handwriting h-full w-full overflow-hidden text-[1rem] max-6-lines">
                 {data.description}
               </div>
             </div>
 
             {/* External Injuries */}
-            <div className="flex-1 cell-border-b p-2">
+            <div className="h-[46mm] shrink-0 cell-border-b p-2">
               <div className="field-label font-bold mb-1">External Injuries</div>
-              <div className="ruled-bg handwriting h-full w-full min-h-[140px]">
+              <div className="ruled-bg handwriting h-full w-full overflow-hidden text-[1rem] max-6-lines">
                 {data.externalInjuries}
               </div>
             </div>
 
             {/* Internal Injuries */}
-            <div className="flex-1 cell-border-b p-2">
+            <div className="h-[46mm] shrink-0 cell-border-b p-2">
               <div className="field-label font-bold mb-1">Internal Injuries</div>
-              <div className="ruled-bg handwriting h-full w-full min-h-[140px]">
+              <div className="ruled-bg handwriting h-full w-full overflow-hidden text-[1rem] max-6-lines">
                 {data.internalInjuries}
               </div>
             </div>
 
             {/* Cause of Death */}
-            <div className="flex-1 p-2">
+            <div className="h-[46mm] shrink-0 p-2">
               <div className="field-label font-bold mb-1">Cause of Death:</div>
-              <div className="ruled-bg handwriting h-full w-full min-h-[100px]">
+              <div className="ruled-bg cause-handwriting h-full w-full overflow-hidden max-3-lines">
                 {data.causeOfDeath}
               </div>
             </div>
@@ -234,12 +274,12 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
           </div>
 
           {/* --- RIGHT COLUMN (Diagram & Manner) --- */}
-          <div className="w-1/2 flex flex-col">
+          <div className="w-3/5 flex flex-col">
              
              {/* Body Diagram Area */}
-             <div className="flex-grow relative p-4 flex items-center justify-center">
+             <div className="h-[126mm] relative p-4 flex items-center justify-center">
                 {/* SVG Human Body Outline */}
-                <svg viewBox="0 0 150 350" className="h-full w-auto opacity-70" fill="none" stroke="#334155" strokeWidth="1.5">
+                <svg viewBox="0 0 150 350" className="h-[30%] w-auto opacity-70" fill="none" stroke="#334155" strokeWidth="1.5">
                    {/* Head */}
                    <path d="M75 10 C 60 10, 55 30, 55 45 C 55 55, 65 65, 75 65 C 85 65, 95 55, 95 45 C 95 30, 90 10, 75 10 Z" />
                    {/* Torso */}
@@ -257,7 +297,7 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
 
                 {/* Optional: Red 'Handwritten' Annotation simulating the injury circle */}
                 <div className="absolute top-[12%] right-[25%] pointer-events-none">
-                    <svg width="60" height="60" viewBox="0 0 100 100" className="text-red-700 opacity-60">
+                    <svg width="60" height="60" viewBox="0 0 100 100" className="text-slate-800 opacity-45">
                        <path d="M20,50 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0" fill="none" stroke="currentColor" strokeWidth="3" strokeDasharray="5,2" />
                        <path d="M80,30 L120,10" stroke="currentColor" strokeWidth="2" />
                     </svg>
@@ -276,7 +316,7 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
              {/* Manner of Death */}
              <div className="p-2 border-t border-slate-700 bg-white/10 flex-shrink-0">
                <div className="field-label font-bold mb-1">Manner of Death:</div>
-               <div className="ruled-bg handwriting min-h-[140px]">
+               <div className="ruled-bg handwriting h-[30mm] overflow-hidden text-[1rem] max-3-lines">
                  {data.mannerOfDeath}
                </div>
              </div>
@@ -326,7 +366,7 @@ export default function AutopsyReportViewer({ content }: { content: string }) {
                  </div>
                  <div className="flex items-center gap-2">
                     <div className="w-5 h-5 border border-slate-800 bg-white flex items-center justify-center">
-                        <span className="text-red-700 font-bold handwriting text-xl">X</span>
+                        <span className="font-bold handwriting text-xl">X</span>
                     </div>
                     <span className="field-label">NO</span>
                  </div>

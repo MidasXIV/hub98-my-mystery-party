@@ -29,10 +29,20 @@ async function waitForServer(url, { timeoutMs = 30000 } = {}) {
 
 function getArgs() {
   const [, , ...rest] = process.argv;
-  const args = { slugs: [], outDir: 'exported-pdfs', baseUrl: process.env.BASE_URL || 'http://localhost:3000' };
+  const args = {
+    slugs: [],
+    outDir: 'exported-pdfs',
+    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    navTimeoutMs: Number(process.env.PDF_NAV_TIMEOUT_MS || 180000),
+    readyTimeoutMs: Number(process.env.PDF_READY_TIMEOUT_MS || 120000),
+    pdfTimeoutMs: Number(process.env.PDF_RENDER_TIMEOUT_MS || 180000),
+  };
   for (const arg of rest) {
     if (arg.startsWith('--out=')) args.outDir = arg.slice('--out='.length);
     else if (arg.startsWith('--base=')) args.baseUrl = arg.slice('--base='.length);
+    else if (arg.startsWith('--nav-timeout=')) args.navTimeoutMs = Number(arg.slice('--nav-timeout='.length));
+    else if (arg.startsWith('--ready-timeout=')) args.readyTimeoutMs = Number(arg.slice('--ready-timeout='.length));
+    else if (arg.startsWith('--pdf-timeout=')) args.pdfTimeoutMs = Number(arg.slice('--pdf-timeout='.length));
     else args.slugs.push(arg);
   }
   if (args.slugs.length === 0) args.slugs = ['station-zero'];
@@ -40,7 +50,7 @@ function getArgs() {
 }
 
 async function main() {
-  const { slugs, outDir, baseUrl } = getArgs();
+  const { slugs, outDir, baseUrl, navTimeoutMs, readyTimeoutMs, pdfTimeoutMs } = getArgs();
   const printPath = (slug) => `${baseUrl.replace(/\/$/, '')}/print/${slug}`;
 
   if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
@@ -54,15 +64,30 @@ async function main() {
   const browser = await puppeteer.launch({ headless: true });
   try {
     const page = await browser.newPage();
-  // Use print media so our @media print and @page rules apply
-  await page.emulateMediaType('print');
+    // Use print media so our @media print and @page rules apply
+    await page.emulateMediaType('print');
+    page.setDefaultNavigationTimeout(navTimeoutMs);
+    page.setDefaultTimeout(readyTimeoutMs);
 
     for (const slug of slugs) {
       const url = printPath(slug);
       console.log(`Exporting ${slug} from ${url}...`);
-      await page.goto(url, { waitUntil: 'networkidle0', timeout: 120000 });
-      // Ensure fonts and images settled
-      await page.waitForFunction('document?.fonts ? document.fonts.ready : true', { timeout: 20000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navTimeoutMs });
+
+      // Ensure print root exists and hydrated content is present.
+      await page.waitForSelector('#print-root', { timeout: readyTimeoutMs });
+
+      // Ensure fonts are loaded before snapshotting to PDF.
+      await page.waitForFunction(
+        'document?.fonts ? document.fonts.status === "loaded" : true',
+        { timeout: readyTimeoutMs }
+      );
+
+      // Allow late style/layout stabilization for heavy print pages.
+      await page.waitForFunction(
+        'document.readyState === "complete"',
+        { timeout: readyTimeoutMs }
+      );
 
       const outFile = path.join(outDir, `${slug}.pdf`);
       await page.pdf({
@@ -71,6 +96,7 @@ async function main() {
         preferCSSPageSize: true,
         format: 'A4',
         margin: { top: 0, right: 0, bottom: 0, left: 0 },
+        timeout: pdfTimeoutMs,
       });
       console.log(`Saved -> ${outFile}`);
     }

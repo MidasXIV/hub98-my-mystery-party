@@ -62,14 +62,24 @@ import ContextMenu from "@/components/board-context-menu";
 import DiaryViewer from "@/components/diary-viewer";
 import PersonOfInterestPreview from "@/components/person-of-interest-preview";
 import PersonOfInterestViewer from "@/components/person-of-interest-viewer";
+import CriminalProfilePreview from "@/components/criminal-profile-preview";
+import CriminalProfileViewer from "@/components/criminal-profile-viewer";
+import LetterPreview from "@/components/letter-preview";
+import LetterViewer from "@/components/letter-viewer";
 import AutopsyReportViewer from "@/components/autopsy-report-viewer";
 import AutopsyReportPreview from "@/components/autopsy-report-preview";
 import NewspaperPreview from "@/components/newspaper-preview";
 import NewspaperViewer from "@/components/newspaper-viewer";
+import BrochurePreview from "@/components/brochure-preview";
+import BrochureViewer from "@/components/brochure-viewer";
 import ReceiptViewer from "@/components/receipt-viewer";
 import ReceiptPreview from "@/components/receipt-preview";
 import TicketStubPreview from "@/components/ticket-stub-preview";
 import TicketStubViewer from "@/components/ticket-stub-viewer";
+import BoardingPassPreview from "@/components/boarding-pass-preview";
+import BoardingPassViewer from "@/components/boarding-pass-viewer";
+import SpectrographyPreview from "@/components/spectrography-preview";
+import SpectrographyViewer from "@/components/spectrography-viewer";
 import TelephoneLogPreview from "@/components/telephone-log-preview";
 import TelephoneLogViewer from "@/components/telephone-log-viewer";
 import ActivityLogPreview from "@/components/activity-log-preview";
@@ -118,7 +128,9 @@ const DEFAULT_ITEM_SIZES: Record<
   { width: number; height: number }
 > = {
   photo: { width: 220, height: 220 },
+  brochure: { width: 180, height: 256 },
   document: { width: 260, height: 190 },
+  letter: { width: 280, height: 190 },
   note: { width: 180, height: 180 },
   clue: { width: 260, height: 140 },
   "folder-tab": { width: 140, height: 48 },
@@ -128,9 +140,12 @@ const DEFAULT_ITEM_SIZES: Record<
   newspaper: { width: 300, height: 200 },
   diary: { width: 220, height: 160 }, // compact representation; modal handles full paged view
   "person-of-interest-report": { width: 260, height: 160 },
+  "criminal-profile": { width: 260, height: 170 },
   "bank-statement": { width: 300, height: 190 },
   receipt: { width: 220, height: 360 },
   ticket: { width: 260, height: 120 },
+  "boarding-pass": { width: 300, height: 160 },
+  "spectrography-report": { width: 320, height: 220 },
   phoneLog: { width: 260, height: 160 },
   "activity-log": { width: 260, height: 160 },
   "search-and-rescue-report": { width: 300, height: 170 },
@@ -206,6 +221,8 @@ function Modal({
             variant={photoVariant}
           />
         );
+      case "brochure":
+        return <BrochureViewer content={item.content} />;
       case "document":
         return (
           <div className="bg-amber-50 text-black p-4 font-special-elite max-w-2xl whitespace-pre-wrap">
@@ -215,6 +232,8 @@ function Modal({
             <p>{item.content}</p>
           </div>
         );
+      case "letter":
+        return <LetterViewer content={item.content} />;
       case "note":
         return (
           <div className="bg-yellow-200 text-black p-4 font-kalam text-lg max-w-lg">
@@ -235,8 +254,14 @@ function Modal({
         return <DiaryViewer content={item.content} />;
       case "person-of-interest-report":
         return <PersonOfInterestViewer content={item.content} />;
+      case "criminal-profile":
+        return <CriminalProfileViewer content={item.content} />;
       case "ticket":
         return <TicketStubViewer content={item.content} />;
+      case "boarding-pass":
+        return <BoardingPassViewer content={item.content} />;
+      case "spectrography-report":
+        return <SpectrographyViewer content={item.content} />;
       case "phoneLog":
         return <TelephoneLogViewer content={item.content} />;
       case "activity-log":
@@ -931,6 +956,11 @@ export default function PlayBoardPage({
       const newXPercent = (newX_px / viewportRect.width) * 100;
       const newYPercent = (newY_px / viewportRect.height) * 100;
 
+      // console.log("[Board Debug] Item moved", {
+      //   id: draggingItem.id,
+      //   position: { x: newXPercent, y: newYPercent },
+      // });
+
       setBoardData((prevData) => {
         // If there's no previous data, keep it unchanged.
         if (!prevData) return prevData;
@@ -962,6 +992,18 @@ export default function PlayBoardPage({
   };
 
   const handleInteractionEnd = () => {
+    if (draggingItem && boardDataRef.current) {
+      const movedItem = boardDataRef.current.items.find(
+        (item) => item.id === draggingItem.id,
+      );
+      if (movedItem) {
+        console.log("[Board Debug] Drag ended", {
+          id: movedItem.id,
+          latestPosition: movedItem.position,
+        });
+      }
+    }
+
     // Always clear and reset timer ref so touch end can reliably exit drag mode.
     if (longPressTimer.current) {
       clearTimeout(longPressTimer.current);
@@ -1600,6 +1642,21 @@ export default function PlayBoardPage({
           </div>
         );
       }
+      case "brochure":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-visible`}
+          >
+            <BrochurePreview content={item.content} />
+          </div>
+        );
       case "document":
         return (
           // FIX: Ref callback should not return a value and should handle unmounting.
@@ -1617,6 +1674,22 @@ export default function PlayBoardPage({
               TOP SECRET // EYES ONLY
             </h3>
             <p className="whitespace-pre-wrap">{item.content}</p>
+          </div>
+        );
+      case "letter":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <LetterPreview content={item.content} />
+            <Tape rotation={6} />
           </div>
         );
       case "note":
@@ -1686,6 +1759,21 @@ export default function PlayBoardPage({
             <NewspaperPreview content={item.content} />
           </div>
         );
+      case "spectrography-report":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <SpectrographyPreview content={item.content} />
+          </div>
+        );
       case "ticket":
         return (
           <div
@@ -1699,6 +1787,21 @@ export default function PlayBoardPage({
             className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
           >
             <TicketStubPreview content={item.content} />
+          </div>
+        );
+      case "boarding-pass":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <BoardingPassPreview content={item.content} />
           </div>
         );
       case "activity-log":
@@ -1913,6 +2016,22 @@ export default function PlayBoardPage({
           >
             <PersonOfInterestPreview content={item.content} />
             <Tape rotation={-7} />
+          </div>
+        );
+      case "criminal-profile":
+        return (
+          <div
+            {...interactionHandlers}
+            ref={(el) => {
+              if (el) itemRefs.current.set(item.id, el);
+              else itemRefs.current.delete(item.id);
+            }}
+            key={item.id}
+            style={style}
+            className={`${commonClasses} ${dynamicClasses} overflow-hidden`}
+          >
+            <CriminalProfilePreview content={item.content} />
+            <Tape rotation={-9} />
           </div>
         );
       case "receipt":

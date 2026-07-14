@@ -12,6 +12,7 @@ import FAQ from "@/components/FAQ";
 import Footer from "@/components/footer";
 import Features from "@/components/features";
 import AffiliatePromo from "@/components/affiliate-promo";
+import BadgeDropCTA from "@/components/badge-drop-cta";
 
 import { coldCases } from "@/data/coldCases";
 import CaseCard from "@/components/case-card";
@@ -248,6 +249,7 @@ function App() {
           {/* <AnimatedCardStack /> */}
         </main>
         <RoadmapHomePreview />
+        <BadgeDropCTA cases={coldCases} />
         <CallToAction />
         <Footer />
       </div>

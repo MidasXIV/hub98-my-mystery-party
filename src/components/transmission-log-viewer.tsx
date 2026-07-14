@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { parseTransmissionLog, TransmissionLogData, TransmissionEntry } from "@/lib/transmission-log-utils";
+import { parseTransmissionLog, TransmissionEntry } from "@/lib/transmission-log-utils";
 
 // --- CSS ---
 const ViewerStyles = () => (
@@ -38,34 +38,68 @@ const ViewerStyles = () => (
     .bg-stripe:nth-child(even) {
       background-color: #f9fafb;
     }
+
+    /* Print pagination hardening */
+    @media print {
+      .tech-sheet {
+        width: 210mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        break-after: page;
+        page-break-after: always;
+        overflow: hidden;
+      }
+
+      .log-row,
+      .log-entry-block,
+      .log-notes {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+    }
   `}</style>
 );
 
 // --- Pagination Helper ---
-// We estimate page fill. 1 page = ~100 "units" of height.
-// A normal row = 5 units.
-// A row with long notes = 5 + (note_length / 60) units.
+// Deterministic page budgeting for A4 pages.
+// Higher safety margin helps move tall rows to the next page instead of clipping.
 function paginateEntries(entries: TransmissionEntry[]): TransmissionEntry[][] {
   const pages: TransmissionEntry[][] = [];
   let currentPage: TransmissionEntry[] = [];
-  let currentLoad = 0;
-  const maxLoad = 110; // Threshold for A4 break
+  const headerFooterLoad = 20;
+  const maxLoad = 108; // conservative usable budget for one A4 page
+  const maxEntryLoad = maxLoad - headerFooterLoad - 2;
+  let currentLoad = headerFooterLoad;
+
+  const estimateWrappedLines = (text: string, charsPerLine: number) => {
+    if (!text) return 1;
+    return text
+      .split("\n")
+      .reduce((sum, line) => sum + Math.max(1, Math.ceil(line.length / charsPerLine)), 0);
+  };
 
   entries.forEach((entry) => {
-    // Calculate "Load" (Height approximation)
-    const noteLines = Math.ceil(entry.notes.length / 80); // approx chars per line
-    const newLines = (entry.notes.match(/\n/g) || []).length;
-    const entryLoad = 4 + noteLines + newLines;
+    // Estimate row height: base + wrapped content lines.
+    const noteLines = estimateWrappedLines(entry.notes || "", 62);
+    const numberLines = estimateWrappedLines(entry.number || "", 34);
+    const entryLoad = 4 + noteLines + Math.min(2, numberLines);
 
-    if (currentLoad + entryLoad > maxLoad) {
+    // Cap pathological rows so they still get placed on a page by themselves.
+    const boundedEntryLoad = Math.min(entryLoad, maxEntryLoad);
+
+    if (currentLoad + boundedEntryLoad > maxLoad) {
       // Push current page and reset
-      pages.push(currentPage);
+      if (currentPage.length > 0) {
+        pages.push(currentPage);
+      }
       currentPage = [];
-      currentLoad = 0;
+      currentLoad = headerFooterLoad;
     }
 
     currentPage.push(entry);
-    currentLoad += entryLoad;
+    currentLoad += boundedEntryLoad;
   });
 
   if (currentPage.length > 0) {
@@ -134,7 +168,7 @@ export default function TransmissionLogViewer({ content }: { content: string }) 
              {/* Entries */}
              <div className="flex flex-col">
                {pageEntries.map((entry, i) => (
-                 <div key={i} className="grid grid-cols-12 py-3 log-row bg-stripe">
+            <div key={i} className="grid grid-cols-12 py-3 log-row log-entry-block bg-stripe">
                     {/* Time */}
                     <div className="col-span-2 font-bold text-gray-800">
                       {entry.time}
@@ -156,7 +190,7 @@ export default function TransmissionLogViewer({ content }: { content: string }) 
                     </div>
 
                     {/* Content */}
-                    <div className="col-span-8 pl-2 border-l border-gray-200">
+                    <div className="col-span-8 pl-2 border-l border-gray-200 log-notes">
                        <div className="font-bold mb-1 text-gray-900">
                          {entry.number}
                        </div>
@@ -175,7 +209,7 @@ export default function TransmissionLogViewer({ content }: { content: string }) 
                 AegisCorp Secure Archives • Auto-Generated Report
              </div>
              <div className="font-mono text-[9px]">
-                {data.caseRef} // SEQ-{pageIndex + 1}
+           {`${data.caseRef} // SEQ-${pageIndex + 1}`}
              </div>
           </div>
 

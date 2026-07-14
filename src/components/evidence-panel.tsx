@@ -27,7 +27,9 @@ export interface EvidencePanelProps {
 const TYPE_ORDER = [
   "case-briefing",
   "photo",
+  "brochure",
   "document",
+  "letter",
   "note",
   "folder-tab",
   "autopsy-report",
@@ -37,6 +39,7 @@ const TYPE_ORDER = [
   "diary", // newly supported journal/log items
   "clue",
   "person-of-interest-report",
+  "criminal-profile",
   "bank-statement",
   "receipt",
   "ticket",

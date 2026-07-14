@@ -1,7 +1,9 @@
 // Shared board types and constants
 export const ITEM_TYPES = [
   "photo",
+  "brochure",
   "document",
+  "letter",
   "note",
   "clue",
   "folder-tab",
@@ -11,9 +13,12 @@ export const ITEM_TYPES = [
   "newspaper",
   "diary",
   "person-of-interest-report",
+  "spectrography-report",
+  "criminal-profile",
   "bank-statement",
   "receipt",
   "ticket", // train , movie, parking, office card
+  "boarding-pass",
   "phoneLog",
   "activity-log", // guest log, inventory log, any table log
   "map",

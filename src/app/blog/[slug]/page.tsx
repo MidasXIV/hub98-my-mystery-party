@@ -8,6 +8,7 @@ import Toc from "@/components/toc";
 import PopularArticles from "@/components/popular-articles";
 import Image from "next/image";
 import { getMetadataBase } from "@/lib/metadata-base";
+import { DynamicIslandTOC } from "@/components/dynamic-toc";
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -65,6 +66,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <>
+      <DynamicIslandTOC />
       <div className="bg-background text-foreground min-h-screen py-20 px-4 md:px-6 font-sans">
         <div className="max-w-7xl mx-auto">
           <nav className="text-sm text-foreground/60 mb-6">

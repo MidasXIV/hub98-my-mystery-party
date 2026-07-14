@@ -24,6 +24,8 @@ import MapPreview from "./map-preview";
 import MissingPersonReportPreview from "./missing-person-report-preview";
 import NewspaperPreview from "./newspaper-preview";
 import PersonOfInterestPreview from "./person-of-interest-preview";
+import CriminalProfilePreview from "./criminal-profile-preview";
+import LetterPreview from "./letter-preview";
 import BankStatementPreview from "./bank-statement-preview";
 import ReceiptPreview from "./receipt-preview";
 import SearchAndRescueReportPreview from "./search-and-rescue-report-preview";
@@ -97,6 +99,13 @@ export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> =
         TOP SECRET // EYES ONLY
       </h3>
       <p className="whitespace-pre-wrap">{item.content}</p>
+    </div>
+  ),
+
+  letter: ({ item }) => (
+    <div className="w-full h-full overflow-hidden">
+      <LetterPreview content={item.content} />
+      <Tape rotation={6} />
     </div>
   ),
 
@@ -225,6 +234,13 @@ export const CONTENT_RENDERERS: Record<string, React.FC<ContentRendererProps>> =
     <div className="w-full h-full overflow-hidden">
       <PersonOfInterestPreview content={item.content} />
       <Tape rotation={-7} />
+    </div>
+  ),
+
+  "criminal-profile": ({ item }) => (
+    <div className="w-full h-full overflow-hidden">
+      <CriminalProfilePreview content={item.content} />
+      <Tape rotation={-9} />
     </div>
   ),
 

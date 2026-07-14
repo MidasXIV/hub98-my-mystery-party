@@ -501,6 +501,7 @@ export async function POST(req: Request) {
       'sentinel-1-the-zero-sum-game',
       'the-final-rehearsal',
       'the-final-bench-off',
+      'the-murder-at-kismet-casino',
       'sins-of-saint-lazarus',
       'the-last-check-in',
     ]);
