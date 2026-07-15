@@ -23,6 +23,7 @@ const PREDEFINED_IMAGES = {
   farhan_haider_profile: "/cold_case_data/kismet_casino/farhan_haider.jpeg",
   case_badge:
     "/cold_case_data/the_final_rehearsal/the_final_rehearsal_badge.png",
+  kismet_case_badge: "/cold_case_data/kismet_casino/kismet_casino_badge.png",
 };
 
 const KISMET_CASINO_DATA = {
@@ -106,7 +107,7 @@ Treat this as an escalation.
       position: { x: 185, y: 87 },
       size: { width: 220, height: 280 },
       rotation: 1,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["evidence"],
     },
 
@@ -702,7 +703,7 @@ Included in this package is a burner phone. Next week it'll receive some texts. 
       position: { x: 190, y: 140 },
       size: { width: 220, height: 280 },
       rotation: 0,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["evidence"],
     },
     {
@@ -1066,7 +1067,7 @@ Included in this package is a burner phone. Next week it'll receive some texts. 
       position: { x: 160, y: 100 },
       size: { width: 220, height: 280 },
       rotation: 1,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["suspect", "evidence"],
     },
     {
@@ -1101,7 +1102,7 @@ Included in this package is a burner phone. Next week it'll receive some texts. 
       position: { x: 161, y: 145 },
       size: { width: 220, height: 280 },
       rotation: 0,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["suspect", "evidence"],
     },
     {
@@ -1135,7 +1136,7 @@ Included in this package is a burner phone. Next week it'll receive some texts. 
       position: { x: 161, y: 51 },
       size: { width: 220, height: 280 },
       rotation: 0,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["suspect", "evidence"],
     },
     {
@@ -1164,7 +1165,7 @@ Gaikwad went on to vehemently deny the allegations that the Mumbai Police were i
       position: { x: 30, y: 140 },
       size: { width: 380, height: 300 },
       rotation: -1,
-      // unlockOnObjectiveId: "obj_01",
+      unlockOnObjectiveId: "obj_01",
       packIn: ["evidence"],
     },
     {
@@ -1190,6 +1191,7 @@ Gaikwad went on to vehemently deny the allegations that the Mumbai Police were i
       position: { x: 200, y: 42 },
       size: { width: 320, height: 280 },
       rotation: -2,
+      unlockOnObjectiveId: "obj_01",
       packIn: ["evidence"],
     },
     {
@@ -1201,6 +1203,7 @@ Gaikwad went on to vehemently deny the allegations that the Mumbai Police were i
       position: { x: 217, y: 67 },
       size: { width: 100, height: 100 },
       rotation: 2,
+      unlockOnObjectiveId: "obj_01",
       packIn: ["clues"],
     },
     {
@@ -1219,47 +1222,66 @@ Gaikwad went on to vehemently deny the allegations that the Mumbai Police were i
         arriveTime: "7:10 AM",
         seat: "(VIP)",
         class: "Private",
-  ticketNumber: "DGCA-FORM-7233",
+        ticketNumber: "DGCA-FORM-7233",
       }),
       position: { x: 220, y: 80 },
       size: { width: 200, height: 100 },
       rotation: 1,
       packIn: ["evidence"],
+      unlockOnObjectiveId: "obj_01",
     },
-{
-  id: "spec_soundwave_7014",
-  type: "spectrography-report",
-  title: "Acoustic Spectrography: 7014 Gandhidham",
-  content: JSON.stringify({
-    instrument: "Parabolic Microphone Array (Rec-009)",
-    sampleId: "456-MK-90",
-    analyzedAt: "2015-04-03T10:00:00Z",
-    operator: "Inspector Jayesh Ishwar",
-    summary: "As part of our investigation, we deployed a parabolic mic array directed at 7014 Gandhidham Ring Road. We isolated an active conversation on the night of March 31. Voiceprint analysis confirms the speakers match cartel leadership. The complete flatline intervals indicate periods when the building was entirely empty.",
-    peaks: [
-      { mz: 21.10, intensity: 0 },
-      { mz: 21.15, intensity: 0 },
-      { mz: 21.20, intensity: 0 },
-      { mz: 21.25, intensity: 0 },
-      { mz: 22.10, intensity: 15 },
-      { mz: 22.15, intensity: 35 },
-      { mz: 22.20, intensity: 50 },
-      { mz: 22.25, intensity: 45 },
-      { mz: 22.30, intensity: 85 }, // Climax/Struggle window
-      { mz: 22.35, intensity: 65 },
-      { mz: 22.40, intensity: 2 },  // Flatline begins (Silence)
-      { mz: 22.45, intensity: 2 },
-      { mz: 22.50, intensity: 2 },
-      { mz: 22.55, intensity: 2 },
-      { mz: 23.00, intensity: 28 }, // Brief closing door activity
-      { mz: 23.05, intensity: 2 }   // Quiet
-    ]
-  }),
-  position: { x: 260, y: 120 },
-  size: { width: 150, height: 180 },
-  rotation: 0,
-  packIn: ["evidence"]
-}
+    {
+      id: "spec_soundwave_7014",
+      type: "spectrography-report",
+      title: "Acoustic Spectrography: 7014 Gandhidham",
+      content: JSON.stringify({
+        instrument: "Parabolic Microphone Array (Rec-009)",
+        sampleId: "456-MK-90",
+        analyzedAt: "2015-04-03T10:00:00Z",
+        operator: "Inspector Jayesh Ishwar",
+        summary:
+          "As part of our investigation, we deployed a parabolic mic array directed at 7014 Gandhidham Ring Road. We isolated an active conversation on the night of March 31. Voiceprint analysis confirms the speakers match cartel leadership. The complete flatline intervals indicate periods when the building was entirely empty.",
+        peaks: [
+          { mz: 21.1, intensity: 0 },
+          { mz: 21.15, intensity: 0 },
+          { mz: 21.2, intensity: 0 },
+          { mz: 21.25, intensity: 0 },
+          { mz: 22.1, intensity: 15 },
+          { mz: 22.15, intensity: 35 },
+          { mz: 22.2, intensity: 50 },
+          { mz: 22.25, intensity: 45 },
+          { mz: 22.3, intensity: 85 }, // Climax/Struggle window
+          { mz: 22.35, intensity: 65 },
+          { mz: 22.4, intensity: 2 }, // Flatline begins (Silence)
+          { mz: 22.45, intensity: 2 },
+          { mz: 22.5, intensity: 2 },
+          { mz: 22.55, intensity: 2 },
+          { mz: 23.0, intensity: 28 }, // Brief closing door activity
+          { mz: 23.05, intensity: 2 }, // Quiet
+        ],
+      }),
+      position: { x: 260, y: 120 },
+      size: { width: 150, height: 180 },
+      rotation: 0,
+      packIn: ["evidence"],
+      unlockOnObjectiveId: "obj_01",
+    },
+    {
+      id: "badge_kismet_casino",
+      type: "objectives-cleared-badge",
+      title: "Official Commendation: Kismet Casino",
+      content: JSON.stringify({
+        imageUrl: PREDEFINED_IMAGES.kismet_case_badge,
+        caseId: "KC-2015-456",
+        issueDate: new Date().toLocaleDateString(),
+        officerSignature: "Deputy Commissioner Deshmukh",
+        text: "This commendation is formally awarded for exceptional investigative work during the Kismet Casino case. Your efforts have uncovered the crucial links and ensured justice was served.",
+      }),
+      position: { x: 70, y: 40 },
+      size: { width: 250, height: 250 },
+      rotation: 0,
+      packIn: ["bonus"],
+    },
   ],
   connections: [
     {
@@ -1317,6 +1339,18 @@ Gaikwad went on to vehemently deny the allegations that the Mumbai Police were i
     {
       from: "poi_nandini_mittal",
       to: "formal_alibi_nandini_mittal_counseling",
+    },
+    {
+      from: "spec_soundwave_7014",
+      to: "criminal_profile_nakul_punj",
+    },
+    {
+      from: "spec_soundwave_7014",
+      to: "criminal_profile_naina_punj",
+    },
+    {
+      from: "spec_soundwave_7014",
+      to: "briefing_kismet_casino_followup",
     },
     {
       from: "criminal_profile_farhan_haider",
