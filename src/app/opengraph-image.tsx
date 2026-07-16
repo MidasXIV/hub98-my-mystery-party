@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { coldCases } from "@/data/coldCases";
-import { readFile } from "node:fs/promises";
-import path from "path";
+import type { NextRequest } from "next/server";
 
 // Open Graph image metadata
 export const size = {
@@ -11,8 +10,8 @@ export const size = {
 };
 
 export const contentType = "image/png";
-// Use Node.js runtime so we can read the file system (public folder) directly.
-export const runtime = "nodejs";
+// Use Edge runtime to avoid creating a Node Serverless Function — fetch public assets by URL instead of fs.
+export const runtime = "edge";
 
 // Generates an OG image based on the case thumbnail.
 // If the slug doesn't match a case or the image can't be loaded, falls back to a simple text image.
@@ -21,80 +20,19 @@ export const alt = "My Mystery Party – Interactive Mystery Cases";
 // Helper to truncate overly long titles (OG / Twitter card best practices ~70 chars for headline prominence)
 // (truncate helper removed for simplified hero version)
 
-export default async function Image() {
-  // Base hero image: vanishing woman
-  const heroRelative = "hero_wideshot/woman-vanishing.png";
-  const heroPath = path.join(process.cwd(), "public", heroRelative);
-  let heroData: string | null = null;
-  try {
-    const heroFile = await readFile(heroPath);
-    heroData = `data:image/png;base64,${heroFile.toString("base64")}`;
-  } catch (e) {
-    console.warn("Failed to load hero image", heroRelative, e);
-  }
+export default async function Image(req: NextRequest) {
+  const origin = new URL(req.url).origin;
 
-  // Load 6 case thumbnails for a subtle row strip (optional accent)
+  // Base hero image: vanishing woman (served from public/)
+  const heroRelative = "hero_wideshot/woman-vanishing.png";
+  const heroUrl = `${origin}/${heroRelative}`;
+
+  // Load 6 case thumbnails for a subtle row strip (public URLs)
   const cases = coldCases.slice(0, 6);
-  const thumbs: { src: string; data: string }[] = [];
-  for (const c of cases) {
-    try {
-      const fp = path.join(process.cwd(), "public", c.imageUrl.replace(/^\//, ""));
-      const f = await readFile(fp);
-      thumbs.push({ src: c.imageUrl, data: `data:image/png;base64,${f.toString("base64")}` });
-    } catch (e) {
-      console.warn("Failed to read thumbnail", c.imageUrl, e);
-    }
-  }
+  const thumbs: { src: string; data: string }[] = cases.map((c) => ({ src: c.imageUrl, data: `${origin}${c.imageUrl}` }));
 
   // If hero failed completely, fallback text only
-  if (!heroData) {
-    return new ImageResponse(
-      (
-        <div
-          style={{
-            display: "flex",
-            width: "100%",
-            height: "100%",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            background: "#050505",
-            fontFamily: "system-ui, sans-serif",
-            color: "white",
-            gap: 38,
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              gap: 12,
-              fontSize: 30,
-              fontWeight: 600,
-              letterSpacing: "1px",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.85)",
-            }}
-          >
-            <span style={{ color: "#ffcf33" }}>Hub98</span>
-            <span style={{ opacity: 0.4 }}>•</span>
-            <span>My Mystery Party</span>
-          </div>
-          <div
-            style={{
-              fontSize: 80,
-              fontWeight: 700,
-              textAlign: "center",
-              maxWidth: "70%",
-              lineHeight: 1.05,
-            }}
-          >
-            Unravel Every Mystery
-          </div>
-        </div>
-      ),
-      size
-    );
-  }
+  // If hero image not available, fallback to text-only image. We'll still render using CSS and text.
 
   // Thumbnail strip dimensions
   // (Row sizing variables removed after design change; kept minimal to avoid unused warnings)
@@ -113,9 +51,10 @@ export default async function Image() {
         }}
       >
         {/* Hero base image */}
-        {heroData && (
+        {/* Use absolute URLs for images so Edge runtime can fetch them */}
+        {heroUrl && (
           <img
-            src={heroData}
+            src={heroUrl}
             alt="Hero"
             style={{
               position: "absolute",
@@ -225,7 +164,7 @@ export default async function Image() {
             >
               <span style={{ display: "flex" }}>Interactive case files. Collaborative sleuthing. New stories weekly.</span>
             </div>
-            {thumbs.length > 0 && (
+                {thumbs.length > 0 && (
               <div
                 style={{
                   display: "flex",

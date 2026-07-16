@@ -1,8 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import { getCaseBySlug } from "@/data/coldCases";
-import { readFile } from "node:fs/promises";
-import path from "path";
+import type { NextRequest } from 'next/server';
 
 // Open Graph image metadata
 export const size = {
@@ -12,7 +11,8 @@ export const size = {
 
 export const contentType = "image/png";
 // Use Node.js runtime so we can read the file system (public folder) directly.
-export const runtime = "nodejs";
+// Use Edge runtime to avoid Node serverless function
+export const runtime = "edge";
 
 // Generates an OG image based on the case thumbnail.
 // If the slug doesn't match a case or the image can't be loaded, falls back to a simple text image.
@@ -28,17 +28,15 @@ export default async function Image({
 }: {
   params: { slug: string } | Promise<{ slug: string }>;
 }) {
-  const resolved = params instanceof Promise ? await params : params;
-  const { slug } = resolved;
+
+  const slug = params.slug;
   const coldCase = getCaseBySlug(slug);
 
   if (coldCase) {
-    const relativePath = coldCase.imageUrl.replace(/^\//, "");
-    const imagePath = path.join(process.cwd(), "public", relativePath);
-    try {
-      const file = await readFile(imagePath);
-      const base64 = file.toString("base64");
-      const dataUri = `data:image/png;base64,${base64}`;
+    const url = new URL(req.url);
+    const origin = url.origin;
+    // Public thumbnail URL
+    const thumbUrl = `${origin}/cold_cases/${slug}/thumbnail.png`;
 
       const title = truncate(coldCase.title);
       return new ImageResponse(
@@ -56,7 +54,7 @@ export default async function Image({
           >
             {/* Background image */}
             <img
-              src={dataUri}
+            src={thumbUrl}
               alt={title}
               style={{
                 position: "absolute",

@@ -12,7 +12,7 @@ export const size = {
 
 export const contentType = "image/png";
 // Use Node.js runtime so we can read the file system (public folder) directly.
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 // Generates an OG image based on the case thumbnail.
 // If the slug doesn't match a case or the image can't be loaded, falls back to a simple text image.
@@ -25,20 +25,42 @@ function truncate(str: string, max = 70) {
 
 export default async function Image({
   params,
-}: {
-  params: { slug: string } | Promise<{ slug: string }>;
-}) {
-  const resolved = params instanceof Promise ? await params : params;
-  const { slug } = resolved;
+}: { params: { slug: string } }) {
+export default async function Image(req: NextRequest) {
+  const url = new URL(req.url);
+  const origin = url.origin;
+  const slug = url.pathname.split('/').pop() || '';
   const coldCase = getCaseBySlug(slug);
 
   if (coldCase) {
-    const relativePath = coldCase.imageUrl.replace(/^\//, "");
-    const imagePath = path.join(process.cwd(), "public", relativePath);
-    try {
-      const file = await readFile(imagePath);
-      const base64 = file.toString("base64");
-      const dataUri = `data:image/png;base64,${base64}`;
+    const thumbUrl = `${origin}${coldCase.imageUrl}`;
+    const title = truncate(coldCase.title);
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "relative",
+            display: "flex",
+            fontFamily: "system-ui, sans-serif",
+            background: "#000",
+            overflow: "hidden",
+          }}
+        >
+          {/* Background image */}
+          <img
+            src={thumbUrl}
+            alt={title}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              filter: "brightness(0.85)",
+            }}
+          />
 
       const title = truncate(coldCase.title);
       return new ImageResponse(
