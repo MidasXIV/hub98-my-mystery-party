@@ -15,20 +15,20 @@ export function ShareOptions({ shareUrl, onSendEmail, onSendSms }: ShareOptionsP
   };
   const sendEmail = async () => {
     try {
-      await fetch("/api/invitations/send-email", {
+      await fetch("/api/invitations/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: shareUrl }),
+        body: JSON.stringify({ type: "email", url: shareUrl }),
       });
     } catch {}
     onSendEmail?.();
   };
   const sendSms = async () => {
     try {
-      await fetch("/api/invitations/send-sms", {
+      await fetch("/api/invitations/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: shareUrl }),
+        body: JSON.stringify({ type: "sms", url: shareUrl }),
       });
     } catch {}
     onSendSms?.();
