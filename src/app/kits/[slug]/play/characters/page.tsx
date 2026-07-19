@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: KitCharactersPageProps): Prom
   const title = `${kit.title} Characters | Mystery Party Kits`;
   const description = `Meet the suspects and allies in ${kit.title}. Click a dossier to learn each character's story, alibi, and secret.`;
   const routePath = `/kits/${kit.slug}/play/characters`;
-  const ogImageUrl = `${routePath}/opengraph-image`;
+  const ogImageUrl = `/kits/${kit.slug}/play/opengraph-image`;
 
   return {
     metadataBase,
@@ -42,6 +42,7 @@ export async function generateMetadata({ params }: KitCharactersPageProps): Prom
       type: "website",
       siteName: "My Mystery Party",
       url: routePath,
+      images: [ogImageUrl],
     },
     twitter: {
       card: "summary_large_image",
