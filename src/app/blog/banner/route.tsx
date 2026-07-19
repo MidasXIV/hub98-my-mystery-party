@@ -16,13 +16,12 @@ function clamp(text: string, max: number) {
 }
 
 function pickGradient(seed: string) {
-  // Deterministic gradients (small set, good variety)
   const gradients = [
-    ["#0b1220", "#312e81", "#0891b2"], // indigo/cyan
-    ["#0f172a", "#7c3aed", "#f97316"], // violet/orange
-    ["#030712", "#0f766e", "#84cc16"], // teal/lime
-    ["#020617", "#be123c", "#f59e0b"], // rose/amber
-    ["#0a0a0a", "#2563eb", "#22c55e"], // blue/green
+    ["#0b1220", "#312e81", "#0891b2"],
+    ["#0f172a", "#7c3aed", "#f97316"],
+    ["#030712", "#0f766e", "#84cc16"],
+    ["#020617", "#be123c", "#f59e0b"],
+    ["#0a0a0a", "#2563eb", "#22c55e"],
   ];
 
   let h = 0;
@@ -43,7 +42,6 @@ export async function GET(req: NextRequest) {
 
   const [c1, c2, c3] = pickGradient(`${title}|${category}`);
 
-  // Simple, fast, and very legible. No external font fetches.
   return new ImageResponse(
     (
       <div
@@ -57,7 +55,6 @@ export async function GET(req: NextRequest) {
           overflow: "hidden",
         }}
       >
-        {/* Background gradients */}
         <div
           style={{
             position: "absolute",
@@ -65,7 +62,6 @@ export async function GET(req: NextRequest) {
             background: `radial-gradient(circle at 20% 25%, ${c2}55 0%, transparent 55%), radial-gradient(circle at 80% 35%, ${c3}55 0%, transparent 55%), linear-gradient(135deg, ${c1} 0%, #000 100%)`,
           }}
         />
-        {/* Vignette */}
         <div
           style={{
             position: "absolute",
@@ -87,7 +83,6 @@ export async function GET(req: NextRequest) {
             boxSizing: "border-box",
           }}
         >
-          {/* Brand + category pill */}
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div
               style={{
@@ -128,7 +123,6 @@ export async function GET(req: NextRequest) {
             )}
           </div>
 
-          {/* Title + description */}
           <div style={{ display: "flex", flexDirection: "column", gap: 22, maxWidth: "92%" }}>
             <div
               style={{
@@ -158,7 +152,6 @@ export async function GET(req: NextRequest) {
             ) : null}
           </div>
 
-          {/* Footer */}
           <div
             style={{
               display: "flex",

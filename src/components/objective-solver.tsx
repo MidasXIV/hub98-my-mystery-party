@@ -97,10 +97,11 @@ export default function ObjectiveSolver({
     setStatus({ phase: "submitting" });
 
     try {
-      const res = await fetch("/api/board/objective", {
+      const res = await fetch("/api/board", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          action: "objective",
           caseSlug,
           boardData,
           objectiveId: objective.id,

@@ -606,7 +606,11 @@ export default function PlayBoardPage({
   useEffect(() => {
     const generateBoard = async () => {
       try {
-        const res = await fetch("/api/board/generate", { method: "POST" });
+        const res = await fetch("/api/board", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "generate", caseSlug: slug }),
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const raw = await res.json();
         const data = normalizeBoardData(raw);
@@ -621,7 +625,7 @@ export default function PlayBoardPage({
       }
     };
     generateBoard();
-  }, []);
+  }, [slug]);
 
   useEffect(() => {
     boardDataRef.current = boardData;
@@ -2203,10 +2207,10 @@ export default function PlayBoardPage({
             if (completedAllNow) {
               void (async () => {
                 try {
-                  const res = await fetch("/api/board/badge", {
+                  const res = await fetch("/api/board", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ caseSlug: slug }),
+                    body: JSON.stringify({ action: "badge", caseSlug: slug }),
                   });
 
                   if (!res.ok) return;

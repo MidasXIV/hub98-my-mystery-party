@@ -11,12 +11,12 @@ type ProgressTrackerProps = {
 
 async function sendProgressEvent(payload: Record<string, unknown>) {
   try {
-    await fetch("/api/player-progress", {
+    await fetch("/api/board", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ action: "player-progress", ...payload }),
     });
   } catch (error) {
     console.error("Failed to sync player progress", error);

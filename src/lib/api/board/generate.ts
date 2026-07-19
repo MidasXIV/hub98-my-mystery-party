@@ -427,9 +427,9 @@ const boardSchema = {
 */
 
 /**
- * POST /api/board/generate
- * Request Body (JSON): { "case": "station-zero" }
- * or Query Param: /api/board/generate?case=station-zero
+ * POST /api/board
+ * Request Body (JSON): { "action": "generate", "caseSlug": "station-zero" }
+ * or Query Param fallback: /api/board?action=generate&case=station-zero
  * Returns a mock evidence board for the requested case slug.
  * Supported slugs:
  *  - station-zero (deep space sabotage scenario)
@@ -475,12 +475,21 @@ export async function POST(req: Request) {
     // }
     // Determine requested case slug from body or query param.
     let caseSlug: string | undefined;
-    // Try body first
+    // Try JSON body first.
     try {
+      const body = (await req.json()) as { case?: string; caseSlug?: string };
+      const fromBody = typeof body?.caseSlug === 'string' ? body.caseSlug : body?.case;
+      caseSlug = fromBody?.trim();
+    } catch {/* ignore body parse errors */}
+
+    // Fallback to referer for older callers that don't send a body.
+    if (!caseSlug) {
+      try {
       // referer: 'http://localhost:3000/play/her-shadows-name'
       const referer = req.headers?.get?.('referer') ?? req.headers?.get?.('referrer');
       caseSlug = referer ? String(referer).split('/play/')[1]?.trim() : undefined;
-    } catch {/* ignore body parse errors */}
+      } catch {/* ignore referer parse errors */}
+    }
 
     console.log('caseSlug from body:', caseSlug);
     // Fallback to query param
