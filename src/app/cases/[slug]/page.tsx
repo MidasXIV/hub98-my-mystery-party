@@ -6,6 +6,7 @@ import CaseSectionsAccordion from "@/components/case-sections-accordion";
 import Footer from "@/components/footer";
 import RelatedCases from "@/components/related-cases";
 import TestimonialCard, { Testimonial } from "@/components/multi-media-testimonial";
+import { markdownToHtml } from "@/lib/markdown";
 
 // Next.js 15: params is now async (a Promise) in certain dynamic APIs.
 interface CasePageProps {
@@ -37,6 +38,14 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
         thumbnail: p.thumbnail || p.profile || caseFile.imageUrl,
       }))
     : [];
+
+  const shortDescriptionHtml = markdownToHtml(
+    caseFile.shortDescription || caseFile.description || ""
+  );
+  const fullDescriptionHtml =
+    caseFile.shortDescription && caseFile.description !== caseFile.shortDescription
+      ? markdownToHtml(caseFile.description)
+      : "";
 
   return (
     <div className="min-h-screen bg-background text-text-primary font-sans">
@@ -71,13 +80,15 @@ export default async function CaseDetailPage({ params }: CasePageProps) {
                   </span>
                 ))}
               </div>
-              <p className="text-lg text-text-secondary mb-6 leading-relaxed">
-                {caseFile.shortDescription || caseFile.description}
-              </p>
+              <div
+                className="text-lg text-text-secondary mb-6 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: shortDescriptionHtml }}
+              />
               {caseFile.shortDescription && caseFile.description !== caseFile.shortDescription ? (
-                <div className="text-base text-text-secondary/90 mb-6 leading-relaxed whitespace-pre-line">
-                  {caseFile.description}
-                </div>
+                <div
+                  className="text-base text-text-secondary/90 mb-6 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: fullDescriptionHtml }}
+                />
               ) : null}
                 {caseFile.betaNotice ? (
                 <div className="mb-6 rounded-3xl border border-amber-500/35 bg-amber-100 px-4 py-4 text-sm leading-relaxed text-amber-950 shadow-[0_20px_60px_-30px_rgba(251,191,36,0.35)] dark:border-amber-400/20 dark:bg-amber-500/10 dark:text-amber-100">

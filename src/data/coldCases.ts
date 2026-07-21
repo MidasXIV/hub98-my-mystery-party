@@ -441,40 +441,42 @@ export const coldCases: ColdCase[] = [
     playTitle: "Play The Murder at Kismet Casino",
     pageTitle: "The Murder at Kismet Casino",
     shortDescription:
-      "A gritty cold case mystery set in the high-stakes world of illegal gambling and corporate espionage, where you must analyze ballistics, burner phone logs, and CCTV to solve an ex-con's execution.",
+      "A hard-boiled casino murder mystery where you audit alibis, decode burner-phone texts, and analyze forensic ballistics after an execution behind Aaina Mahal.",
     seoDescription:
-      "Play The Murder at Kismet Casino, a premium cold case mystery. Review silenced weapon ballistics, encrypted burner phone logs, and syndicate profiles to uncover who executed Chetan Yadav in a casino alley.",
+      "Play The Murder at Kismet Casino, a cold case date night detective game set in Mumbai's high-stakes casino underworld. Review autopsy ballistics, burner-phone records, witness statements, and surveillance intel in a gritty interactive investigation.",
     playDescription:
-      "Open the Kismet Casino case board to review forensic findings, analyze parabolic microphone recordings, and hunt for a fugitive gang enforcer through a web of organized crime.",
+      "Open the Kismet Casino interactive case board to connect suspect profiles, formal alibis, forensic reports, SMS dumps, and spectrograph evidence—then pressure-test every timeline without spoilers or hand-holding.",
     seoKeywords: [
       "cold case date night",
       "casino murder mystery game",
-      "true crime detective game",
+      "interactive detective game",
+      "forensic murder mystery",
+      "burner phone evidence",
       "organized crime mystery",
-      "interactive forensic game",
-      "adult mystery game",
+      "true crime detective game",
     ],
     betaNotice:
       "The Murder at Kismet Casino is currently in beta. All forensic reports, syndicate files, and burner logs are playable, but evidence clarity and technical UI polish are being updated.",
     imageUrl: "/cold_cases/thumbnails/kismet_casino.jpeg",
     tags: [
-      "Gritty Noir",
-      "Casino",
+      "Casino Murder Mystery",
+      "Neo-Noir",
       "Organized Crime",
-      "Forensic Mystery",
+      "Forensic Ballistics",
+      "Burner Phone Logs",
+      "CCTV + Audio Forensics",
       "Date Night",
       "Who Dun It",
       "Detective Game",
-      "Expert Level",
       "1-4 Players",
       "Hard",
     ],
     description:
-      `Under the neon glow of **Aaina Mahal** (Magic Mirror Casino), this case unfolds like a dark Bollywood crime epic—where loyalty, betrayal, and family honor are deadlier than bullets. On March 31, 2015, paroled ex-con **Chetan Yadav** (Charlie Young) is found executed in a dumpster, only months after walking free. It wasn't a random street hit. He was killed at point-blank range with a **silenced .32 ACP pistol**, leaving behind rubber residue, coded chatter, and panic across rival syndicate circles.
+      `Under the neon glare of **Aaina Mahal Casino**, a disgraced performer is found shot at close range behind the complex—and every version of the story conflicts with the next. What looks like a straightforward revenge killing quickly turns into a precision-timed operation with staged narratives, missing context, and pressure from powerful interests.
 
-As lead investigator, you step into a web of **Indian crime-family politics**, **mafia bloodline rivalries**, and **corporate espionage** tied to the casino's power brokers. Chetan was allegedly forced to plant a bug under the 'strawberry gum' code—pulling him into a shadow war between the **Haider** (Hadorag) syndicate and the feared **Punj siblings** (Pons twins). Was he silenced by the ghost-like fugitive **'Gray Dog' Farhan Haider**, eliminated by dynasty loyalists, or sacrificed as a disposable pawn in a much bigger play?
+In this playable cold case, you will work through **autopsy and ballistics findings**, **burner-phone message chains**, **formal witness alibis**, **casino-linked news coverage**, and **organized-crime intelligence files** pulled from multiple agencies. The case rewards methodical reading and timeline discipline, not guesswork.
 
-Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, and **parabolic soundwave evidence** to expose who ordered the execution—and why this murder runs deeper than one alleyway body.`,
+If you like darker detective stories with technical evidence and layered motive networks, Kismet delivers a tense, expert-level investigation that stays spoiler-safe while giving you enough raw data to build your own theory from scratch.`,
     difficulty: "Hard",
     players: "1-4",
     duration: "2.5-3 hours",
@@ -485,20 +487,20 @@ Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, a
     isPlayable: true,
     seoSections: [
       {
-        title: "Why The Murder at Kismet Casino is the ultimate expert date night",
-        body: "If you and your partner are tired of 'easy' mysteries, this case is designed for you. Set against the gritty backdrop of the Aaina Mahal (Magic Mirror Casino), this investigation moves away from high school drama into the cold, clinical world of organized crime and forensic ballistics. It is a deep-dive experience that requires you to cross-reference burner phone transcripts with soundwave analysis to catch a killer who leaves no witnesses. It’s the perfect choice for couples who want to feel like real detectives solving a high-stakes professional hit.",
+        title: "Why Kismet Casino is a top-tier hard mode mystery for date night",
+        body: "Kismet Casino is built for players who want a serious investigative challenge. Instead of a short, linear clue trail, you get a dense network of forensic documents, alibi statements, surveillance-linked reporting, and criminal-intelligence records. It works well for date night because both players can split evidence sets, compare interpretations, and test each other's timeline logic in real time. If your ideal mystery night is analytical, tense, and discussion-heavy, this case fits that style.",
       },
       {
-        title: "What happens in this high-stakes casino cold case",
-        body: "The story follows the tragic 'kismet' of Chetan Yadav (Charlie Young), a man who survived prison only to be executed in a rain-slicked alleyway just months after his release. What starts as a simple cheating scandal caught on CCTV turns into a web of corporate espionage involving the bugging of Singhania & Co. (Sykes & Co.). You will have to determine if Chetan was a victim of his own greed, a pawn in a gang war between the Haider (Hadorag) syndicate and the Punj (Pons) twins, or a liability that needed to be 'silenced'.",
+        title: "What makes this casino murder mystery different",
+        body: "The case combines classic motive analysis with modern evidence workflows. You are not just reading suspect drama; you are validating movement windows, comparing statements against objective records, and checking whether communication logs align with what witnesses claim. The result feels closer to reconstructing an operation than solving a simple whodunit. Crucially, the investigation stays spoiler-safe and avoids railroading, so your deductions drive the experience.",
       },
       {
-        title: "How the forensic evidence sets this mystery apart",
-        body: "Unlike standard 'whodunits,' Kismet Casino focuses on high-tech and forensic clues. You won't just be reading witness statements; you’ll be analyzing the 'wipes' on bullets from a professional silencer and tracking a mysterious handler through encrypted burner phone logs. The inclusion of parabolic microphone recordings and professional surveillance files makes the investigation feel like a real-time police operation, challenging you to find the one small detail the killers thought they had scrubbed clean.",
+        title: "What evidence you actually investigate in Kismet Casino",
+        body: "You will examine autopsy and ballistic detail, burner-phone SMS threads, person-of-interest dossiers, formal alibi testimony, incident reporting, and acoustic/spectrograph material tied to key locations. This blend gives the case a strong forensic identity while still leaving room for motive analysis and behavioral reading. It is ideal for players who like evidence-first detective games where the details matter.",
       },
       {
         title: "Who should play The Murder at Kismet Casino",
-        body: "This case is rated as 'Hard' and is best suited for experienced players, true crime enthusiasts, and fans of gritty noir thrillers. If you enjoy the psychological complexity of characters like 'Gray Dog' Farhan Haider—a ghost-like fugitive on the run since 2010—you will find plenty to sink your teeth into. It is designed for 1-4 players who are ready for a 2.5 to 3-hour investigation that rewards patience, logical deduction, and a keen eye for technical evidence.",
+        body: "This investigation is best for experienced mystery players, true-crime fans, and anyone who enjoys organized-crime noir with technical evidence. It supports 1–4 players and rewards patience, note-taking, and careful cross-referencing. If you prefer quick casual mysteries, this one may feel intense; if you want a heavier detective experience with real deduction pressure, Kismet is a strong pick.",
       },
     ],
     preview: [
@@ -510,7 +512,7 @@ Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, a
         title: "Silenced Precision",
         typeOfPreview: "image",
         content:
-          "Analyze the clinical precision of a silenced .32 ACP execution.",
+          "Review wound pattern and projectile notes to understand why investigators treat this as a professional close-range hit.",
         hideProfile: true,
       },
       {
@@ -518,10 +520,10 @@ Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, a
         profile: "/cold_cases/previews/kismet_casino/burner_log_decryption.png",
         thumbnail:
           "/cold_cases/previews/kismet_casino/burner_log_decryption.png",
-        title: "Meetha Paan Codes",
+        title: "Burner Trail",
         typeOfPreview: "image",
         content:
-          "Decipher the 'Meetha Paan' secret codes in the 555-burner phone logs.",
+          "Trace coded instructions, dead drops, and timing gaps inside recovered SMS logs without being handed the answer.",
         hideProfile: true,
       },
       {
@@ -529,20 +531,20 @@ Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, a
         profile: "/cold_cases/previews/kismet_casino/soundwave_forensics.png",
         thumbnail:
           "/cold_cases/previews/kismet_casino/soundwave_forensics.png",
-        title: "Voices in the Static",
+        title: "Spectrograph Window",
         typeOfPreview: "image",
         content:
-          "Identify the inseparable Punj siblings (Pons Twins) through covert soundwave analysis.",
+          "Use acoustic patterns and silence intervals to challenge claimed timelines and pressure-test suspect access windows.",
         hideProfile: true,
       },
       {
-        name: "Fugitive Timeline",
+        name: "Syndicate Intelligence",
         profile: "/cold_cases/previews/kismet_casino/fugitive_timeline.png",
         thumbnail: "/cold_cases/previews/kismet_casino/fugitive_timeline.png",
-        title: "Gray Dog Hunt",
+        title: "Network of Influence",
         typeOfPreview: "image",
         content:
-          "Track the movements of Farhan 'Gray Dog' Haider through decade-old fugitive records.",
+          "Map how cartel bios, prior incidents, and pressure tactics connect to the wider power struggle around the casino.",
         hideProfile: true,
       },
       {
@@ -550,10 +552,10 @@ Work through **CCTV reconstructions**, **encrypted burner phone transcripts**, a
         profile: "/cold_cases/previews/kismet_casino/casino_incident_file.png",
         thumbnail:
           "/cold_cases/previews/kismet_casino/casino_incident_file.png",
-        title: "The Aaina Mahal Setup",
+        title: "Aaina Mahal Incident Chain",
         typeOfPreview: "image",
         content:
-          "Investigate the 'Aaina Mahal' poker scandal that led to a professional hit.",
+          "Reconstruct the chain from table scandal to homicide using witness records, reports, and scene-linked documentation.",
         hideProfile: true,
       },
     ],
