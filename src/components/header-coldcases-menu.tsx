@@ -9,6 +9,7 @@ import { mysteryKits } from "@/data/mysteryKits";
 
 const CASE_MENU_FILTERS = [
   { href: "/cases?v=horror", label: "Horror", tag: "Horror" },
+  { href: "/cases?v=new", label: "New", tag: "New" },
   { href: "/cases?v=classic", label: "Classic", tag: "Classic" },
   { href: "/cases?v=holiday", label: "Holidays", tag: "Holiday" },
   { href: "/cases?v=fantasy", label: "Fantasy", tag: "Fantasy" },
