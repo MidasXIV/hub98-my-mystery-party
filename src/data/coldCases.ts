@@ -459,6 +459,7 @@ export const coldCases: ColdCase[] = [
       "The Murder at Kismet Casino is currently in beta. All forensic reports, syndicate files, and burner logs are playable, but evidence clarity and technical UI polish are being updated.",
     imageUrl: "/cold_cases/thumbnails/kismet_casino.jpeg",
     tags: [
+      "New",
       "Casino Murder Mystery",
       "Neo-Noir",
       "Organized Crime",
@@ -483,7 +484,7 @@ If you like darker detective stories with technical evidence and layered motive 
     price: 0,
     evidence: KISMET_CASINO_DATA,
     isPurchasable: false,
-    hasDownloadSample: true,
+    hasDownloadSample: false,
     isPlayable: true,
     seoSections: [
       {
@@ -749,7 +750,7 @@ If you like darker detective stories with technical evidence and layered motive 
     evidence: ZERO_SUM_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: true,
+    isPlayable: false,
     seoSections: [
       {
         title: "Why is this an 'unsolved cold case online' with a twist?",
