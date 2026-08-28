@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 type ProgressTrackerProps = {
   caseSlug: string;
   completedObjectiveIds: string[];
+  totalObjectives?: number;
+  alreadySyncedObjectiveIds?: string[];
   /** If true, mark events as applying to the 'kits' collection */
   isKit?: boolean;
 };
@@ -26,6 +28,8 @@ async function sendProgressEvent(payload: Record<string, unknown>) {
 export default function PlayerProgressTracker({
   caseSlug,
   completedObjectiveIds,
+  totalObjectives,
+  alreadySyncedObjectiveIds,
   isKit,
 }: ProgressTrackerProps) {
   const hasTrackedCaseOpenRef = useRef(false);
@@ -40,26 +44,42 @@ export default function PlayerProgressTracker({
       occurredAt: new Date().toISOString(),
       isKit: isKit === true,
     });
-  }, [caseSlug]);
+  }, [caseSlug, isKit]);
 
   useEffect(() => {
+    if (Array.isArray(alreadySyncedObjectiveIds)) {
+      for (const objectiveId of alreadySyncedObjectiveIds) {
+        if (typeof objectiveId === "string" && objectiveId.length > 0) {
+          syncedObjectiveIdsRef.current.add(objectiveId);
+        }
+      }
+    }
+
     const unsyncedObjectiveIds = completedObjectiveIds.filter(
       (objectiveId) => !syncedObjectiveIdsRef.current.has(objectiveId),
     );
 
     if (unsyncedObjectiveIds.length === 0) return;
 
-    unsyncedObjectiveIds.forEach((objectiveId) => {
+    unsyncedObjectiveIds.forEach((objectiveId, index) => {
+      const nextCompletedCount =
+        syncedObjectiveIdsRef.current.size + (index + 1);
+      const shouldMarkCaseComplete =
+        typeof totalObjectives === "number" &&
+        totalObjectives > 0 &&
+        nextCompletedCount >= totalObjectives;
+
       syncedObjectiveIdsRef.current.add(objectiveId);
       void sendProgressEvent({
         type: "objective-solved",
         caseSlug,
         objectiveId,
         occurredAt: new Date().toISOString(),
-          isKit: isKit === true,
+        markCaseComplete: shouldMarkCaseComplete,
+        isKit: isKit === true,
       });
     });
-  }, [caseSlug, completedObjectiveIds]);
+  }, [alreadySyncedObjectiveIds, caseSlug, completedObjectiveIds, isKit, totalObjectives]);
 
   return null;
 }

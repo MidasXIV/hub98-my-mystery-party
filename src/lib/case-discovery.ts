@@ -434,15 +434,43 @@ export function recommendNextCase(args: {
 
 export function buildBadgeSummary(allCases: CatalogCase[], progress: UserCaseProgress[]) {
   const playable = allCases.filter((entry) => entry.status === "playable");
-  const completed = new Set(
-    progress.filter((entry) => entry.status === "completed").map((entry) => entry.case_id),
-  );
+  const progressByCaseId = new Map(progress.map((entry) => [entry.case_id, entry]));
+  const earnedCaseIds = new Set<string>();
+
+  for (const caseFile of playable) {
+    const progressEntry = progressByCaseId.get(caseFile.slug);
+    if (!progressEntry) continue;
+
+    if (progressEntry.status === "completed") {
+      earnedCaseIds.add(caseFile.slug);
+      continue;
+    }
+
+    const evidence = caseFile.evidence;
+    const maybeObjectives =
+      evidence && typeof evidence === "object" && !Array.isArray(evidence)
+        ? (evidence as { objectives?: unknown }).objectives
+        : undefined;
+    const objectiveTotal = Array.isArray(maybeObjectives)
+      ? maybeObjectives.length
+      : undefined;
+    const solvedObjectives = progressEntry.objectives_solved;
+
+    if (
+      typeof objectiveTotal === "number" &&
+      objectiveTotal > 0 &&
+      typeof solvedObjectives === "number" &&
+      solvedObjectives >= objectiveTotal
+    ) {
+      earnedCaseIds.add(caseFile.slug);
+    }
+  }
 
   const caseBadges = playable.map((entry) => ({
     id: `case-${entry.slug}`,
     title: entry.title,
     kind: "case" as const,
-    earned: completed.has(entry.slug),
+    earned: earnedCaseIds.has(entry.slug),
   }));
 
   const seriesMap = new Map<string, CatalogCase[]>();
@@ -459,8 +487,8 @@ export function buildBadgeSummary(allCases: CatalogCase[], progress: UserCasePro
       id: `series-${seriesId}`,
       title: `${entries[0]!.title.split(":")[0]} Series Complete`,
       kind: "series" as const,
-      earned: entries.every((entry) => completed.has(entry.slug)),
-      progressLabel: `${entries.filter((entry) => completed.has(entry.slug)).length}/${entries.length}`,
+      earned: entries.every((entry) => earnedCaseIds.has(entry.slug)),
+      progressLabel: `${entries.filter((entry) => earnedCaseIds.has(entry.slug)).length}/${entries.length}`,
     }));
 
   const themeMap = new Map<string, CatalogCase[]>();
@@ -475,7 +503,7 @@ export function buildBadgeSummary(allCases: CatalogCase[], progress: UserCasePro
   const themeBadges = Array.from(themeMap.entries())
     .filter(([, entries]) => entries.length >= 2)
     .map(([theme, entries]) => {
-      const completedCount = entries.filter((entry) => completed.has(entry.slug)).length;
+      const completedCount = entries.filter((entry) => earnedCaseIds.has(entry.slug)).length;
       return {
         id: `theme-${theme}`,
         title: `${THEME_LABELS[theme] ?? theme} Detective`,

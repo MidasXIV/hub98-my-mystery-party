@@ -2291,6 +2291,8 @@ export default function PlayBoardPage({
       <PlayerProgressTracker
         caseSlug={slug}
         completedObjectiveIds={completedObjectiveIds}
+        totalObjectives={boardData?.objectives?.length}
+        alreadySyncedObjectiveIds={persistedCompletedObjectiveIds ?? []}
       />
       {solvingObjective && (
         <ObjectiveSolver
