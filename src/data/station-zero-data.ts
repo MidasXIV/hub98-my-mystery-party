@@ -1555,6 +1555,8 @@ Ideal volunteers are resilient, collaborative, and ready to contribute to a miss
         diaryStyle: {
           preset: "worn",
           handwritingStyle: "reenie-beanie",
+          fontWeight: 700,
+          fontSizeScale: 1.24,
           inkColor: "#3a2b22",
           pressureLevel: 0.52,
           neatnessLevel: 0.46,
@@ -1675,10 +1677,12 @@ Ideal volunteers are resilient, collaborative, and ready to contribute to a miss
       content: JSON.stringify({
         title: "CASSANDRA HALE diary log",
         entriesPerPage: 2,
-        entryFont: "fuggles",
+        entryFont: "caveat",
         diaryStyle: {
           preset: "clean",
-          handwritingStyle: "fuggles",
+          handwritingStyle: "caveat",
+          fontWeight: 700,
+          fontSizeScale: 1.22,
           inkColor: "#2a2622",
           pressureLevel: 0.48,
           neatnessLevel: 0.82,
@@ -1956,6 +1960,102 @@ Ideal volunteers are resilient, collaborative, and ready to contribute to a miss
     },
   ],
   connections: [
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_cassandra_hale",
+    },
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_kai_mercer",
+    },
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_jax_calder",
+    },
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_ren_ilyanova",
+    },
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_elara_voss",
+    },
+    {
+      from: "briefing_case_734_alpha",
+      to: "doc_crew_profile_zane_moreno",
+    },
+    {
+      from: "doc_crew_profile_cassandra_hale",
+      to: "profile_cass",
+    },
+    {
+      from: "doc_crew_profile_cassandra_hale",
+      to: "doc_autopsy_cass",
+    },
+    {
+      from: "doc_crew_profile_kai_mercer",
+      to: "profile_kai",
+    },
+    {
+      from: "doc_crew_profile_kai_mercer",
+      to: "doc_autopsy_kai",
+    },
+    {
+      from: "doc_crew_profile_jax_calder",
+      to: "profile_jax",
+    },
+    {
+      from: "doc_crew_profile_jax_calder",
+      to: "doc_autopsy_jax",
+    },
+    {
+      from: "doc_crew_profile_ren_ilyanova",
+      to: "profile_ren",
+    },
+    {
+      from: "doc_crew_profile_ren_ilyanova",
+      to: "doc_autopsy_ren",
+    },
+    {
+      from: "doc_crew_profile_elara_voss",
+      to: "profile_elara",
+    },
+    {
+      from: "doc_crew_profile_elara_voss",
+      to: "doc_autopsy_elara",
+    },
+    {
+      from: "doc_crew_profile_zane_moreno",
+      to: "profile_zane",
+    },
+    {
+      from: "doc_crew_profile_zane_moreno",
+      to: "doc_autopsy_zane",
+    },
+    {
+      from: "doc_crew_profile_cassandra_hale",
+      to: "cass_diary",
+    },
+    {
+      from: "doc_crew_profile_kai_mercer",
+      to: "kai_diary",
+    },
+    {
+      from: "doc_crew_profile_jax_calder",
+      to: "jax_diary",
+    },
+    {
+      from: "doc_crew_profile_ren_ilyanova",
+      to: "ren_diary",
+    },
+    {
+      from: "doc_crew_profile_elara_voss",
+      to: "elara_diary",
+    },
+    {
+      from: "doc_crew_profile_zane_moreno",
+      to: "zane_diary",
+    },
     {
       from: "audio_log_cass_1",
       to: "engineering_log_jax_1",

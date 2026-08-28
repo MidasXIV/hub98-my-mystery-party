@@ -60,6 +60,8 @@ type DiaryEmboss = "none" | "soft" | "deep";
 interface DiaryStyle {
   preset?: DiaryStylePreset;
   handwritingStyle?: DiaryEntryFont;
+  fontWeight?: number;
+  fontSizeScale?: number;
   inkColor?: string;
   paperColor?: string;
   embossLabel?: string;
@@ -76,6 +78,8 @@ interface DiaryStyle {
 
 type ResolvedDiaryStyle = {
   preset: DiaryStylePreset;
+  fontWeight: number;
+  fontSizeScale: number;
   inkColor: string;
   dateColor: string;
   paperColor: string;
@@ -94,6 +98,8 @@ type ResolvedDiaryStyle = {
 const STYLE_PRESETS: Record<DiaryStylePreset, ResolvedDiaryStyle> = {
   clean: {
     preset: "clean",
+    fontWeight: 400,
+    fontSizeScale: 1,
     inkColor: "#25211d",
     dateColor: "#3a3128",
     paperColor: "#fffaf1",
@@ -110,6 +116,8 @@ const STYLE_PRESETS: Record<DiaryStylePreset, ResolvedDiaryStyle> = {
   },
   worn: {
     preset: "worn",
+    fontWeight: 400,
+    fontSizeScale: 1,
     inkColor: "#2f2a24",
     dateColor: "#493d31",
     paperColor: "#f8efdf",
@@ -126,6 +134,8 @@ const STYLE_PRESETS: Record<DiaryStylePreset, ResolvedDiaryStyle> = {
   },
   distressed: {
     preset: "distressed",
+    fontWeight: 400,
+    fontSizeScale: 1,
     inkColor: "#2b241d",
     dateColor: "#554536",
     paperColor: "#f3e4cc",
@@ -233,6 +243,8 @@ function asDiaryStyle(value: unknown): DiaryStyle | undefined {
   if (raw.emboss === "none" || raw.emboss === "soft" || raw.emboss === "deep") {
     style.emboss = raw.emboss;
   }
+  if (typeof raw.fontWeight === "number") style.fontWeight = raw.fontWeight;
+  if (typeof raw.fontSizeScale === "number") style.fontSizeScale = raw.fontSizeScale;
 
   return style;
 }
@@ -242,6 +254,8 @@ function resolveDiaryStyle(style: DiaryStyle | undefined): ResolvedDiaryStyle {
   const resolvedNeatness = style?.neatnessLevel ?? style?.neatness ?? base.neatness;
   return {
     ...base,
+    fontWeight: clamp(style?.fontWeight ?? base.fontWeight, 300, 700),
+    fontSizeScale: clamp(style?.fontSizeScale ?? base.fontSizeScale, 0.9, 1.6),
     inkColor: style?.inkColor ?? base.inkColor,
     paperColor: style?.paperColor ?? base.paperColor,
     embossLabel: style?.embossLabel ?? base.embossLabel,
@@ -417,10 +431,12 @@ export function DiaryViewer({
     parsedDiaryStyle?.handwritingStyle ??
     (isDiaryEntryFont(data.entryFont) ? data.entryFont : entryFont);
   const entryFontClass = getEntryFontClass(resolvedEntryFont);
-  const entryFontSizeClass = resolvedEntryFont === "default" ? "text-sm" : "text-[1.12rem]";
+  const baseEntryFontSizeRem = resolvedEntryFont === "default" ? 0.875 : 1.12;
   const resolvedStyle = resolveDiaryStyle(parsedDiaryStyle);
+  const entryFontWeight = resolvedStyle.fontWeight;
+  const entryFontSizeRem = baseEntryFontSizeRem * resolvedStyle.fontSizeScale;
   // Use the same font, size, and thickness for date as for entry text
-  const dateFontClass = `${entryFontClass} ${entryFontSizeClass}`;
+  const dateFontClass = `${entryFontClass}`;
   const renderDays = buildRenderableDays(days, {
     handwritten: resolvedEntryFont !== "default",
     sectionsPerPage: entriesPerPage,
@@ -560,6 +576,8 @@ export function DiaryViewer({
                         top: `${topOffset}%`,
                         transform: `rotate(${rotate}deg)`,
                         color: resolvedStyle.inkColor,
+                        fontSize: `${Math.max(0.66, entryFontSizeRem * 0.62)}rem`,
+                        fontWeight: entryFontWeight,
                         opacity: clamp(0.52 + resolvedStyle.pressureLevel * 0.28, 0.5, 0.9),
                         textShadow: "0.4px 0.4px 0 rgba(0,0,0,0.1)",
                       }}
@@ -573,6 +591,8 @@ export function DiaryViewer({
                     className={`absolute right-2 top-[22%] z-20 max-w-[22mm] text-[11px] leading-[1.03] pointer-events-none ${entryFontClass}`}
                     style={{
                       color: resolvedStyle.inkColor,
+                      fontSize: `${Math.max(0.66, entryFontSizeRem * 0.62)}rem`,
+                      fontWeight: entryFontWeight,
                       opacity: clamp(0.44 + resolvedStyle.pressureLevel * 0.22, 0.42, 0.75),
                       transform: `rotate(${seeded(daySeed, 61) * 10 - 5}deg)`,
                       textShadow: "0.3px 0.3px 0 rgba(0,0,0,0.08)",
@@ -607,16 +627,18 @@ export function DiaryViewer({
                 )}
 
                 <div className="relative z-10 flex items-center mb-2">
-                  <span className={dateFontClass} style={{ color: resolvedStyle.dateColor, fontWeight: "inherit", letterSpacing: "inherit" }}>
+                  <span className={dateFontClass} style={{ color: resolvedStyle.dateColor, fontWeight: entryFontWeight, fontSize: `${entryFontSizeRem}rem`, letterSpacing: "inherit" }}>
                     {day.date || `Day ${startIndex + idx + 1}`}
                     {day.continuedFromPrevious ? " (cont.)" : ""}
                     {day.continuedToNext ? " (continues)" : ""}
                   </span>
                 </div>
                 <div
-                  className={`relative z-10 space-y-3 leading-relaxed flex-1 ${entryFontClass} ${entryFontSizeClass}`}
+                  className={`relative z-10 space-y-3 leading-relaxed flex-1 ${entryFontClass}`}
                   style={{
                     color: resolvedStyle.inkColor,
+                    fontSize: `${entryFontSizeRem}rem`,
+                    fontWeight: entryFontWeight,
                     opacity: inkAlpha,
                     textShadow: inkShadow,
                   }}
