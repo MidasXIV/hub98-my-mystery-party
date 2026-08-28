@@ -1,26 +1,72 @@
 "use client";
 import Link from "next/link";
 import { coldCases } from "@/data/coldCases";
+import type { ReactNode } from "react";
 
 // Reusable card component for displaying a cold case preview.
 // Accepts one ColdCase item (inferred from coldCases type) and renders
 // image background, title, arrow icon, and tags similar to homepage styling.
 
-export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
+type CaseCardProps = {
+  caseData: (typeof coldCases)[0];
+  seriesLabel?: string | null;
+  disableLink?: boolean;
+  muted?: boolean;
+  footerAction?: ReactNode;
+  disableHoverScale?: boolean;
+  size?: "default" | "compact";
+};
+
+export function CaseCard({
+  caseData,
+  seriesLabel,
+  disableLink = false,
+  muted = false,
+  footerAction,
+  disableHoverScale = false,
+  size = "default",
+}: CaseCardProps) {
   const isPlayable = caseData.isPlayable ?? false;
   const caseSummary = (caseData.shortDescription || caseData.description || "")
     .replace(/\s+/g, " ")
     .trim();
 
+  const cardSizeClass =
+    size === "compact"
+      ? "w-72 md:w-80 h-[440px]"
+      : "w-80 md:w-96 h-[500px]";
+
+  const CardShell = ({ children }: { children: ReactNode }) => {
+    const className = `case-card relative ${cardSizeClass} flex-shrink-0 group transition-transform duration-300 ease-in-out rounded-3xl ${
+      disableLink
+        ? "cursor-default"
+        : `${disableHoverScale ? "" : "hover:scale-105"} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`
+    }`;
+
+    if (disableLink) {
+      return <div className={className}>{children}</div>;
+    }
+
+    return (
+      <Link
+        href={`/cases/${caseData.slug}`}
+        className={className}
+        aria-label={`View case: ${caseData.title}`}
+      >
+        {children}
+      </Link>
+    );
+  };
+
   return (
-    <Link
-      href={`/cases/${caseData.slug}`}
-      className="case-card relative w-80 md:w-96 h-[500px] flex-shrink-0 group transition-transform duration-300 ease-in-out hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-3xl"
-      aria-label={`View case: ${caseData.title}`}
-    >
-      <div className="relative w-80 md:w-96 h-[500px] flex-shrink-0 cursor-pointer group transition-transform duration-300 ease-in-out hover:scale-105">
+    <CardShell>
+      <div
+        className={`relative ${cardSizeClass} flex-shrink-0 cursor-pointer group transition-transform duration-300 ease-in-out ${
+          disableHoverScale ? "" : "hover:scale-105"
+        }`}
+      >
         <div
-          className="w-full h-full bg-cover bg-center rounded-3xl shadow-2xl"
+          className={`w-full h-full bg-cover bg-center rounded-3xl shadow-2xl ${muted ? "grayscale opacity-75" : ""}`}
           style={{ backgroundImage: `url(${caseData.imageUrl})` }}
           role="img"
           aria-label={caseData.title}
@@ -29,7 +75,7 @@ export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
         </div>
 
         {/* Playability badge */}
-        <div className="absolute top-20 right-5 z-10">
+        <div className="absolute top-20 right-5 z-10 flex flex-col gap-2 items-end">
           {isPlayable ? (
             <span className="inline-flex items-center gap-1 rounded-full border border-emerald-300/30 bg-emerald-500/15 px-3 py-1 text-[11px] font-semibold tracking-wide text-emerald-100 backdrop-blur">
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -41,6 +87,12 @@ export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
               COMING SOON
             </span>
           )}
+
+          {seriesLabel ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-sky-300/30 bg-sky-500/15 px-3 py-1 text-[11px] font-semibold tracking-wide text-sky-100 backdrop-blur">
+              {seriesLabel}
+            </span>
+          ) : null}
         </div>
 
         <div className="absolute top-5 left-5 right-5 p-3 flex justify-between items-center bg-black/10 backdrop-blur-md rounded-2xl text-white">
@@ -79,8 +131,12 @@ export function CaseCard({ caseData }: { caseData: (typeof coldCases)[0] }) {
             {caseSummary}
           </p>
         </div>
+
+        {footerAction ? (
+          <div className="absolute bottom-5 right-5 z-20">{footerAction}</div>
+        ) : null}
       </div>
-    </Link>
+    </CardShell>
   );
 }
 
