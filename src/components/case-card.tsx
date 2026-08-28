@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 type CaseCardProps = {
   caseData: (typeof coldCases)[0];
   seriesLabel?: string | null;
+  statusChip?: ReactNode;
   disableLink?: boolean;
   muted?: boolean;
   footerAction?: ReactNode;
@@ -20,6 +21,7 @@ type CaseCardProps = {
 export function CaseCard({
   caseData,
   seriesLabel,
+  statusChip,
   disableLink = false,
   muted = false,
   footerAction,
@@ -33,8 +35,8 @@ export function CaseCard({
 
   const cardSizeClass =
     size === "compact"
-      ? "w-72 md:w-80 h-[440px]"
-      : "w-80 md:w-96 h-[500px]";
+      ? "w-64 md:w-72 h-[400px]"
+      : "w-72 md:w-88 h-[460px]";
 
   const CardShell = ({ children }: { children: ReactNode }) => {
     const className = `case-card relative ${cardSizeClass} flex-shrink-0 group transition-transform duration-300 ease-in-out rounded-3xl ${
@@ -93,6 +95,8 @@ export function CaseCard({
               {seriesLabel}
             </span>
           ) : null}
+
+          {statusChip ? statusChip : null}
         </div>
 
         <div className="absolute top-5 left-5 right-5 p-3 flex justify-between items-center bg-black/10 backdrop-blur-md rounded-2xl text-white">

@@ -22,6 +22,11 @@ export type PlayerProgressPublicMetadata = {
   cases: PlayerCaseProgress[];
   /** Optional separate tracking for kits (printable kits / hosted kits) */
   kits?: PlayerCaseProgress[];
+  notificationPreferences?: {
+    wantsNewCaseNotifications: boolean;
+    updatedAt: string;
+    sourceCaseSlug?: string;
+  };
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -96,6 +101,20 @@ export function normalizePlayerProgressMetadata(
     version: 1,
     cases,
     kits,
+    notificationPreferences: isRecord(value.notificationPreferences)
+      ? {
+          wantsNewCaseNotifications:
+            value.notificationPreferences.wantsNewCaseNotifications === true,
+          updatedAt: toIsoDate(
+            value.notificationPreferences.updatedAt,
+            new Date().toISOString(),
+          ),
+          sourceCaseSlug:
+            typeof value.notificationPreferences.sourceCaseSlug === "string"
+              ? value.notificationPreferences.sourceCaseSlug
+              : undefined,
+        }
+      : undefined,
   };
 }
 
@@ -116,6 +135,12 @@ type MergeProgressEvent =
       markCaseComplete?: boolean;
       /** If true, treat this event as applying to the 'kits' collection instead of 'cases' */
       isKit?: boolean;
+    }
+  | {
+      type: "notify-new-case-preference";
+      caseSlug: string;
+      wantsNewCaseNotifications: boolean;
+      occurredAt?: string;
     };
 
 export function mergePlayerProgressEvent(
@@ -124,6 +149,18 @@ export function mergePlayerProgressEvent(
 ): PlayerProgressPublicMetadata {
   const now = toIsoDate(event.occurredAt, new Date().toISOString());
   const current = normalizePlayerProgressMetadata(currentValue);
+
+  if (event.type === "notify-new-case-preference") {
+    return {
+      ...current,
+      notificationPreferences: {
+        wantsNewCaseNotifications: event.wantsNewCaseNotifications === true,
+        updatedAt: now,
+        sourceCaseSlug: event.caseSlug,
+      },
+    };
+  }
+
   // Choose target collection: 'kits' when event.isKit === true, otherwise 'cases'
   const targetKey: "cases" | "kits" = event.isKit ? "kits" : "cases";
   // Ensure both collections exist locally

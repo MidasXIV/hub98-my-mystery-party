@@ -23,6 +23,8 @@ export type UserCaseProgress = {
   last_opened_at?: string;
   completed_at?: string;
   progress_percent?: number;
+  objectives_solved?: number;
+  objectives_total?: number;
 };
 
 type DiscoveryRow = {
@@ -204,6 +206,7 @@ export function normalizeUserCaseProgress(
 ): UserCaseProgress[] {
   return metadata.cases.map((entry) => {
     const status = entry.status === "completed" ? "completed" : "in_progress";
+    const objectivesSolved = entry.objectives.length;
     const progressPercent = status === "completed" ? 100 : undefined;
     return {
       user_id: userId,
@@ -212,6 +215,7 @@ export function normalizeUserCaseProgress(
       last_opened_at: entry.lastPlayedAt,
       completed_at: entry.completedAt,
       progress_percent: progressPercent,
+      objectives_solved: objectivesSolved,
     } satisfies UserCaseProgress;
   });
 }

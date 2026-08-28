@@ -192,9 +192,11 @@ function normalizeItemSize(item: BoardItem): BoardItem {
 // FIX: Add explicit prop types to resolve TypeScript error on `item.content`.
 function Modal({
   item,
+  caseSlug,
   onClose,
 }: {
   item: BoardItem;
+  caseSlug: string;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -281,7 +283,13 @@ function Modal({
       case "bank-statement":
         return <BankStatementViewer content={item.content} />;
       case "objectives-cleared-badge":
-        return <BadgeBoardViewer content={item.content} title={item.title} />;
+        return (
+          <BadgeBoardViewer
+            content={item.content}
+            title={item.title}
+            caseSlug={caseSlug}
+          />
+        );
       case "folder-tab":
         return (
           <div className="bg-yellow-600 text-white text-2xl p-4 uppercase font-staatliches tracking-wider">
@@ -558,6 +566,9 @@ export default function PlayBoardPage({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [usedClueIds, setUsedClueIds] = useState(new Set<string>());
   const [newItemId, setNewItemId] = useState<string | null>(null);
+  const [persistedCompletedObjectiveIds, setPersistedCompletedObjectiveIds] = useState<
+    string[] | null
+  >(null);
   const [unlockedByObjective, setUnlockedByObjective] = useState<
     Record<string, string[]>
   >({});
@@ -601,6 +612,7 @@ export default function PlayBoardPage({
   const dragStartPoint = useRef({ x: 0, y: 0 });
   const didDrag = useRef(false);
   const previousAvailableTypesRef = useRef<Set<BoardItemType>>(new Set());
+  const completionBadgeFetchAttemptedRef = useRef(false);
 
   // Generate the board structure
   useEffect(() => {
@@ -628,8 +640,133 @@ export default function PlayBoardPage({
   }, [slug]);
 
   useEffect(() => {
+    completionBadgeFetchAttemptedRef.current = false;
+  }, [slug]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    const loadPersistedProgress = async () => {
+      try {
+        const res = await fetch(
+          `/api/board?action=player-progress&caseSlug=${encodeURIComponent(slug)}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          },
+        );
+
+        if (!res.ok) return;
+
+        const payload = (await res.json()) as {
+          completedObjectiveIds?: unknown;
+        };
+
+        if (isCancelled) return;
+
+        const completedIds = Array.isArray(payload.completedObjectiveIds)
+          ? payload.completedObjectiveIds.filter(
+              (value): value is string => typeof value === "string" && value.length > 0,
+            )
+          : [];
+
+        setPersistedCompletedObjectiveIds(completedIds);
+      } catch (progressError) {
+        console.warn("Failed to load persisted player progress", progressError);
+      }
+    };
+
+    void loadPersistedProgress();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [slug]);
+
+  useEffect(() => {
+    if (!Array.isArray(persistedCompletedObjectiveIds) || !boardData?.objectives) {
+      return;
+    }
+
+    const validObjectiveIds = new Set(boardData.objectives.map((objective) => objective.id));
+    const hydratedObjectiveIds = persistedCompletedObjectiveIds.filter((objectiveId) =>
+      validObjectiveIds.has(objectiveId),
+    );
+
+    if (hydratedObjectiveIds.length === 0) return;
+
+    setCompletedObjectives((prev) => {
+      let hasChanges = false;
+      const next = new Set(prev);
+      for (const objectiveId of hydratedObjectiveIds) {
+        if (!next.has(objectiveId)) {
+          next.add(objectiveId);
+          hasChanges = true;
+        }
+      }
+      return hasChanges ? next : prev;
+    });
+  }, [boardData?.objectives, persistedCompletedObjectiveIds]);
+
+  useEffect(() => {
     boardDataRef.current = boardData;
   }, [boardData]);
+
+  useEffect(() => {
+    if (!boardData?.objectives || boardData.objectives.length === 0) return;
+
+    const completedAllObjectives =
+      completedObjectives.size >= boardData.objectives.length;
+    if (!completedAllObjectives) return;
+
+    const alreadyHasBadge = boardData.items.some(
+      (item) => item.type === "objectives-cleared-badge",
+    );
+    if (alreadyHasBadge || completionBadgeFetchAttemptedRef.current) return;
+
+    completionBadgeFetchAttemptedRef.current = true;
+
+    void (async () => {
+      try {
+        const res = await fetch("/api/board", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "badge", caseSlug: slug }),
+        });
+
+        if (!res.ok) return;
+
+        const payload = (await res.json()) as {
+          item?: BoardItem | null;
+        };
+        const badgeItem = payload?.item;
+        if (!badgeItem) return;
+
+        setBoardData((prev) => {
+          if (!prev) return prev;
+          const exists = prev.items.some(
+            (item) =>
+              item.id === badgeItem.id || item.type === "objectives-cleared-badge",
+          );
+          if (exists) return prev;
+
+          return {
+            ...prev,
+            items: [...prev.items, normalizeItemSize(badgeItem)],
+          };
+        });
+
+        setActiveFilters((prev) => {
+          if (prev.has("objectives-cleared-badge")) return prev;
+          const next = new Set(prev);
+          next.add("objectives-cleared-badge");
+          return next;
+        });
+      } catch (badgeError) {
+        console.warn("Failed to rehydrate completion badge", badgeError);
+      }
+    })();
+  }, [boardData, completedObjectives, slug]);
 
 
   const visibleItems = useMemo(
@@ -1117,6 +1254,10 @@ export default function PlayBoardPage({
     } else {
       const item = boardData?.items.find((i) => i.id === itemId);
       if (item) {
+        if (item.type === "objectives-cleared-badge") {
+          // Avoid overlap between global toasts and the certificate modal close button.
+          toast.dismiss();
+        }
         setModalItem(item);
       }
     }
@@ -1432,6 +1573,8 @@ export default function PlayBoardPage({
   };
 
   const handleAttemptSolve = (objectiveId: string) => {
+    if (completedObjectives.has(objectiveId)) return;
+
     const objectiveToSolve = boardData?.objectives.find(
       (obj) => obj.id === objectiveId,
     );
@@ -2234,6 +2377,15 @@ export default function PlayBoardPage({
                     };
                   });
 
+                  // Ensure newly unlocked badge is immediately visible even if
+                  // filter state didn't auto-include the type yet.
+                  setActiveFilters((prev) => {
+                    if (prev.has("objectives-cleared-badge")) return prev;
+                    const next = new Set(prev);
+                    next.add("objectives-cleared-badge");
+                    return next;
+                  });
+
                   toast.custom(
                     (t) => (
                       <ObjectiveStatusToastContent
@@ -2297,7 +2449,7 @@ export default function PlayBoardPage({
                       onDismiss={() => toast.dismiss(t)}
                     />
                   ),
-                  { duration: Infinity, closeButton: true },
+                  { duration: 5000, closeButton: false },
                 );
               }
             } else if (correct) {
@@ -2322,7 +2474,7 @@ export default function PlayBoardPage({
                       onDismiss={() => toast.dismiss(t)}
                     />
                   ),
-                  { duration: Infinity, closeButton: true },
+                  { duration: 5000, closeButton: false },
                 );
               }
             } else if (!correct) {
@@ -2360,6 +2512,7 @@ export default function PlayBoardPage({
       {modalItem && (
         <Modal
           item={modalItem}
+          caseSlug={slug}
           onClose={() => setModalItem(null)}
         />
       )}

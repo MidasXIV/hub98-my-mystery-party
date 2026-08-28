@@ -23,6 +23,17 @@ export const metadata = {
     "Browse all immersive cold case investigation games and pick your next challenge.",
 };
 
+function getObjectiveCountFromEvidence(evidence: unknown): number | null {
+  if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) {
+    return null;
+  }
+
+  const maybeObjectives = (evidence as { objectives?: unknown }).objectives;
+  if (!Array.isArray(maybeObjectives)) return null;
+
+  return maybeObjectives.length;
+}
+
 function CaseRow({
   title,
   subtitle,
@@ -77,6 +88,15 @@ export default async function CasesIndexPage() {
   const rows = buildCaseRows(allCases, mergedProgress);
   const badgeSummary = buildBadgeSummary(allCases, mergedProgress);
   const starterCase = rows.startHereRow.cases[0];
+  const progressByCaseId = new Map(
+    mergedProgress.map((entry) => [entry.case_id, entry]),
+  );
+  const objectiveTotalsByCaseId = new Map(
+    allCases.map((caseFile) => [
+      caseFile.slug,
+      getObjectiveCountFromEvidence(caseFile.evidence),
+    ]),
+  );
 
   const isNewOrAnonymousUser =
     !userId || !mergedProgress.some((entry) => entry.status !== "not_started");
@@ -115,14 +135,29 @@ export default async function CasesIndexPage() {
         <div className="max-w-7xl mx-auto">
           {userId && rows.continueRow && rows.continueRow.cases.length > 0 ? (
             <CaseRow title={rows.continueRow.title} subtitle="Pick up where you left off">
-              {rows.continueRow.cases.map((caseFile) => (
-                <CaseCard
-                  key={`continue-${caseFile.slug}`}
-                  caseData={caseFile}
-                  disableHoverScale
-                  size="compact"
-                />
-              ))}
+              {rows.continueRow.cases.map((caseFile) => {
+                const progressEntry = progressByCaseId.get(caseFile.slug);
+                const solvedCount = progressEntry?.objectives_solved;
+                const totalCount = objectiveTotalsByCaseId.get(caseFile.slug);
+                const showObjectiveProgress = typeof solvedCount === "number";
+
+                return (
+                  <CaseCard
+                    key={`continue-${caseFile.slug}`}
+                    caseData={caseFile}
+                    disableHoverScale
+                    size="compact"
+                    statusChip={
+                      showObjectiveProgress ? (
+                        <span className="inline-flex items-center rounded-full border border-sky-200/35 bg-black/45 px-3 py-1 text-[11px] font-semibold tracking-wide text-sky-100 backdrop-blur">
+                          Objectives: {solvedCount}
+                          {typeof totalCount === "number" ? `/${totalCount}` : ""}
+                        </span>
+                      ) : undefined
+                    }
+                  />
+                );
+              })}
             </CaseRow>
           ) : null}
 

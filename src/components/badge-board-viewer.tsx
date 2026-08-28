@@ -26,10 +26,16 @@ function parseBadgeContent(content: string): BadgeContent {
 export default function BadgeBoardViewer({
   content,
   title,
+  caseSlug,
 }: {
   content: string;
   title?: string;
+  caseSlug?: string;
 }) {
+  const [notifyStatus, setNotifyStatus] = React.useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
+  const [notifyMessage, setNotifyMessage] = React.useState<string>("");
   const data = parseBadgeContent(content);
 
   const imageSrc = data.imageUrl;
@@ -41,6 +47,42 @@ export default function BadgeBoardViewer({
   const caseId = data.caseId || "CASE-FILE: REDACTED";
   const issueDate = data.issueDate || new Date().toLocaleDateString();
   const signature = data.officerSignature || "The Commissioner";
+
+  async function handleNotifyInterest() {
+    if (!caseSlug) {
+      setNotifyStatus("error");
+      setNotifyMessage("Missing case context. Please reopen this badge from the case board.");
+      return;
+    }
+
+    if (notifyStatus === "sending") return;
+    setNotifyStatus("sending");
+    setNotifyMessage("");
+    try {
+      const response = await fetch("/api/board", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "player-progress",
+          type: "notify-new-case-preference",
+          caseSlug,
+          wantsNewCaseNotifications: true,
+          occurredAt: new Date().toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Request failed (${response.status})`);
+      }
+
+      setNotifyStatus("sent");
+      setNotifyMessage("Got it — we’ll use your account preference for new case drop notifications.");
+    } catch (err) {
+      console.error("[badge-board-viewer:notify-interest:error]", err);
+      setNotifyStatus("error");
+      setNotifyMessage("Couldn’t save your notification preference. Please try again.");
+    }
+  }
 
   return (
     <div className="flex flex-col items-center justify-center p-4 md:p-12 animate-in fade-in zoom-in duration-500">
@@ -113,6 +155,45 @@ export default function BadgeBoardViewer({
                     STATION<br/>ZERO
                  </div>
             </div>
+        </div>
+
+        {/* Notification interest section */}
+        <div className="mt-10 pt-8 border-t border-slate-200/90 print:hidden">
+          <h3 className="text-[11px] font-mono tracking-[0.24em] text-slate-500 uppercase text-center">
+            Dispatch Bulletin Registry
+          </h3>
+          <p className="mt-3 text-center text-[1rem] leading-relaxed font-serif italic text-slate-700">
+            Stay informed when new cases are declassified.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={handleNotifyInterest}
+              disabled={notifyStatus === "sending" || notifyStatus === "sent"}
+              className="group relative inline-flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-full border-[3px] border-amber-200/70 bg-[radial-gradient(circle_at_30%_25%,#b4534d_0%,#7f1d1d_52%,#450a0a_100%)] text-[9px] font-semibold uppercase tracking-[0.16em] leading-tight text-amber-50 shadow-[0_10px_18px_rgba(69,10,10,0.35),inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-5px_8px_rgba(0,0,0,0.32)] transition-all duration-200 cursor-pointer hover:-translate-y-[1px] hover:scale-[1.02] hover:shadow-[0_14px_22px_rgba(69,10,10,0.38),inset_0_2px_4px_rgba(255,255,255,0.2),inset_0_-5px_8px_rgba(0,0,0,0.32)] disabled:cursor-not-allowed disabled:grayscale disabled:opacity-80"
+              aria-label="Opt in for new case alerts"
+            >
+              <span className="pointer-events-none absolute inset-2 rounded-full border border-amber-100/35" />
+              <span className="pointer-events-none absolute inset-4 rounded-full border border-amber-100/20" />
+              <span className="relative text-center whitespace-pre-line drop-shadow-[0_1px_0_rgba(0,0,0,0.35)]">
+                {notifyStatus === "sending"
+                  ? "Saving"
+                  : notifyStatus === "sent"
+                    ? "Recorded"
+                    : "Notify\nMe"}
+              </span>
+            </button>
+          </div>
+          {notifyStatus === "error" && notifyMessage && (
+            <p className="mt-3 text-sm text-rose-700 font-serif italic" role="alert">
+              {notifyMessage}
+            </p>
+          )}
+          {notifyStatus === "sent" && notifyMessage && (
+            <p className="mt-3 text-sm text-slate-700 font-serif italic" role="status">
+              Preference recorded. You will be alerted when new cases enter the archive.
+            </p>
+          )}
         </div>
       </div>
 

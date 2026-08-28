@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import { POST as generatePost } from "@/lib/api/board/generate";
 import { POST as objectivePost } from "@/lib/api/board/objective";
 import { GET as badgeGet, POST as badgePost } from "@/lib/api/board/badge";
-import { POST as playerProgressPost } from "@/lib/api/board/player-progress";
+import {
+  GET as playerProgressGet,
+  POST as playerProgressPost,
+} from "@/lib/api/board/player-progress";
 
 type BoardApiAction = "generate" | "objective" | "badge" | "player-progress";
 
@@ -47,8 +50,15 @@ export async function GET(req: Request) {
     return badgeGet(req);
   }
 
+  if (action === "player-progress") {
+    return playerProgressGet(req);
+  }
+
   return NextResponse.json(
-    { error: "Unsupported GET action. Use ?action=badge or POST with an action body." },
+    {
+      error:
+        "Unsupported GET action. Use ?action=badge, ?action=player-progress, or POST with an action body.",
+    },
     { status: 400 },
   );
 }
