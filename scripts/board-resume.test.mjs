@@ -213,6 +213,27 @@ test("public metadata has no evidence, while server scoring and print retain all
   assert.ok(summary.earned > 0, "Objective-count-based badge progress must still work");
 });
 
+test("analytics preserves server objective counts and labels without returning answers", () => {
+  const { serverCases } = loadCaseRegistries();
+  const { buildCaseAnalytics } = loadModule(path.join("src", "lib", "case-analytics.ts"), {});
+  const result = buildCaseAnalytics(serverCases.coldCases, []);
+  for (const entry of serverCases.coldCases) {
+    const row = result.rows.find((candidate) => candidate.caseSlug === entry.slug);
+    const objectives = entry.evidence.objectives ?? [];
+    assert.equal(row.objectiveCount, objectives.length);
+    assert.deepEqual(row.objectiveCompletionDistribution.map((objective) => ({
+      id: objective.objectiveId,
+      label: objective.objectiveLabel,
+    })), objectives.map((objective) => ({
+      id: objective.id,
+      label: objective.description,
+    })));
+    assert.ok(row.objectiveCompletionDistribution.every((objective) =>
+      !Object.hasOwn(objective, "solution")));
+    assert.ok(!Object.hasOwn(row, "evidence"));
+  }
+});
+
 test("no client component can import the server case registry or evidence datasets", () => {
   const src = path.join(root, "src");
   const config = ts.readConfigFile(path.join(root, "tsconfig.json"), ts.sys.readFile);

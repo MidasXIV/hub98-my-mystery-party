@@ -3,7 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import type { Metadata } from "next";
 import CaseAnalyticsRowItem from "@/components/admin/case-analytics-row";
 import Footer from "@/components/footer";
-import { coldCases } from "@/data/coldCases";
+import { coldCases } from "@/data/coldCases.server";
 import { buildCaseAnalytics } from "@/lib/case-analytics";
 import {
   normalizePlayerProgressMetadata,

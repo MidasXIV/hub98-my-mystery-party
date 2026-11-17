@@ -1,4 +1,4 @@
-import type { ColdCase } from "@/data/coldCases";
+import type { CaseWithEvidence } from "@/data/coldCases.server";
 import type {
   PlayerCaseProgress,
   PlayerProgressPublicMetadata,
@@ -155,7 +155,7 @@ function addCaseProgress(
 }
 
 export function buildCaseAnalytics(
-  allCases: ColdCase[],
+  allCases: CaseWithEvidence[],
   playerProgressRecords: PlayerProgressPublicMetadata[],
 ): CaseAnalyticsResult {
   const objectiveCountBySlug = new Map(

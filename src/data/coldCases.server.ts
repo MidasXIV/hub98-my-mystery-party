@@ -10,7 +10,7 @@ import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data";
 import THE_LAST_CHECK_IN_DATA from "./the-last-check-in";
 import KISMET_CASINO_DATA from "./kismet-casino-data";
 
-type CaseWithEvidence = ColdCase & { evidence?: Record<string, unknown> };
+export type CaseWithEvidence = ColdCase & { evidence?: Record<string, unknown> };
 
 const evidenceBySlug: Record<string, Record<string, unknown>> = {
   "station-zero": STATION_ZERO_DATA,

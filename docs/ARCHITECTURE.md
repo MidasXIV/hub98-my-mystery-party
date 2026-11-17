@@ -32,6 +32,10 @@ pages derive numeric objective counts on the server and send metadata/counts, no
 evidence, to client cards and filters. Public metadata contains promotional badge
 image URLs so the homepage does not need full datasets.
 
+The analytics page also reads the server registry. Its aggregator accepts
+`CaseWithEvidence` and returns objective counts/labels and player statistics,
+not full evidence or canonical solutions, to the analytics UI.
+
 GET supports `badge` and `player-progress` query actions. POST supports
 `generate`, `objective`, `badge`, and `player-progress`. Do not recreate older
 per-action route paths documented elsewhere without checking current callers.
