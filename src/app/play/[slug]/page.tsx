@@ -569,9 +569,6 @@ export default function PlayBoardPage({
   const [persistedCompletedObjectiveIds, setPersistedCompletedObjectiveIds] = useState<
     string[] | null
   >(null);
-  const [unlockedByObjective, setUnlockedByObjective] = useState<
-    Record<string, string[]>
-  >({});
   // FloatingButton now contains ZoomController directly as trigger; toggle state not needed.
 
   const isPlayable = caseFile.isPlayable ?? false;
@@ -589,7 +586,9 @@ export default function PlayBoardPage({
     if (!boardData?.objectives) return [];
     return boardData.objectives
       .map((objective) => {
-        const itemIds = unlockedByObjective[objective.id] ?? [];
+        const itemIds = boardData.items
+          .filter((item) => item.unlockOnObjectiveId === objective.id)
+          .map((item) => item.id);
         return {
           objectiveId: objective.id,
           label: objective.description,
@@ -597,7 +596,7 @@ export default function PlayBoardPage({
         };
       })
       .filter((entry) => entry.itemIds.length > 0);
-  }, [boardData?.objectives, unlockedByObjective]);
+  }, [boardData]);
 
   const itemRefs = useRef(new Map());
   const viewportRef = useRef<HTMLDivElement | null>(null);
@@ -616,6 +615,8 @@ export default function PlayBoardPage({
 
   // Generate the board structure
   useEffect(() => {
+    let isCancelled = false;
+
     const generateBoard = async () => {
       try {
         const res = await fetch("/api/board", {
@@ -625,10 +626,23 @@ export default function PlayBoardPage({
         });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const raw = await res.json();
+        if (isCancelled) return;
+
         const data = normalizeBoardData(raw);
+        const completedIds = Array.isArray(raw.completedObjectiveIds)
+          ? raw.completedObjectiveIds.filter(
+              (value: unknown): value is string =>
+                typeof value === "string" &&
+                data.objectives.some((objective) => objective.id === value),
+            )
+          : [];
+
         setBoardData(data);
+        setPersistedCompletedObjectiveIds(completedIds);
+        setCompletedObjectives(new Set(completedIds));
         setLoadingMessage(null);
       } catch (err) {
+        if (isCancelled) return;
         console.error("Failed to generate board data:", err);
         setError(
           "Failed to retrieve mission intel. The connection might be compromised.",
@@ -637,76 +651,14 @@ export default function PlayBoardPage({
       }
     };
     generateBoard();
-  }, [slug]);
-
-  useEffect(() => {
-    completionBadgeFetchAttemptedRef.current = false;
-  }, [slug]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    const loadPersistedProgress = async () => {
-      try {
-        const res = await fetch(
-          `/api/board?action=player-progress&caseSlug=${encodeURIComponent(slug)}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          },
-        );
-
-        if (!res.ok) return;
-
-        const payload = (await res.json()) as {
-          completedObjectiveIds?: unknown;
-        };
-
-        if (isCancelled) return;
-
-        const completedIds = Array.isArray(payload.completedObjectiveIds)
-          ? payload.completedObjectiveIds.filter(
-              (value): value is string => typeof value === "string" && value.length > 0,
-            )
-          : [];
-
-        setPersistedCompletedObjectiveIds(completedIds);
-      } catch (progressError) {
-        console.warn("Failed to load persisted player progress", progressError);
-      }
-    };
-
-    void loadPersistedProgress();
-
     return () => {
       isCancelled = true;
     };
   }, [slug]);
 
   useEffect(() => {
-    if (!Array.isArray(persistedCompletedObjectiveIds) || !boardData?.objectives) {
-      return;
-    }
-
-    const validObjectiveIds = new Set(boardData.objectives.map((objective) => objective.id));
-    const hydratedObjectiveIds = persistedCompletedObjectiveIds.filter((objectiveId) =>
-      validObjectiveIds.has(objectiveId),
-    );
-
-    if (hydratedObjectiveIds.length === 0) return;
-
-    setCompletedObjectives((prev) => {
-      let hasChanges = false;
-      const next = new Set(prev);
-      for (const objectiveId of hydratedObjectiveIds) {
-        if (!next.has(objectiveId)) {
-          next.add(objectiveId);
-          hasChanges = true;
-        }
-      }
-      return hasChanges ? next : prev;
-    });
-  }, [boardData?.objectives, persistedCompletedObjectiveIds]);
+    completionBadgeFetchAttemptedRef.current = false;
+  }, [slug]);
 
   useEffect(() => {
     boardDataRef.current = boardData;
@@ -1641,6 +1593,8 @@ export default function PlayBoardPage({
                 : undefined;
           const title = typeof it.title === "string" ? it.title : undefined;
           const packIn = Array.isArray(it.packIn) ? it.packIn : [];
+          const unlockOnObjectiveId =
+            typeof it.unlockOnObjectiveId === "string" ? it.unlockOnObjectiveId : undefined;
           return normalizeItemSize({
             id,
             title,
@@ -1651,6 +1605,7 @@ export default function PlayBoardPage({
             rotation,
             imageUrl,
             packIn,
+            unlockOnObjectiveId,
           });
         })
       : [];
@@ -2412,18 +2367,6 @@ export default function PlayBoardPage({
                 next.add(objectiveId);
                 return next;
               });
-
-              if (unlockedItems.length > 0) {
-                setUnlockedByObjective((prev) => {
-                  const existing = prev[objectiveId] ?? [];
-                  const nextSet = new Set(existing);
-                  unlockedItems.forEach((item) => nextSet.add(item.id));
-                  return {
-                    ...prev,
-                    [objectiveId]: Array.from(nextSet),
-                  };
-                });
-              }
             }
 
             // 3) Notify user with Sonner toasts

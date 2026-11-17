@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getCaseBySlug } from "@/data/coldCases";
+import { getCaseBySlug } from "@/data/coldCases.server";
 import type { BoardItem } from "@/lib/boardTypes";
 
 type BadgeRequestBody = {

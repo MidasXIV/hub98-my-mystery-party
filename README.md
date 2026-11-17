@@ -26,12 +26,19 @@ An index page listing all available cold case games now lives at `src/app/cases/
 
 Reusable card component: `src/components/case-card.tsx`.
 
-Data source: `src/data/coldCases.ts`.
+Public metadata source: `src/data/coldCases.ts`. Full evidence is attached only in
+the server-only registry, `src/data/coldCases.server.ts`.
 
 To add a new case:
 1. Append an object to the `coldCases` array with a unique `slug`.
 2. Add any referenced images under `public/cold_cases/thumbnails/`.
 3. Visit `/cases` to verify it appears.
+
+For a playable case, register its dataset by slug in `src/data/coldCases.server.ts`
+and the supported-slug list in `src/lib/api/board/generate.ts`. Do not import full
+datasets into public metadata or client components. Set `badgeImageUrl` in public
+metadata when the case has a promotional badge; the regression checks compare it
+with the authored award.
 
 Optional: Add Open Graph / Twitter images similar to existing dynamic case routes if needed.
 
@@ -245,4 +252,3 @@ Adding a new post:
 1. Create the Markdown file under `content/blog/<category>/<slug>.md`
 2. Fill out frontmatter; set `date` to ISO (YYYY-MM-DD)
 3. Commit and deploy; pages are statically generated
-

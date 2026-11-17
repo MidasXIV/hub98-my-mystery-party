@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { coldCases, getCaseBySlug } from "@/data/coldCases";
+import { coldCases, getCaseBySlug } from "@/data/coldCases.server";
 import type { ColdCase } from "@/data/coldCases";
 import type { BoardData, BoardItem, PackagingSlot } from "@/lib/boardTypes";
 import CaseBriefingViewer from "@/components/case-briefing-viewer";

@@ -5,6 +5,7 @@ export type CaseStatus = "playable" | "coming_soon";
 export type CaseDifficulty = "easy" | "medium" | "hard" | "high_difficulty";
 
 export type CatalogCase = ColdCase & {
+  objectiveCount?: number;
   status: CaseStatus;
   difficulty_level: CaseDifficulty;
   is_starter: boolean;
@@ -446,14 +447,7 @@ export function buildBadgeSummary(allCases: CatalogCase[], progress: UserCasePro
       continue;
     }
 
-    const evidence = caseFile.evidence;
-    const maybeObjectives =
-      evidence && typeof evidence === "object" && !Array.isArray(evidence)
-        ? (evidence as { objectives?: unknown }).objectives
-        : undefined;
-    const objectiveTotal = Array.isArray(maybeObjectives)
-      ? maybeObjectives.length
-      : undefined;
+    const objectiveTotal = caseFile.objectiveCount;
     const solvedObjectives = progressEntry.objectives_solved;
 
     if (

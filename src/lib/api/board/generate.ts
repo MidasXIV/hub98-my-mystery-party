@@ -1,24 +1,40 @@
 import { NextResponse } from 'next/server';
-import { getCaseBySlug } from '@/data/coldCases';
+import { getCaseBySlug } from '@/data/coldCases.server';
+import { getPlayerCaseProgress } from '@/lib/api/board/player-progress';
 
 type MaybeBoardData = {
   items?: unknown[];
   connections?: unknown[];
   clues?: unknown[];
+  objectives?: unknown[];
   [k: string]: unknown;
 };
 
-function filterLockedEvidence(boardData: unknown) {
+function filterLockedEvidence(boardData: unknown, completedObjectiveIds: string[]) {
   if (!boardData || typeof boardData !== 'object') return boardData;
   const bd = boardData as MaybeBoardData;
 
+  const objectives = Array.isArray(bd.objectives) ? bd.objectives : [];
+  const publicObjectives = objectives.flatMap((objective) =>
+    objective && typeof objective === 'object' &&
+    'id' in objective && typeof objective.id === 'string' &&
+    'description' in objective && typeof objective.description === 'string'
+      ? [{ id: objective.id, description: objective.description }]
+      : [],
+  );
+  const validObjectiveIds = new Set(publicObjectives.map((objective) => objective.id));
+  const completedIds = new Set(
+    completedObjectiveIds.filter((id) => validObjectiveIds.has(id)),
+  );
   const items = Array.isArray(bd.items) ? bd.items : [];
   const unlockedItems = items.filter((it) => {
     if (!it || typeof it !== 'object') return true;
     const obj = it as Record<string, unknown>;
     // Badge is unlocked dynamically in gameplay; exclude it from initial board payload.
     if (obj.type === 'objectives-cleared-badge') return false;
-    return obj.unlockOnObjectiveId == null;
+    return obj.unlockOnObjectiveId == null ||
+      (typeof obj.unlockOnObjectiveId === 'string' &&
+        completedIds.has(obj.unlockOnObjectiveId));
   });
 
   const unlockedIds = new Set(
@@ -47,8 +63,10 @@ function filterLockedEvidence(boardData: unknown) {
 
   return {
     ...bd,
+    objectives: publicObjectives,
     items: unlockedItems,
     connections: unlockedConnections,
+    completedObjectiveIds: Array.from(completedIds),
   };
 }
 
@@ -527,17 +545,19 @@ export async function POST(req: Request) {
         );
       }
 
-      return NextResponse.json(filterLockedEvidence(boardData));
+      const { completedObjectiveIds } = await getPlayerCaseProgress(caseSlug);
+      return NextResponse.json(filterLockedEvidence(boardData, completedObjectiveIds));
     }
 
 
     // If the slug matches another cold case, return placeholder (currently Shadowfall mock until bespoke data is authored).
     const existing = getCaseBySlug(caseSlug);
     if (existing) {
-      return NextResponse.json({
+      const { completedObjectiveIds } = await getPlayerCaseProgress(caseSlug);
+      return NextResponse.json(filterLockedEvidence({
         warning: 'No bespoke board yet for this case; returning default mock.',
         ...mockData,
-      });
+      }, completedObjectiveIds));
     }
 
     // Unknown slug entirely.

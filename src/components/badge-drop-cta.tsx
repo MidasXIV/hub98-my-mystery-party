@@ -15,36 +15,9 @@ type PosterCase = {
   posterUrl: string;
 };
 
-function extractCaseBadgeUrl(evidence: ColdCase["evidence"]): string | null {
-  if (!evidence || typeof evidence !== "object" || Array.isArray(evidence)) {
-    return null;
-  }
-  const items = (evidence as { items?: unknown }).items;
-  if (!Array.isArray(items)) {
-    return null;
-  }
-  for (const item of items) {
-    if (!item || typeof item !== "object") continue;
-    const candidate = item as { type?: unknown; imageUrl?: unknown; content?: unknown; };
-    if (candidate.type !== "objectives-cleared-badge") continue;
-    if (typeof candidate.imageUrl === "string" && candidate.imageUrl.length > 0) return candidate.imageUrl;
-    
-    if (typeof candidate.content === "string") {
-      try {
-        const parsed = JSON.parse(candidate.content) as { imageUrl?: unknown };
-        if (typeof parsed.imageUrl === "string" && parsed.imageUrl.length > 0) return parsed.imageUrl;
-      } catch { /* ignore */ }
-    } else if (candidate.content && typeof candidate.content === "object" && !Array.isArray(candidate.content)) {
-      const parsed = candidate.content as { imageUrl?: unknown };
-      if (typeof parsed.imageUrl === "string" && parsed.imageUrl.length > 0) return parsed.imageUrl;
-    }
-  }
-  return null;
-}
-
 function getBadgeCases(cases: ColdCase[]): BadgeCase[] {
   return cases
-    .map((c) => ({ slug: c.slug, title: c.pageTitle || c.title, badgeUrl: extractCaseBadgeUrl(c.evidence) }))
+    .map((c) => ({ slug: c.slug, title: c.pageTitle || c.title, badgeUrl: c.badgeImageUrl }))
     .filter((item): item is BadgeCase & { badgeUrl: string } => Boolean(item.badgeUrl));
 }
 

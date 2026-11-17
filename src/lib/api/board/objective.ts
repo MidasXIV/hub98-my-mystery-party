@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
-import { getCaseBySlug } from "@/data/coldCases";
+import { getCaseBySlug } from "@/data/coldCases.server";
 
 type BoardObjective = { id: string; description: string; solution?: string };
 type BoardData = {

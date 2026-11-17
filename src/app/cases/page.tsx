@@ -3,6 +3,7 @@ import { auth, clerkClient } from "@clerk/nextjs/server";
 import CaseCard from "@/components/case-card";
 import CasesFilterGrid from "@/components/cases-filter-grid";
 import Footer from "@/components/footer";
+import { getCaseBySlug } from "@/data/coldCases.server";
 import {
   buildBadgeSummary,
   buildCaseRows,
@@ -70,7 +71,11 @@ function CaseRow({
 }
 
 export default async function CasesIndexPage() {
-  const allCases = getCatalogCases();
+  const allCases = getCatalogCases().map((caseFile) => ({
+    ...caseFile,
+    objectiveCount:
+      getObjectiveCountFromEvidence(getCaseBySlug(caseFile.slug)?.evidence) ?? undefined,
+  }));
   const { userId } = await auth();
 
   let mergedProgress = mergeProgressWithCatalog("guest", [], allCases);
@@ -94,7 +99,7 @@ export default async function CasesIndexPage() {
   const objectiveTotalsByCaseId = new Map(
     allCases.map((caseFile) => [
       caseFile.slug,
-      getObjectiveCountFromEvidence(caseFile.evidence),
+      caseFile.objectiveCount,
     ]),
   );
 

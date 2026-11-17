@@ -33,23 +33,15 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
 }
 
-export async function GET(req: Request) {
+export async function getPlayerCaseProgress(caseSlug: string, isKit = false) {
   const { userId } = await auth();
-  const url = new URL(req.url);
-  const caseSlug = url.searchParams.get("caseSlug");
-  const isKit = url.searchParams.get("isKit") === "true";
-
-  if (!isNonEmptyString(caseSlug)) {
-    return NextResponse.json({ error: "caseSlug is required" }, { status: 400 });
-  }
 
   if (!userId) {
-    return NextResponse.json({
-      ok: true,
+    return {
       authenticated: false,
       caseProgress: null,
       completedObjectiveIds: [],
-    });
+    };
   }
 
   const client = await clerkClient();
@@ -61,13 +53,27 @@ export async function GET(req: Request) {
   const source = isKit ? metadata.kits ?? [] : metadata.cases;
   const caseProgress = source.find((entry) => entry.caseSlug === caseSlug) ?? null;
 
-  return NextResponse.json({
-    ok: true,
+  return {
     authenticated: true,
     caseProgress,
     completedObjectiveIds: Array.from(
       new Set(caseProgress?.objectives.map((objective) => objective.objectiveId) ?? []),
     ),
+  };
+}
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const caseSlug = url.searchParams.get("caseSlug");
+  const isKit = url.searchParams.get("isKit") === "true";
+
+  if (!isNonEmptyString(caseSlug)) {
+    return NextResponse.json({ error: "caseSlug is required" }, { status: 400 });
+  }
+
+  return NextResponse.json({
+    ok: true,
+    ...(await getPlayerCaseProgress(caseSlug, isKit)),
   });
 }
 

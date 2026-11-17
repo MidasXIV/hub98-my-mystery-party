@@ -1,13 +1,3 @@
-import HER_SHADOWS_NAME_DATA from "./her-shadows-name-data";
-import PALAZZO_OF_BONES_DATA from "./palazzo-of-bones-data";
-import STATION_ZERO_DATA from "./station-zero-data";
-import ZERO_SUM_DATA from "./zero-sum-data";
-import FINAL_REHEARSAL_DATA from "./the-final-rehearsal-data";
-import FINAL_BENCH_OFF_DATA from "./the-final-bench-off-data";
-import SINS_OF_SAINT_LAZARUS_DATA from "./sins-of-saint-lazarus-data";
-import THE_LAST_CHECK_IN_DATA from "./the-last-check-in";
-import KISMET_CASINO_DATA from "./kismet-casino-data";
-
 export interface Evidence {
   title: string;
   description: string;
@@ -39,7 +29,7 @@ export interface ColdCase {
     title: string;
     body: string;
   }>;
-  evidence?: Record<string, unknown> | Evidence[];
+  badgeImageUrl?: string;
   /** Optional packaging columns available for this case's index (e.g. suspect, evidence, bonus) */
   packagingColumns?: Array<"suspect" | "evidence" | "bonus">;
   /** Whether the case can currently be purchased */
@@ -100,7 +90,7 @@ export const coldCases: ColdCase[] = [
     players: "1-4",
     duration: "3-5 hours",
     price: 39.0,
-    evidence: STATION_ZERO_DATA,
+    badgeImageUrl: "/cold_case_data/station_zero/station_zero_badge.png",
     // For Station Zero we maintain two packaging destinations only
     packagingColumns: ["suspect", "evidence"],
     // Intentionally mark this one as not yet purchasable / downloadable
@@ -256,7 +246,7 @@ export const coldCases: ColdCase[] = [
     players: "1-2",
     duration: "1.5-2 hours",
     price: 0,
-    evidence: FINAL_BENCH_OFF_DATA,
+    badgeImageUrl: "/cold_case_data/the_final_rehearsal/the_final_rehearsal_badge.png",
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: true,
@@ -360,7 +350,7 @@ export const coldCases: ColdCase[] = [
     players: "1-2",
     duration: "1.5-2 hours",
     price: 0,
-    evidence: FINAL_REHEARSAL_DATA,
+    badgeImageUrl: "/cold_case_data/the_final_rehearsal/the_final_rehearsal_badge.png",
     isPurchasable: false,
     hasDownloadSample: false,
     // Board/play exists
@@ -482,7 +472,7 @@ If you like darker detective stories with technical evidence and layered motive 
     players: "1-4",
     duration: "2.5-3 hours",
     price: 0,
-    evidence: KISMET_CASINO_DATA,
+    badgeImageUrl: "/cold_case_data/kismet_casino/kismet_casino_badge.png",
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: true,
@@ -599,7 +589,7 @@ If you like darker detective stories with technical evidence and layered motive 
     players: "1-2",
     duration: "2-3 hours",
     price: 19.99,
-    evidence: SINS_OF_SAINT_LAZARUS_DATA,
+    badgeImageUrl: "/cold_case_data/sins_of_saint_lazarus/sins_of_saint_lazarus_badge.png",
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: true,
@@ -659,10 +649,9 @@ If you like darker detective stories with technical evidence and layered motive 
     players: "1-2",
     duration: "2-3 hours",
     price: 19.99,
-    evidence: THE_LAST_CHECK_IN_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
-    isPlayable: false,
+    isPlayable: true,
     seoSections: [
       {
         title: "Why The Last Check-In stands out as a locked-room mystery",
@@ -699,7 +688,6 @@ If you like darker detective stories with technical evidence and layered motive 
     players: "1-2",
     duration: "2-3 hours",
     price: 79.99,
-    evidence: PALAZZO_OF_BONES_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: false,
@@ -747,7 +735,6 @@ If you like darker detective stories with technical evidence and layered motive 
     players: "1",
     duration: "1.5-2 hours",
     price: 0,
-    evidence: ZERO_SUM_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: false,
@@ -840,7 +827,6 @@ Did Eleanor wander off? Or did she answer the call of her shadow's name?
     players: "1-2",
     duration: "4-5 hours",
     price: 49.99,
-    evidence: HER_SHADOWS_NAME_DATA,
     isPurchasable: false,
     hasDownloadSample: false,
     isPlayable: false,
