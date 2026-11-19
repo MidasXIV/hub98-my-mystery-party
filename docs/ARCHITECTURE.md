@@ -56,6 +56,7 @@ per-action route paths documented elsewhere without checking current callers.
 ## Change rules
 
 - Stay within the current Vercel Hobby budget of 12 generated Serverless Functions. Check deployment output when changing server entrypoints or rendering behavior; see the [function-count constraint](RELIABILITY.md#vercel-hobby-function-count-budget-2026-11-18).
+- Public static URLs do not require server bundle copies. [Tracing exclusions](../next.config.ts) omit only directories unused by filesystem readers; retain social-image dependencies and run the [coverage regression](../scripts/board-resume.test.mjs) when changing readers or exclusions. Oversized traces can prevent function grouping.
 - Route entrypoints dispatch; keep reusable logic/contracts in the existing library boundaries. Keep secrets/server SDK work out of client components.
 - Evidence changes must agree across data, preview, viewer, and print dispatch. See [board design](design-docs/board-evidence-lifecycle.md).
 - Preserve Clerk matcher behavior and inspect per-handler authorization. Generation/objective dispatch must not be described as protected solely because play UI is gated.

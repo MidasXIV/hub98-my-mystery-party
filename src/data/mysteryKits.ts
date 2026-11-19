@@ -262,7 +262,7 @@ export const mysteryKits: MysteryKit[] = [
         secret:
           "He's actually bankrupt and bet against himself in his last fight. Needs the prize money to pay off loan sharks.",
         imageUrl:
-          "/mystery_kits/swipe_right_or_die_trying/characters/rocco-Steel.jpeg",
+          "/mystery_kits/swipe_right_or_die_trying/characters/rocco-steel.jpeg",
         participantDossierHtml: `
           <p>You are the villa’s obvious physical threat: loud, powerful, and easy for everyone to blame. Lean into the fact that people underestimate your intelligence while quietly protecting how desperate your finances really are. Your job is to look suspicious without handing anyone a clean motive-and-opportunity confession.</p>
           <h3>Your Alibi</h3>

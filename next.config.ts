@@ -35,6 +35,14 @@ const localImagePatterns = [
 ];
 
 const nextConfig: NextConfig = {
+  // These assets are served publicly, never read through fs by server handlers.
+  outputFileTracingExcludes: {
+    "/*": [
+      "./public/cold_case_data/**/*",
+      "./public/hero/**/*",
+      "./public/features_section/**/*",
+    ],
+  },
   images: {
     domains: ["images.unsplash.com", "github.com", "kioubj9rw7g55npk.public.blob.vercel-storage.com"],
     localPatterns: localImagePatterns,

@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { Script } from "node:vm";
 import ts from "typescript";
+import picomatch from "next/dist/compiled/picomatch/index.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
@@ -221,8 +222,35 @@ function loadCaseRegistries() {
     publicCases: load(path.join(root, "src", "data", "coldCases.ts")),
     serverCases: load(path.join(root, "src", "data", "coldCases.server.ts")),
     discovery: load(path.join(root, "src", "lib", "case-discovery.ts")),
+    kits: load(path.join(root, "src", "data", "mysteryKits.ts")),
   };
 }
+
+test("function tracing excludes unused asset directories but retains every filesystem social image", () => {
+  const config = loadModule("next.config.ts", {}).default;
+  const excluded = picomatch(config.outputFileTracingExcludes["/*"].map(
+    (pattern) => path.resolve(root, pattern).replaceAll("\\", "/"),
+  ), { dot: true });
+  const { publicCases, kits } = loadCaseRegistries();
+  const images = new Set([
+    "/hero_wideshot/woman-vanishing.png",
+    ...publicCases.coldCases.slice(0, 4).map((entry) => entry.imageUrl),
+    ...kits.mysteryKits.flatMap((kit) => [
+      kit.imageUrl,
+      ...(kit.characters ?? []).map((character) => character.imageUrl),
+    ]),
+  ].filter(Boolean));
+  for (const url of images) {
+    const asset = `./public${url}`;
+    assert.ok(!excluded(path.resolve(root, asset).replaceAll("\\", "/")), `Filesystem social image excluded: ${url}`);
+    assert.ok(statSync(path.resolve(root, asset)).isFile(), `Missing social image: ${url}`);
+    assert.ok(readdirSync(path.dirname(path.resolve(root, asset))).includes(path.basename(asset)),
+      `Social image filename case must match Linux: ${url}`);
+  }
+  for (const directory of ["cold_case_data", "hero", "features_section"]) {
+    assert.ok(excluded(path.resolve(root, "public", directory, "nested", "asset.png").replaceAll("\\", "/")));
+  }
+});
 
 test("public metadata has no evidence, while server scoring and print retain all datasets", () => {
   const { publicCases, serverCases, discovery } = loadCaseRegistries();

@@ -30,8 +30,9 @@ never copy real values into troubleshooting notes.
 Deployment constraint: keep this project's generated deployment at **no more
 than 12 Serverless Functions** while using the current Hobby configuration.
 The deployment was rejected with that limit on 2026-11-18. This is separate
-from the Function Storage allowance discussed below; deleting old deployments
-or shrinking bundles does not reduce the new deployment's function count.
+from the Function Storage allowance discussed below. Deleting old deployments
+does not reduce the new deployment's function count. Shrinking oversized bundles
+can reduce it by allowing Vercel to group more compatible routes together.
 
 Count generated Vercel functions, not source files or API endpoints. Dynamic
 pages and generated social-image handlers can also contribute; Next.js/Vercel
@@ -47,7 +48,9 @@ Source investigation:
 
 - Commit `c72b6de` introduced [the analytics page](../src/app/analytics/page.tsx),
   which calls Clerk `auth()` and loads account data at request time. This is a
-  newly added dynamic route and the leading candidate for crossing the budget.
+  newly added dynamic route and was the initial candidate for crossing the budget.
+  Local packaging later identified oversized shared asset traces as the grouping
+  bottleneck; removing analytics is not required.
 - Commit `a859b5c` only corrected analytics registry/type usage; it added no route.
   [The server-only case registry](../src/data/coldCases.server.ts) is a library,
   not a function entrypoint. Its imports can affect bundle size, not independently
@@ -55,11 +58,11 @@ Source investigation:
 - Earlier board API consolidation remains intact. No per-action board endpoints
   were reintroduced.
 
-Exact generated count and grouping remain unverified. The failed deployment
-does not expose a retained function file tree, and local builds have been
-blocked by Google Fonts downloads. Compare generated output with the last successful deployment
-before claiming the budget is met. Do not remove analytics, make private data
-public/static, change runtimes blindly, or upgrade the plan without approval.
+The [tracing fix below](#oversized-trace-grouping-fix-2026-11-20) now has a local
+generated inventory below the cap; remote deployment acceptance remains
+unverified. Rejected deployments did not expose a retained function file tree.
+Do not remove analytics, make private data public/static, change runtimes blindly,
+or upgrade the plan without approval.
 
 ### Function reduction implemented (2026-11-20)
 
@@ -77,7 +80,7 @@ public/static, change runtimes blindly, or upgrade the plan without approval.
 
 Verification: all 16 [focused regressions](../scripts/board-resume.test.mjs),
 targeted ESLint, `next typegen`, and `tsc --noEmit --incremental false` passed.
-Full Turbopack builds remain blocked by external Google Fonts downloads.
+At that stage, full Turbopack builds were blocked by Google Fonts downloads.
 An alternative webpack build compiled but found pre-existing generated route
 parameter type errors; split build generation also stalled. Neither is counted
 as a successful production build. Vercel tooling was tried outside the repository
@@ -94,15 +97,69 @@ These changes were insufficient and are not evidence of an exact function count.
 `dynamicParams = false`. Both already enumerate all registry slugs using
 `generateStaticParams`. Known pages remain prebuilt; unlisted slugs return 404
 without on-demand page generation. New cases require a deployment, as their
-repository datasets already do. This targets unnecessary fallback functions;
-the exact packaging reduction and deployment acceptance still need verification.
+repository datasets already do. This targets unnecessary fallback functions,
+but the user's deployment of `a6f6b21`
+(`dpl_295CckRRrG5vkU1cTBZUMWdBJM7G`) still failed the same function cap after
+a successful Next build. This change alone did not resolve packaging.
 Scoring, progress, analytics authentication, and social images are unchanged.
 
 Validation: all 17 focused regressions passed, including registry slug coverage
 and disabled fallback for both routes. Targeted ESLint, route type generation,
-TypeScript, and whitespace checks passed. The local production build still failed
-downloading Google Fonts; generated function counts and deployed 404 behavior
-have not yet been verified. No deployment was triggered.
+TypeScript, and whitespace checks passed. At that stage, the local production build
+failed downloading Google Fonts, so this attempt supplied no generated-count or
+deployed-404 evidence. No deployment was triggered.
+
+### Oversized trace grouping fix (2026-11-20)
+
+The broad image filesystem traces also appeared in page bundles. The local
+Vercel adapter split these oversized trace unions into **15 Node groups**, plus
+3 Edge groups. Source-route and API-route counts missed this cause.
+
+[Next configuration](../next.config.ts) now excludes only
+`public/cold_case_data`, `public/hero`, and `public/features_section` from server
+file tracing. No application server filesystem reader uses these directories.
+Their public URLs remain deployed; this is not removal from static hosting.
+Keep `public/cold_cases`, `public/hero_wideshot`, and `public/mystery_kits` in
+function traces because social-image handlers read them. New filesystem readers
+must respect the exclusions or update them with image-coverage checks.
+
+| Local trace | Before | After |
+| --- | --- | --- |
+| Analytics and cases pages | 225.59 MiB each | 72.75 MiB each |
+| Kit social-image handler | 223.76 MiB | 70.92 MiB |
+| Board API | 2.60 MiB | 2.60 MiB |
+| Public assets in affected traces | 197 files / 219.77 MiB | 85 files / 66.93 MiB |
+
+These are overlapping trace sums, not billed storage. The exclusions remove
+152.84 MiB / 112 files from each affected public-asset trace.
+
+Final local packaging produced **5 Node groups (`nodejs22.x`) + 3 Edge groups**:
+even their combined count is below 12. This is local `@vercel/next` 31.0.0
+evidence, not a remote deployment inventory. Temporary Windows tooling needed
+path-separator normalization to consume Next's trace map; an initial count
+without traces was invalid. The before run used the adapter's default Node
+runtime; the final run explicitly used the project's Node 22 runtime. The local
+process ran Node 24, so platform parity and Vercel acceptance remain unverified.
+
+Validation:
+
+- All 18 [focused regressions](../scripts/board-resume.test.mjs) and targeted
+  ESLint passed. Coverage checks all 42 authored filesystem social images exist,
+  have Linux-correct filenames, and do not match the exclusions.
+- Full Turbopack production build, including TypeScript and 125 static pages,
+  passed using locally cached **real** Google font bytes. Network font downloads
+  remain unreliable; no font workaround or localhost references were added to
+  application source. This was not an ordinary network build.
+- Five compiled-handler probes rendered real PNGs: root Twitter image, both kit
+  images, and the first character image for each kit. The probes rejected public
+  filesystem reads absent from each route's trace. A discovered Rocco image
+  filename-case mismatch was corrected in the
+  [kit registry](../src/data/mysteryKits.ts).
+- No deployment, hosting settings change, paid-provider call, or live player-data
+  check was performed. Redeploy the committed source through the normal build;
+  do not deploy local diagnostic build artifacts.
+
+See the [completed investigation](exec-plans/completed/2026-11-20-vercel-function-tracing.md).
 
 ### When the 12-function error returns
 
@@ -130,7 +187,8 @@ Follow this workflow before making more route changes:
    Confirm `exceeded_serverless_functions_per_deployment`. Do not print the full
    deployment object: it can contain environment and other sensitive metadata.
    The rejected deployment `dpl_8juDPP2bywbuK5jbGH1U5KQjC2Gd` confirmed this
-   exact error. This is not a TypeScript failure or the separate storage quota.
+   exact error, as did `dpl_295CckRRrG5vkU1cTBZUMWdBJM7G` after the fallback
+   change. This is not a TypeScript failure or the separate storage quota.
 4. Compare the deployed commit with the last successful deployment. The last
    confirmed successful commit before this failure was `ddca898`; `/analytics`
    was the only new page route by `b094f57`. This identifies a likely trigger,
@@ -146,7 +204,18 @@ Follow this workflow before making more route changes:
    `.vercel/output/functions` and `.vc-config.json` files. Resolve links/grouping
    and classify runtimes before counting. Never commit pulled environment files.
    If build/network access blocks this, record the missing inventory explicitly.
-7. Prefer disabling unnecessary fallback for fully enumerated repository content,
+   For trace-only diagnostics, a temporary external Vercel adapter can package
+   an already completed Next build. Group actual Lambda/EdgeFunction objects,
+   not route aliases; configure Node 22 and verify Windows trace keys are
+   normalized before trusting counts. Identify this as local, not deployed,
+   evidence. If fonts block compilation, cached real font bytes may support a
+   local diagnostic build; do not commit a test hook or deploy that output.
+7. Check `.next/server/**/*.nft.json` sizes before changing more routes. Broad
+   filesystem reads can include unrelated public assets and prevent compatible
+   routes sharing a function. Compare trace unions and generated grouping.
+   Exclude only files no server reader needs, keeping static URLs intact, then
+   test the actual filesystem-backed social-image responses.
+   Other options are disabling unnecessary fallback for fully enumerated content,
    static output for request-independent handlers, or existing dispatchers.
    Preserve unknown-slug 404s, public URLs, authentication, and server-only answers.
    Do not delete features, change runtimes blindly, or change the plan/compute
@@ -158,13 +227,13 @@ Follow this workflow before making more route changes:
 
 ## Vercel Function Storage investigation (2026-11-18)
 
-Status: open; local production build inspected, deployed usage not verified.
+Status: trace mitigation locally verified on 2026-11-20; deployed usage unverified.
 The user reported reaching the team's included Function Storage allowance.
 This concerns retained deployment function bundles, not player progress or
 runtime memory. Preview/production deployment history and configured regions
 can multiply retained storage; other projects in the team can contribute.
 
-Local Next.js dependency trace measurements:
+Original local Next.js dependency trace measurements, before the tracing fix:
 
 | Route | Traced files, approximately | Included public assets |
 | --- | --- | --- |
@@ -179,12 +248,14 @@ not final Vercel Function bundle sizes or billed totals. Do not add them togethe
 files overlap, Vercel may group functions, and deployed output can differ.
 The tagged objective handler was not the main local size contributor.
 
-Likely trigger to investigate: dynamically constructed filesystem reads under
+Identified local tracing trigger: dynamically constructed filesystem reads under
 `public` in the [Twitter image generator](../src/app/twitter-image.tsx),
 [kit image generator](../src/app/kits/[slug]/play/opengraph-image.tsx), and
 [character image generator](../src/app/kits/[slug]/play/characters/[characterSlug]/opengraph-image.tsx).
 Their traces included the entire public directory; the same assets also appeared
-in page traces. The exact tracing propagation and deployed cost are not yet proven.
+in page traces. Narrow exclusions now remove unrelated assets and improve local
+function grouping; see [the measured fix](#oversized-trace-grouping-fix-2026-11-20).
+Deployed bundle sizes and billed cost remain unverified.
 
 Next steps:
 
@@ -193,16 +264,18 @@ Next steps:
    **Resources > Functions** for actual bundle sizes and regions.
 2. Review deployment retention and stale preview history, preserving the required
    rollback window. Do not delete deployments or change retention without approval.
-3. Scope a fix for broad filesystem tracing, such as precise image dependencies or
-   URL-based image loading where suitable. Do not blindly exclude `public`:
-   filesystem-based image generators still need their referenced files.
-4. Rebuild, compare traces and deployed bundles, and verify social-image routes
-   before claiming savings. Smaller new bundles do not shrink retained old ones.
+3. Keep the tracing exclusions aligned with actual filesystem readers. Do not
+   blindly exclude `public`: image generators still need their referenced files.
+4. After deploying the fix, compare deployed bundles and verify social-image routes
+   before claiming billed savings. Smaller new bundles do not shrink retained
+   old ones; old deployment deletion/retention is a separate approved action.
 
 References: [Vercel storage accounting](https://vercel.com/docs/deployment-storage),
 [optimization](https://vercel.com/docs/deployment-storage/optimize), and
 [retention](https://vercel.com/docs/deployment-retention).
-No application code, Vercel settings, or deployments were changed in this investigation.
+The initial storage investigation changed no application code. The later tracing
+fix changes packaging configuration and an image-path case mismatch only; no
+Vercel settings, retention, or deployments were changed.
 
 ## Verification by change
 
