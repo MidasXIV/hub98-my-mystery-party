@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAllPosts, getBaseUrl } from "@/lib/blog";
 
+export const dynamic = "force-static";
+
 export async function GET() {
   const base = getBaseUrl();
   const posts = getAllPosts();

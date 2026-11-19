@@ -43,6 +43,7 @@ const nextConfig: NextConfig = {
     return [
       // Allow visiting /category/:category directly (alias of /blog/category/:category)
       { source: "/category/:category", destination: "/blog/category/:category" },
+      { source: "/admin/analytics", destination: "/analytics" },
     ];
   },
 };

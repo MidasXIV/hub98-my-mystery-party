@@ -8,6 +8,51 @@ import ts from "typescript";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 
+test("repository blog responses are static and preserve JSON and RSS contracts", async () => {
+  const posts = [{
+    slug: "test-post",
+    title: "Test post",
+    description: "A".repeat(180),
+    date: "2026-11-18",
+  }];
+  const imports = {
+    "next/server": { NextResponse: Response },
+    "@/lib/blog": {
+      getAllPosts: () => posts,
+      getBaseUrl: () => "https://example.test",
+    },
+  };
+  const cards = loadModule(path.join("src", "app", "api", "blog", "cards", "route.ts"), imports);
+  assert.equal(cards.dynamic, "force-static");
+  const cardResponse = await cards.GET();
+  assert.equal(cardResponse.status, 200);
+  assert.deepEqual(await cardResponse.json(), [{
+    slug: "test-post",
+    title: "Test post",
+    description: posts[0].description,
+    shortDescription: `${"A".repeat(157)}…`,
+    image: "/opengraph/hero.png",
+  }]);
+
+  const rss = loadModule(path.join("src", "app", "rss.xml", "route.ts"), imports);
+  assert.equal(rss.dynamic, "force-static");
+  const feedResponse = await rss.GET();
+  assert.equal(feedResponse.status, 200);
+  assert.equal(feedResponse.headers.get("Content-Type"), "application/rss+xml; charset=utf-8");
+  const xml = await feedResponse.text();
+  assert.ok(xml.includes("<link>https://example.test/blog/test-post</link>"));
+  assert.ok(xml.includes("<title><![CDATA[Test post]]></title>"));
+  assert.ok(xml.includes(`<description><![CDATA[${posts[0].description}]]></description>`));
+  assert.ok(xml.includes("<pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>"));
+});
+
+test("admin analytics alias rewrites to the existing protected page", async () => {
+  const config = loadModule("next.config.ts", {}).default;
+  assert.ok((await config.rewrites()).some(
+    (rewrite) => rewrite.source === "/admin/analytics" && rewrite.destination === "/analytics",
+  ));
+});
+
 function loadModule(relativePath, imports, env = {}) {
   const filename = path.resolve(root, relativePath);
   const { outputText } = ts.transpileModule(readFileSync(filename, "utf8"), {

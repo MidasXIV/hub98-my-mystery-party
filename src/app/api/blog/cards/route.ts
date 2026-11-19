@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getAllPosts } from "@/lib/blog";
 
+export const dynamic = "force-static";
+
 type BlogCard = {
   slug: string;
   title: string;

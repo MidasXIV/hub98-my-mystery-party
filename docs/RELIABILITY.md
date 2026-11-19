@@ -25,6 +25,67 @@ for account features. Waitlist notification optionally uses
 `DISCORD_WAITLIST_WEBHOOK_URL`. Check variable names in source/example config;
 never copy real values into troubleshooting notes.
 
+## Vercel Hobby function-count budget (2026-11-18)
+
+Deployment constraint: keep this project's generated deployment at **no more
+than 12 Serverless Functions** while using the current Hobby configuration.
+The deployment was rejected with that limit on 2026-11-18. This is separate
+from the Function Storage allowance discussed below; deleting old deployments
+or shrinking bundles does not reduce the new deployment's function count.
+
+Count generated Vercel functions, not source files or API endpoints. Dynamic
+pages and generated social-image handlers can also contribute; Next.js/Vercel
+may group routes, so a source-route count is not an authoritative total.
+Before adding or changing request-time rendering, API routes, server actions,
+or image handlers, inspect the generated deployment's function inventory and
+verify that the total stays within 12. Preserve the existing
+[board dispatcher](../src/app/api/board/route.ts) rather than recreating
+per-action endpoints. Prefer static output where behavior permits, or reuse
+existing server entrypoints without weakening authorization or exposing answers.
+
+Source investigation:
+
+- Commit `c72b6de` introduced [the analytics page](../src/app/analytics/page.tsx),
+  which calls Clerk `auth()` and loads account data at request time. This is a
+  newly added dynamic route and the leading candidate for crossing the budget.
+- Commit `a859b5c` only corrected analytics registry/type usage; it added no route.
+  [The server-only case registry](../src/data/coldCases.server.ts) is a library,
+  not a function entrypoint. Its imports can affect bundle size, not independently
+  create a function.
+- Earlier board API consolidation remains intact. No per-action board endpoints
+  were reintroduced.
+
+Exact deployed count, grouping, and the route that exceeded the budget remain
+unverified: no Vercel build-output function inventory is available locally, and
+the latest local production build was blocked by Google Fonts downloads.
+Compare the failed deployment's function inventory with the last successful one
+before claiming the budget is met. Do not remove analytics, make private data
+public/static, change runtimes blindly, or upgrade the plan without approval.
+
+### Function reduction implemented (2026-11-20)
+
+- [Blog-card JSON](../src/app/api/blog/cards/route.ts) and
+  [RSS](../src/app/rss.xml/route.ts) now use `dynamic = "force-static"`.
+  Both depend only on repository Markdown and build configuration, not the
+  current request. Their content now refreshes on deployment, like the blog
+  itself; URLs and response bodies are unchanged.
+- `/admin/analytics` previously re-exported the analytics page as another
+  request-time page entrypoint. It is now a
+  [rewrite](../next.config.ts) to `/analytics`. Both URLs still reach the same
+  server-side authentication and allowlist checks; account data stays dynamic
+  and private.
+- No gameplay endpoints, authorization checks, or social-image behavior changed.
+
+Verification: all 16 [focused regressions](../scripts/board-resume.test.mjs),
+targeted ESLint, `next typegen`, and `tsc --noEmit --incremental false` passed.
+Full Turbopack builds remain blocked by external Google Fonts downloads.
+An alternative webpack build compiled but found pre-existing generated route
+parameter type errors; split build generation also stalled. Neither is counted
+as a successful production build. Vercel tooling was tried outside the repository
+without changing dependencies or deploying; no complete function inventory was
+produced. Deployment acceptance and the final function count are still pending
+the user's redeploy. These changes are not evidence of an exact function count.
+
 ## Vercel Function Storage investigation (2026-11-18)
 
 Status: open; local production build inspected, deployed usage not verified.

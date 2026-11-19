@@ -35,6 +35,9 @@ image URLs so the homepage does not need full datasets.
 The analytics page also reads the server registry. Its aggregator accepts
 `CaseWithEvidence` and returns objective counts/labels and player statistics,
 not full evidence or canonical solutions, to the analytics UI.
+`/admin/analytics` rewrites to `/analytics` rather than defining a second page.
+The blog-card JSON and RSS handlers are build-time static output from repository
+content; their data refreshes on deployment.
 
 GET supports `badge` and `player-progress` query actions. POST supports
 `generate`, `objective`, `badge`, and `player-progress`. Do not recreate older
@@ -50,6 +53,7 @@ per-action route paths documented elsewhere without checking current callers.
 
 ## Change rules
 
+- Stay within the current Vercel Hobby budget of 12 generated Serverless Functions. Check deployment output when changing server entrypoints or rendering behavior; see the [function-count constraint](RELIABILITY.md#vercel-hobby-function-count-budget-2026-11-18).
 - Route entrypoints dispatch; keep reusable logic/contracts in the existing library boundaries. Keep secrets/server SDK work out of client components.
 - Evidence changes must agree across data, preview, viewer, and print dispatch. See [board design](design-docs/board-evidence-lifecycle.md).
 - Preserve Clerk matcher behavior and inspect per-handler authorization. Generation/objective dispatch must not be described as protected solely because play UI is gated.
