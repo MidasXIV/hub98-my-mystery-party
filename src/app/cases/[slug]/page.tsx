@@ -13,6 +13,8 @@ interface CasePageProps {
   params: Promise<{ slug: string }> | { slug: string }; // Support both for forward/back compat
 }
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return coldCases.map((c) => ({ slug: c.slug }));
 }

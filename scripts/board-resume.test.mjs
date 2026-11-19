@@ -258,6 +258,36 @@ test("public metadata has no evidence, while server scoring and print retain all
   assert.ok(summary.earned > 0, "Objective-count-based badge progress must still work");
 });
 
+test("case and print routes prebuild every registered slug without runtime fallback", async () => {
+  const { publicCases, serverCases } = loadCaseRegistries();
+  for (const [route, registry] of [
+    ["cases", publicCases],
+    ["print", serverCases],
+  ]) {
+    const filename = path.join(root, "src", "app", route, "[slug]", "page.tsx");
+    const source = ts.createSourceFile(filename, readFileSync(filename, "utf8"), ts.ScriptTarget.Latest, true);
+    const config = source.statements.find((statement) =>
+      ts.isVariableStatement(statement) && statement.declarationList.declarations.some(
+        (declaration) => ts.isIdentifier(declaration.name) && declaration.name.text === "dynamicParams",
+      ));
+    const generate = source.statements.find((statement) =>
+      ts.isFunctionDeclaration(statement) && statement.name?.text === "generateStaticParams");
+    assert.ok(config && generate, `${route} must declare static params and disable fallback`);
+    const { outputText } = ts.transpileModule(`${config.getText(source)}\n${generate.getText(source)}`, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS },
+    });
+    const exports = {};
+    new Script(`(function(exports, coldCases) { ${outputText}\n})`, { filename })
+      .runInThisContext()(exports, registry.coldCases);
+    assert.equal(exports.dynamicParams, false);
+    const params = await exports.generateStaticParams();
+    assert.deepEqual(params, registry.coldCases.map(({ slug }) => ({ slug })));
+    assert.ok(params.length > 0);
+    assert.equal(new Set(params.map(({ slug }) => slug)).size, params.length);
+    assert.ok(!params.some(({ slug }) => slug === "not-a-case"));
+  }
+});
+
 test("analytics preserves server objective counts and labels without returning answers", () => {
   const { serverCases } = loadCaseRegistries();
   const { buildCaseAnalytics } = loadModule(path.join("src", "lib", "case-analytics.ts"), {});

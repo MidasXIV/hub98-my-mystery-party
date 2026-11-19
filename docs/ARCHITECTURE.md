@@ -38,6 +38,8 @@ not full evidence or canonical solutions, to the analytics UI.
 `/admin/analytics` rewrites to `/analytics` rather than defining a second page.
 The blog-card JSON and RSS handlers are build-time static output from repository
 content; their data refreshes on deployment.
+Case-detail and print pages enumerate registry slugs at build time and set
+`dynamicParams = false`; unlisted slugs return 404 without runtime fallback.
 
 GET supports `badge` and `player-progress` query actions. POST supports
 `generate`, `objective`, `badge`, and `player-progress`. Do not recreate older

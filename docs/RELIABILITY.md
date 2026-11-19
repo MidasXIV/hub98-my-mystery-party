@@ -55,10 +55,9 @@ Source investigation:
 - Earlier board API consolidation remains intact. No per-action board endpoints
   were reintroduced.
 
-Exact deployed count, grouping, and the route that exceeded the budget remain
-unverified: no Vercel build-output function inventory is available locally, and
-the latest local production build was blocked by Google Fonts downloads.
-Compare the failed deployment's function inventory with the last successful one
+Exact generated count and grouping remain unverified. The failed deployment
+does not expose a retained function file tree, and local builds have been
+blocked by Google Fonts downloads. Compare generated output with the last successful deployment
 before claiming the budget is met. Do not remove analytics, make private data
 public/static, change runtimes blindly, or upgrade the plan without approval.
 
@@ -83,8 +82,79 @@ An alternative webpack build compiled but found pre-existing generated route
 parameter type errors; split build generation also stalled. Neither is counted
 as a successful production build. Vercel tooling was tried outside the repository
 without changing dependencies or deploying; no complete function inventory was
-produced. Deployment acceptance and the final function count are still pending
-the user's redeploy. These changes are not evidence of an exact function count.
+produced. The user's redeploy of commit `b094f57` subsequently passed the full
+Next.js build but was still rejected by the function cap. Its route summary
+confirmed that both feeds were static and the duplicate analytics page was gone.
+These changes were insufficient and are not evidence of an exact function count.
+
+### Static case/print fallback reduction (2026-11-20)
+
+[Case details](../src/app/cases/[slug]/page.tsx) and
+[print pages](../src/app/print/[slug]/page.tsx) now export
+`dynamicParams = false`. Both already enumerate all registry slugs using
+`generateStaticParams`. Known pages remain prebuilt; unlisted slugs return 404
+without on-demand page generation. New cases require a deployment, as their
+repository datasets already do. This targets unnecessary fallback functions;
+the exact packaging reduction and deployment acceptance still need verification.
+Scoring, progress, analytics authentication, and social images are unchanged.
+
+Validation: all 17 focused regressions passed, including registry slug coverage
+and disabled fallback for both routes. Targeted ESLint, route type generation,
+TypeScript, and whitespace checks passed. The local production build still failed
+downloading Google Fonts; generated function counts and deployed 404 behavior
+have not yet been verified. No deployment was triggered.
+
+### When the 12-function error returns
+
+Follow this workflow before making more route changes:
+
+1. Use the existing authenticated CLI first: `vercel.cmd whoami`. If necessary,
+   ask the user to finish `vercel.cmd login`. Do not install plugins or configure
+   MCP merely to inspect a deployment; CLI authentication is sufficient.
+2. Obtain the deployment ID from the dashboard URL (prefix its final ID with
+   `dpl_`). Read the build logs with:
+
+   ```powershell
+   vercel.cmd inspect <deployment-id> --scope midasxivs-projects --logs
+   ```
+
+3. If compilation succeeds but "Deploying outputs" fails, read the actual
+   deployment error, not just the build log:
+
+   ```powershell
+   $raw = vercel.cmd api /v13/deployments/<deployment-id> --scope midasxivs-projects --method GET
+   $deployment = ($raw -join "`n") | ConvertFrom-Json
+   $deployment | Select-Object id, readyState, errorCode, errorMessage
+   ```
+
+   Confirm `exceeded_serverless_functions_per_deployment`. Do not print the full
+   deployment object: it can contain environment and other sensitive metadata.
+   The rejected deployment `dpl_8juDPP2bywbuK5jbGH1U5KQjC2Gd` confirmed this
+   exact error. This is not a TypeScript failure or the separate storage quota.
+4. Compare the deployed commit with the last successful deployment. The last
+   confirmed successful commit before this failure was `ddca898`; `/analytics`
+   was the only new page route by `b094f57`. This identifies a likely trigger,
+   not an authoritative function-count delta.
+5. Inspect **Resources > Functions** when available. API file-tree requests may
+   return 404 for rejected/Git deployments. The `Route (app)` table's `ƒ`, `●`,
+   and `○` symbols describe rendering, not the exact counted function inventory.
+   SSG routes can retain runtime fallback functions. Edge handlers, middleware,
+   grouped routes, and internal function aliases require separate interpretation;
+   do not count raw `lambdas.output` aliases as distinct quota-consuming functions.
+6. If remote inventory is unavailable, run `vercel.cmd build --prod` locally
+   using existing project settings (build only, not deploy), then inspect
+   `.vercel/output/functions` and `.vc-config.json` files. Resolve links/grouping
+   and classify runtimes before counting. Never commit pulled environment files.
+   If build/network access blocks this, record the missing inventory explicitly.
+7. Prefer disabling unnecessary fallback for fully enumerated repository content,
+   static output for request-independent handlers, or existing dispatchers.
+   Preserve unknown-slug 404s, public URLs, authentication, and server-only answers.
+   Do not delete features, change runtimes blindly, or change the plan/compute
+   settings without approval. Fluid Compute was already enabled during this
+   investigation; enabling it is not an outstanding fix.
+8. Run focused regressions, lint, type-check, and a production build. Verify the
+   final generated inventory is at most 12 and confirm deployment acceptance
+   before declaring the blocker resolved. Deploy/push only when requested.
 
 ## Vercel Function Storage investigation (2026-11-18)
 

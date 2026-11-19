@@ -31,6 +31,8 @@ import {
   type RenderDiaryDay as LayoutRenderDiaryDay,
 } from "@/lib/diary-layout";
 
+export const dynamicParams = false;
+
 // Ensure we pre-generate for known cases
 export async function generateStaticParams() {
   return coldCases.map((c) => ({ slug: c.slug }));
